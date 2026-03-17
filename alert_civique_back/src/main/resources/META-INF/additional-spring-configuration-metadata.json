@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "spring.h2.console.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.h2.console.enabled'"
+  },
+  {
+    "name": "spring.h2.console.path",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.h2.console.path'"
+  },
+  {
+    "name": "spring.h2.console.settings.web-allow-others",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.h2.console.settings.web-allow-others'"
+  },
+  {
+    "name": "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,",
+    "type": "java.lang.String",
+    "description": "A description for 'org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,'"
+  },
+  {
+    "name": "spring.data.mongodb.auto-index-creation",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.data.mongodb.auto-index-creation'"
+  },
+  {
+    "name": "spring.data.mongodb.repositories.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.data.mongodb.repositories.enabled'"
+  }
+]}
