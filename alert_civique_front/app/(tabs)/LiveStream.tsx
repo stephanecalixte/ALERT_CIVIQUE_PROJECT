@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { useLiveStream } from '../../hooks/useLiveStream';
 import LiveStreamCamera from '../../components/LiveStreamCamera';
-// import LiveStreamService from '../services/LiveStreamService';
+import { useAuth } from '../../contexts/AuthContext';
 
-export default function LiveStream() {
-  const userId = "123"; // TODO: from auth context
+export default function LiveStreamScreen() {
+  const { userId } = useAuth();
   const {
     facing,
     toggleCameraFacing,
@@ -14,12 +14,15 @@ export default function LiveStream() {
     hasPermission,
     cameraRef,
     toggleCamera,
-  } = useLiveStream(userId);
+    recording,
+    streams,
+    checkCameraPermission,
+  } = useLiveStream();
 
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Text>Chargement...</Text>
+        <Text style={styles.text}>Chargement... (User ID: {userId})</Text>
       </View>
     );
   }
@@ -27,28 +30,120 @@ export default function LiveStream() {
   if (!hasPermission) {
     return (
       <View style={styles.container}>
-        <Text>Permission caméra requise</Text>
+        <Text style={styles.text}>Permission caméra requise</Text>
+        <Text style={styles.textSmall}>Cliquez pour demander</Text>
       </View>
     );
   }
 
   return (
-    <LiveStreamCamera
-      facing={facing}
-      isCameraActive={isCameraActive}
-      cameraRef={cameraRef}
-      toggleCameraFacing={toggleCameraFacing}
-      toggleCamera={toggleCamera}
-      onClose={() => {}} // Gère close
-    />
+    <View style={styles.container}>
+      {isCameraActive ? (
+        <LiveStreamCamera
+          facing={facing}
+          isCameraActive={isCameraActive}
+          cameraRef={cameraRef}
+          toggleCameraFacing={toggleCameraFacing}
+          toggleCamera={toggleCamera}
+          onClose={() => {}} // TODO: navigation
+          recording={recording}
+        />
+      ) : (
+        <>
+          <View style={styles.header}>
+            <Text style={styles.title}>Live Stream</Text>
+            <Text style={styles.subtitle}>User: {userId}</Text>
+          </View>
+          <TouchableOpacity style={styles.startButton} onPress={toggleCamera}>
+            <Text style={styles.startButtonText}>Démarrer Live Stream</Text>
+          </TouchableOpacity>
+          <Text style={styles.listTitle}>Streams récents:</Text>
+          <FlatList
+            data={streams}
+            keyExtractor={(item) => item.livestreamId?.toString() || ''}
+            renderItem={({ item }) => (
+              <View style={styles.streamItem}>
+                <Text style={styles.streamTitle}>#{item.livestreamId}</Text>
+                <Text style={styles.streamInfo}>Status: {item.status}</Text>
+                <Text style={styles.streamInfo}>Durée: {item.duration}s</Text>
+                {item.videoUrl && (
+                  <Text style={styles.videoUrl}>Vidéo: {item.videoUrl.split('/').pop()}</Text>
+                )}
+              </View>
+            )}
+            style={styles.list}
+          />
+        </>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  header: {
+    padding: 20,
     alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: 'gray',
+  },
+  startButton: {
+    backgroundColor: '#FF3B30',
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  startButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  listTitle: {
+    fontSize: 18,
+    paddingHorizontal: 20,
+    marginTop: 20,
+    fontWeight: '600',
+  },
+  list: {
+    flex: 1,
+  },
+  streamItem: {
+    backgroundColor: 'white',
+    margin: 10,
+    padding: 15,
+    borderRadius: 10,
+    elevation: 2,
+  },
+  streamTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  streamInfo: {
+    fontSize: 14,
+    color: 'gray',
+    marginTop: 4,
+  },
+  videoUrl: {
+    fontSize: 12,
+    color: 'green',
+    marginTop: 4,
+    fontFamily: 'monospace',
+  },
+  text: {
+    fontSize: 18,
+  },
+  textSmall: {
+    fontSize: 14,
+    color: 'gray',
   },
 });
 

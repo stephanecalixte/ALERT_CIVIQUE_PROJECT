@@ -10,6 +10,7 @@ interface LiveStreamCameraProps {
   toggleCameraFacing: () => void;
   toggleCamera: () => void;
   onClose?: () => void;
+  recording?: boolean;
 }
 
 export default function LiveStreamCamera({

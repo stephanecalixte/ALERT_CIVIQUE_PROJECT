@@ -16,17 +16,23 @@ public class LiveStreamMapperService {
              entity.getStartedAt(),
              entity.getEndedAt(),
              entity.getStreamUrl(),
-             entity.getStatus()
-
+             entity.getStatus(),
+             entity.getVideoUrl(),
+             entity.getMediaId(),
+             entity.getDuration()
         );
     }
 
     public LiveStream toEntity(LiveStreamDTO dto){
         LiveStream liveStream=new LiveStream();
-        liveStream.setStreamUrl(liveStream.getStreamUrl());
-        liveStream.setStatus(liveStream.getStatus());
-        liveStream.setStartedAt(liveStream.getStartedAt());
-        liveStream.setLivestreamId(liveStream.getLivestreamId());
+        liveStream.setStreamUrl(dto.streamUrl());
+        liveStream.setStatus(dto.status());
+        liveStream.setStartedAt(dto.startedAt());
+        liveStream.setLivestreamId(dto.livestreamId());
+        liveStream.setVideoUrl(dto.videoUrl());
+        liveStream.setMediaId(dto.mediaId());
+        liveStream.setEndedAt(dto.endedAt());
+        liveStream.setDuration(dto.duration());
 
         return liveStream;
     }

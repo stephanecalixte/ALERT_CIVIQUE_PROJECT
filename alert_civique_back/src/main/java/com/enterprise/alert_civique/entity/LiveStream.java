@@ -32,9 +32,19 @@ public class LiveStream {
     @Column(name = "status")
     private String status; // "LIVE", "ENDED", "SCHEDULED"
 
+    @Column(name = "video_url")
+    private String videoUrl;
+
+    @Column(name = "media_id")
+    private Long mediaId;
+
+    @Column(name = "duration")
+    private Integer duration;
+
     @PrePersist
     protected void onCreate() {
         startedAt = LocalDateTime.now();
         status = "LIVE";
     }
 }
+

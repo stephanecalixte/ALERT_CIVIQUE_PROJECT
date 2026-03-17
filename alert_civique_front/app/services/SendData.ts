@@ -1,15 +1,19 @@
 const BASE_URL = "http://localhost:8082";
 
-async function sendData(url: string, body: any) {
-  // Ajoute l'URL de base si l'URL est relative
+async function sendData(url: string, body: any, token?: string) {
   const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;
   
   try {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    
     const response = await fetch(fullUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(body),
     });
 
@@ -21,7 +25,7 @@ async function sendData(url: string, body: any) {
     return data;
   } catch (error) {
     console.error("Erreur sendData :", error);
-    return null;
+    throw error;
   }
 }
 

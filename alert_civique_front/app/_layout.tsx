@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { GeolocalisationProvider } from '@/components/GeolocalisationContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
@@ -28,7 +29,8 @@ export default function RootLayout() {
   }
 
   return (
-    <GeolocalisationProvider>
+      <AuthProvider>
+        <GeolocalisationProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -36,7 +38,8 @@ export default function RootLayout() {
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
-    </GeolocalisationProvider>
+      </GeolocalisationProvider>
+      </AuthProvider>
   );
 }
 
