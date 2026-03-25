@@ -11,6 +11,7 @@ public class UserRegisterRequestDto {
 
     @NotBlank
     @Size(min = 2, max = 48)
+    @Pattern(regexp = "^[A-Za-z]")
     private String firstname;
 
     @NotBlank
@@ -31,6 +32,6 @@ public class UserRegisterRequestDto {
     @Pattern(regexp = "^[0-9+ ]{8,20}$", message = "Le numéro de téléphone doit comporter entre 8 et 20 chiffres, espaces ou signes plus")
     private String phone;
 
-    @Past
+    @Past(message="La date de naissance doit être antérieur à la date du jour")
     private LocalDate birthdate;
 }

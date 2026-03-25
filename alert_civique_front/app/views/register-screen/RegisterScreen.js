@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 // import { registerUser } from "../services/AuthService";
-import { registerUser } from "../../services/RegisterService";
+import { registerUser } from "../../lib/services/RegisterService";
 
 export default function RegisterScreen() {
   const [form, setForm] = useState({
@@ -90,7 +90,7 @@ export default function RegisterScreen() {
         <ActivityIndicator size="large" />
       ) : (
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>S'inscrire</Text>
+          <Text style={styles.buttonText}>inscription</Text>
         </TouchableOpacity>
       )}
     </View>

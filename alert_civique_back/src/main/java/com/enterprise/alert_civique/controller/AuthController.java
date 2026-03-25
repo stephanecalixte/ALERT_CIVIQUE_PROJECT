@@ -2,7 +2,7 @@ package com.enterprise.alert_civique.controller;
 
 import com.enterprise.alert_civique.dto.LoginRequestDTO;
 import com.enterprise.alert_civique.dto.UserRegisterRequestDto;
-import com.enterprise.alert_civique.dto.UserResponseDTO;
+import com.enterprise.alert_civique.dto.UserResponseDto;
 import com.enterprise.alert_civique.service.RegisterService;
 import com.enterprise.alert_civique.security.JwtService;
 import org.springframework.http.HttpStatus;
@@ -57,9 +57,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRegisterRequestDto request) {
+    public ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserRegisterRequestDto request) {
         try {
-            UserResponseDTO response = registerService.register(request);
+            UserResponseDto response = registerService.register(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);

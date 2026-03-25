@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 import com.enterprise.alert_civique.entity.PushNotification;
 
 @Repository
-public interface PushNotificationRepository extends JpaRepository<PushNotification,Long>{
-    
-    List<PushNotification> findByUserId(Long userId);
-    
-    List<PushNotification> findByReportId(Long reportId);
+public interface PushNotificationRepository extends JpaRepository<PushNotification, Long> {
+
+    // ✅ Navigation via la relation user.userId
+    List<PushNotification> findByUserUserId(Long userId);
+
+    // ✅ Navigation via la relation report.reportId
+    List<PushNotification> findByReportReportId(Long reportId);
 }

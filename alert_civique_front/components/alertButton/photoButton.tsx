@@ -1,4 +1,3 @@
-import LiveStream from '@/app/(tabs)/LiveStream';
 import { useGeolocalisation } from '@/components/GeolocalisationContext';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
@@ -10,35 +9,12 @@ import {
   Modal,
   ActivityIndicator 
 } from 'react-native';
+import CameraScreen from '@/components/CameraScreen';
 
 export default function PhotoButton() {
   const { requestLocation, location, error, loading } = useGeolocalisation();
   const [showPhoto, setShowPhoto] = useState(false);
   const bounceAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const bounce = Animated.loop(
-      Animated.sequence([
-        Animated.timing(bounceAnim, {
-          toValue: -10,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    
-    bounce.start();
-    
-    // Nettoyage
-    return () => {
-      bounce.stop();
-    };
-  }, [bounceAnim]);
 
   const handlePress = async () => {
     try {
@@ -48,7 +24,7 @@ export default function PhotoButton() {
       // Active la caméra
       setShowPhoto(true);
     } catch (err) {
-      console.warn('Erreur lors de l\'activation de la caméra :', err);
+      console.warn("Erreur lors de l'activation de la caméra :", err);
     }
   };
 
@@ -67,7 +43,6 @@ export default function PhotoButton() {
           activeOpacity={0.7}
         >
           <Text style={styles.buttonText}>📸</Text>
-          <Text style={styles.buttonLabel}>Alerte Photo</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -91,26 +66,29 @@ export default function PhotoButton() {
         animationType="slide"
         onRequestClose={handleCloseCamera}
       >
-        <LiveStream onClose={handleCloseCamera} />
+        <CameraScreen onClose={handleCloseCamera} />
       </Modal>
 
       {/* Afficher la localisation si disponible */}
-      {location && !showPhoto && (
+      {/* {location && !showPhoto && (
         <View style={styles.locationContainer}>
           <Text style={styles.locationText}>
             📍 {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
           </Text>
         </View>
-      )}
+      )} */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
+    // position: 'absolute',
+    // bottom: 30,
+    // right: 20,
+    borderColor: 'red',
+    borderWidth: 2,
+    width:'33%',
     alignItems: 'center',
     zIndex: 1000,
   },
@@ -118,9 +96,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#30ff86',
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width:'70%',
+    height:'100%',
+    borderRadius:20,
     elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -128,8 +106,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   touchableArea: {
-    width: '100%',
-    height: '100%',
+    // width: '100%',
+    // height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },

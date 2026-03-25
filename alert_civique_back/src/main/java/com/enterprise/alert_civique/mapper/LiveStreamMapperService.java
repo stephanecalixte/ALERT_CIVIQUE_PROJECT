@@ -4,15 +4,14 @@ import com.enterprise.alert_civique.dto.LiveStreamDTO;
 import com.enterprise.alert_civique.entity.LiveStream;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class LiveStreamMapperService {
 
-    //Entity to DTO
-
+    // Entity to DTO - Fixed order to match LiveStreamDTO record
     public LiveStreamDTO toDTO(LiveStream entity){
       return  new LiveStreamDTO(
              entity.getLivestreamId(),
+             "dummy-user", // userId
              entity.getStartedAt(),
              entity.getEndedAt(),
              entity.getStreamUrl(),
@@ -23,8 +22,9 @@ public class LiveStreamMapperService {
         );
     }
 
+    // DTO to Entity
     public LiveStream toEntity(LiveStreamDTO dto){
-        LiveStream liveStream=new LiveStream();
+        LiveStream liveStream = new LiveStream();
         liveStream.setStreamUrl(dto.streamUrl());
         liveStream.setStatus(dto.status());
         liveStream.setStartedAt(dto.startedAt());

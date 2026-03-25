@@ -1,13 +1,19 @@
 package com.enterprise.alert_civique.service;
 
 import com.enterprise.alert_civique.dto.UserRegisterRequestDto;
-import com.enterprise.alert_civique.dto.UserResponseDTO;
+import com.enterprise.alert_civique.dto.UserResponseDto;
 import com.enterprise.alert_civique.entity.Users;
+import com.enterprise.alert_civique.entity.Roles;
 import com.enterprise.alert_civique.entity.ActivationToken;
-import com.enterprise.alert_civique.enum1.RoleEnum;
 import com.enterprise.alert_civique.repository.UserRepository;
+import com.enterprise.alert_civique.repository.RoleRepository;
 import com.enterprise.alert_civique.repository.IActivationRepository;
 import com.enterprise.alert_civique.security.IPasswordService;
+import com.enterprise.alert_civique.security.InputSanitizer;
+import com.enterprise.alert_civique.security.PasswordPolicyValidator;
+import com.enterprise.alert_civique.utils.DtoConverter;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +29,15 @@ import java.time.LocalDate;
 public class RegisterService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository; // ✅ Ajout du RoleRepository
     private final IActivationRepository activationRepository;
     private final IPasswordService passwordService;
+    private final InputSanitizer sanitizer;
+    private final PasswordPolicyValidator passwordValidator;
 
-public UserResponseDTO register(UserRegisterRequestDto request) throws Exception {
+    public UserResponseDto register(UserRegisterRequestDto request) throws Exception {
         log.info("Tentative d'inscription pour l'email : {}", request.getEmail());
+
         if (request == null ||
                 request.getFirstname() == null || request.getFirstname().isBlank() ||
                 request.getLastname() == null || request.getLastname().isBlank() ||
@@ -38,12 +48,23 @@ public UserResponseDTO register(UserRegisterRequestDto request) throws Exception
             throw new IllegalArgumentException("Données d'inscription invalides ou incomplètes");
         }
 
+        request.setFirstname(sanitizer.sanitize(request.getFirstname()));
+        request.setLastname(sanitizer.sanitize(request.getLastname()));
+        request.setEmail(sanitizer.sanitize(request.getEmail()));
+        request.setPassword(sanitizer.sanitize(request.getPassword()));
+        request.setPhone(sanitizer.sanitize(request.getPhone()));
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email déjà utilisé");
         }
 
-        // Hash du mot de passe (validation @ValidPassword déjà faite au controller)
+        passwordValidator.validate(request.getPassword());
+
         String hashedPassword = passwordService.hash(request.getPassword());
+
+        // ✅ Récupération de l'entité Roles depuis la BDD au lieu de RoleEnum.CLIENT
+        Roles defaultRole = roleRepository.findByName("ROLE_CLIENT")
+                .orElseThrow(() -> new EntityNotFoundException("Rôle ROLE_CLIENT introuvable en base de données"));
 
         Users user = Users.builder()
                 .firstname(request.getFirstname())
@@ -55,12 +76,11 @@ public UserResponseDTO register(UserRegisterRequestDto request) throws Exception
                 .active(false)
                 .createdAt(LocalDateTime.now())
                 .registrationDate(LocalDate.now())
-                .roles(Set.of(RoleEnum.CLIENT))
+                .roles(Set.of(defaultRole)) // ✅ Set<Roles> au lieu de Set<RoleEnum>
                 .build();
 
         userRepository.save(user);
 
-        // Generate activation token
         String tokenHash = UUID.randomUUID().toString();
         ActivationToken token = ActivationToken.builder()
                 .tokenHash(tokenHash)
@@ -73,10 +93,6 @@ public UserResponseDTO register(UserRegisterRequestDto request) throws Exception
         log.info("Activation token '{}' généré pour user {}", tokenHash, user.getEmail());
         log.info("TODO Email: send activation to {} at http://localhost:8080/api/auth/activate?token={}", user.getEmail(), tokenHash);
 
-        // Return response matching UserResponseDTO (userId, name, roleId, email, registration_date)
-        // Assuming roleId=3 for CLIENT; adjust if Roles table uses ID
-        String fullName = user.getFirstname() + " " + user.getLastname();
-        LocalDate regDate = user.getRegistrationDate();
-        return new UserResponseDTO(user.getUserId(), fullName, 3L, user.getEmail(), regDate);
+        return DtoConverter.toUserResponseDto(user);
     }
 }

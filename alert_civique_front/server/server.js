@@ -18,18 +18,36 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/alert-civique')
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+// MongoDB Connection
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/alert-civique';
+
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Message Schema
 const messageSchema = new mongoose.Schema({
-  id: String,
-  text: String,
-  sender: String,
-  senderId: String,
-  timestamp: String,
+  id: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  text: {
+    type: String,
+    required: true
+  },
+  sender: {
+    type: String,
+    required: true
+  },
+  senderId: {
+    type: String,
+    required: true
+  },
+  timestamp: {
+    type: String,
+    required: true
+  },
   type: {
     type: String,
     enum: ['text', 'alert', 'system'],
@@ -45,8 +63,15 @@ const Message = mongoose.model('Message', messageSchema);
 
 // User Schema
 const userSchema = new mongoose.Schema({
-  id: String,
-  name: String,
+  id: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
   isOnline: {
     type: Boolean,
     default: false
@@ -59,16 +84,24 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Store connected users
+// Store connected users with their socket IDs
 const connectedUsers = new Map();
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+  console.log(`🔌 New client connected: ${socket.id} from ${socket.handshake.address}`);
 
   // Handle user connection
   socket.on('userConnect', async (userData) => {
     try {
+      console.log('📝 User data received:', userData);
+
+      // Validate user data
+      if (!userData || !userData.userId || !userData.userName) {
+        console.error('❌ Invalid user data:', userData);
+        return;
+      }
+
       // Update or create user
       let user = await User.findOne({ id: userData.userId });
       if (!user) {
@@ -85,6 +118,13 @@ io.on('connection', (socket) => {
 
       // Store socket mapping
       connectedUsers.set(userData.userId, socket.id);
+      socket.userId = userData.userId;
+
+      // ✅ CORRECTION BUG 1 : renvoyer les infos utilisateur au client
+      socket.emit('userInfo', {
+        id: user.id,
+        name: user.name
+      });
 
       // Notify other users
       socket.broadcast.emit('userConnected', {
@@ -92,9 +132,9 @@ io.on('connection', (socket) => {
         name: user.name
       });
 
-      console.log(`User ${userData.userName} connected`);
+      console.log(`✅ User ${userData.userName} (${userData.userId}) connected`);
     } catch (error) {
-      console.error('Error handling user connection:', error);
+      console.error('❌ Error handling user connection:', error);
     }
   });
 
@@ -104,33 +144,46 @@ io.on('connection', (socket) => {
       const messages = await Message.find()
         .sort({ createdAt: -1 })
         .limit(50)
-        .sort({ createdAt: 1 }); // Re-sort to ascending
+        .sort({ createdAt: 1 });
 
       socket.emit('messageHistory', messages);
+      console.log(`📜 Sent ${messages.length} messages to client ${socket.id}`);
     } catch (error) {
-      console.error('Error fetching message history:', error);
+      console.error('❌ Error fetching message history:', error);
+      socket.emit('messageHistory', []);
     }
   });
 
   // Handle new message
   socket.on('sendMessage', async (messageData) => {
     try {
+      // Validate message data
+      if (!messageData || !messageData.text || !messageData.sender) {
+        console.error('❌ Invalid message data:', messageData);
+        return;
+      }
+
       // Save message to database
-      const message = new Message(messageData);
+      const message = new Message({
+        ...messageData,
+        createdAt: new Date()
+      });
       await message.save();
 
       // Broadcast to all connected clients
       io.emit('newMessage', messageData);
 
-      console.log(`Message from ${messageData.sender}: ${messageData.text}`);
+      console.log(`💬 Message from ${messageData.sender}: ${messageData.text.substring(0, 50)}`);
     } catch (error) {
-      console.error('Error saving message:', error);
+      console.error('❌ Error saving message:', error);
     }
   });
 
   // Handle alert message
   socket.on('sendAlert', async (alertData) => {
     try {
+      console.log('🚨 Alert received:', alertData);
+
       const alertMessage = {
         id: Date.now().toString(),
         text: `🚨 ALERTE: ${alertData.text}`,
@@ -147,34 +200,27 @@ io.on('connection', (socket) => {
       // Broadcast alert to all clients
       io.emit('alertMessage', alertData);
 
-      console.log(`Alert sent: ${alertData.text}`);
+      console.log(`🚨 Alert sent: ${alertData.text} (Priority: ${alertData.priority || 'medium'})`);
     } catch (error) {
-      console.error('Error sending alert:', error);
+      console.error('❌ Error sending alert:', error);
     }
   });
 
   // Handle disconnect
   socket.on('disconnect', async () => {
     try {
-      // Find user by socket id
-      let disconnectedUser = null;
-      for (const [userId, socketId] of connectedUsers.entries()) {
-        if (socketId === socket.id) {
-          disconnectedUser = userId;
-          connectedUsers.delete(userId);
-          break;
-        }
-      }
-
-      if (disconnectedUser) {
+      if (socket.userId) {
         // Update user status
         await User.findOneAndUpdate(
-          { id: disconnectedUser },
-          { isOnline: false, lastSeen: new Date() }
+          { id: socket.userId },
+          {
+            isOnline: false,
+            lastSeen: new Date()
+          }
         );
 
         // Get user data for notification
-        const user = await User.findOne({ id: disconnectedUser });
+        const user = await User.findOne({ id: socket.userId });
         if (user) {
           socket.broadcast.emit('userDisconnected', {
             id: user.id,
@@ -182,15 +228,18 @@ io.on('connection', (socket) => {
           });
         }
 
-        console.log(`User ${disconnectedUser} disconnected`);
+        connectedUsers.delete(socket.userId);
+        console.log(`👋 User ${socket.userId} disconnected`);
       }
     } catch (error) {
-      console.error('Error handling disconnect:', error);
+      console.error('❌ Error handling disconnect:', error);
     }
   });
 });
 
-// API Routes
+// ========== REST API ENDPOINTS ==========
+
+// Get all messages (last 100)
 app.get('/api/messages', async (req, res) => {
   try {
     const messages = await Message.find()
@@ -198,22 +247,41 @@ app.get('/api/messages', async (req, res) => {
       .limit(100);
     res.json(messages);
   } catch (error) {
+    console.error('Error fetching messages:', error);
     res.status(500).json({ error: 'Error fetching messages' });
   }
 });
 
+// Get online users
 app.get('/api/users', async (req, res) => {
   try {
     const users = await User.find({ isOnline: true });
     res.json(users);
   } catch (error) {
+    console.error('Error fetching users:', error);
     res.status(500).json({ error: 'Error fetching users' });
   }
 });
 
+// Get all users (online and offline)
+app.get('/api/users/all', async (req, res) => {
+  try {
+    const users = await User.find().sort({ lastSeen: -1 });
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    res.status(500).json({ error: 'Error fetching users' });
+  }
+});
+
+// Send alert via REST API
 app.post('/api/alert', async (req, res) => {
   try {
     const { text, priority = 'medium' } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: 'Alert text is required' });
+    }
 
     const alertData = { text, priority };
 
@@ -234,18 +302,59 @@ app.post('/api/alert', async (req, res) => {
 
     res.json({ success: true, message: 'Alert sent successfully' });
   } catch (error) {
+    console.error('Error sending alert:', error);
     res.status(500).json({ error: 'Error sending alert' });
+  }
+});
+
+// Delete all messages (admin)
+app.delete('/api/messages', async (req, res) => {
+  try {
+    await Message.deleteMany({});
+    res.json({ success: true, message: 'All messages deleted' });
+  } catch (error) {
+    console.error('Error deleting messages:', error);
+    res.status(500).json({ error: 'Error deleting messages' });
   }
 });
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    connectedUsers: connectedUsers.size,
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
 });
 
-const PORT = process.env.PORT || 3000;
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Alert Civique Server',
+    version: '1.0.0',
+    endpoints: {
+      websocket: 'ws://localhost:9091',
+      rest: {
+        messages: 'GET /api/messages',
+        users: 'GET /api/users',
+        alert: 'POST /api/alert',
+        health: 'GET /health'
+      }
+    }
+  });
+});
+
+const PORT = process.env.PORT || 9091;
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Socket.io server ready`);
+  console.log(`\n🚀 ========================================`);
+  console.log(`🚀 Alert Civique Server Started`);
+  console.log(`🚀 ========================================`);
+  console.log(`📡 Port: ${PORT}`);
+  console.log(`🔌 Socket.IO: http://localhost:${PORT}`);
+  console.log(`🌐 REST API: http://localhost:${PORT}/api`);
+  console.log(`💚 Health: http://localhost:${PORT}/health`);
+  console.log(`✅ MongoDB: ${MONGODB_URI}`);
+  console.log(`🚀 ========================================\n`);
 });

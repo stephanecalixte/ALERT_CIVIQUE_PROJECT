@@ -3,7 +3,7 @@ package com.enterprise.alert_civique.controller;
 import java.util.List;
 
 import com.enterprise.alert_civique.dto.UserCreateDTO;
-import com.enterprise.alert_civique.dto.UserResponseDTO;
+import com.enterprise.alert_civique.dto.UserResponseDto;
 import com.enterprise.alert_civique.entity.Roles;
 import com.enterprise.alert_civique.entity.Users;
 import com.enterprise.alert_civique.mapper.UserMapperService;
@@ -25,8 +25,8 @@ public class UserController {
     private final RoleRepository roleRepository;
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getUsers() {
-        List<UserResponseDTO> users = userRepository.findAll()
+    public ResponseEntity<List<UserResponseDto>> getUsers() {
+        List<UserResponseDto> users = userRepository.findAll()
                 .stream()
                 .map(userMapperService::toResponseDto)
                 .toList();

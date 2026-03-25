@@ -32,7 +32,7 @@ export default function LiveStreamCamera({
         </View>
       )}
 
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef} />
+      <CameraView style={styles.camera} facing={facing} ref={cameraRef} /> 
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.controlButton} onPress={toggleCameraFacing}>

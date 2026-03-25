@@ -1,14 +1,12 @@
 package com.enterprise.alert_civique.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
-import java.util.List;
-
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,9 +23,7 @@ public class Roles {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    // @OneToMany(mappedBy = "role")
-    // private List<Users> users; // Removed due to RoleEnum usage in Users
-
-
-
+    @ManyToMany(mappedBy = "roles")
+    private Set<Users> users;
 }
+

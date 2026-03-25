@@ -3,8 +3,13 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native
 import { useLiveStream } from '../../hooks/useLiveStream';
 import LiveStreamCamera from '../../components/LiveStreamCamera';
 import { useAuth } from '../../contexts/AuthContext';
+import CameraView from 'expo-camera/build/CameraView';
 
-export default function LiveStreamScreen() {
+interface LiveStreamScreenProps {
+  onClose?: () => void;
+}
+
+export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
   const { userId } = useAuth();
   const {
     facing,
@@ -38,14 +43,19 @@ export default function LiveStreamScreen() {
 
   return (
     <View style={styles.container}>
+      {onClose && (
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.closeButtonText}>Fermer</Text>
+        </TouchableOpacity>
+      )}
       {isCameraActive ? (
         <LiveStreamCamera
           facing={facing}
           isCameraActive={isCameraActive}
-          cameraRef={cameraRef}
+          cameraRef={cameraRef as React.RefObject<CameraView>}
           toggleCameraFacing={toggleCameraFacing}
           toggleCamera={toggleCamera}
-          onClose={() => {}} // TODO: navigation
+          onClose={onClose}
           recording={recording}
         />
       ) : (
@@ -82,6 +92,19 @@ export default function LiveStreamScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 100,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 10,
+    borderRadius: 20,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   header: {
     padding: 20,

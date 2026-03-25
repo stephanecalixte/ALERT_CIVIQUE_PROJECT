@@ -1,14 +1,14 @@
 package com.enterprise.alert_civique.service;
 
 import com.enterprise.alert_civique.dto.UserCreateDTO;
-import com.enterprise.alert_civique.dto.UserResponseDTO;
+import com.enterprise.alert_civique.dto.UserResponseDto;
 
 import java.util.List;
 
 public interface UserService {
-    UserResponseDTO createUser(UserCreateDTO dto);
-    UserResponseDTO getUserById(Long id);
-    List<UserResponseDTO> getAllUsers();
-    UserResponseDTO updateUser(Long id, UserCreateDTO dto);
+    UserResponseDto createUser(UserCreateDTO dto);
+    UserResponseDto getUserById(Long id);
+    List<UserResponseDto> getAllUsers();
+    UserResponseDto updateUser(Long id, UserCreateDTO dto);
     void deleteUser(Long id);
 }

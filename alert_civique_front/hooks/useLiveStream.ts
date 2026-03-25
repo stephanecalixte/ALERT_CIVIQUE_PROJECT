@@ -1,11 +1,16 @@
-import { CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { Audio } from 'expo-av';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import LiveStreamService from '../app/services/LiveStreamService';
-import MediaService from '../app/services/MediaService';
+// import LiveStreamService from '../lib/services/LiveStreamService';
+// import MediaService from '../lib/services/MediaService';
 import { useAuth } from '../contexts/AuthContext';
 import type { LiveStream } from '../models/LiveStream';
 import { Alert } from 'react-native';
+import LiveStreamCamera from '@/components/LiveStreamCamera';
+import LiveStreamService from '@/app/lib/services/LiveStreamService';
+import MediaService from '@/app/lib/services/MediaService';
+
+
 
 type LiveStreamPayload = {
   userId: string;
@@ -15,8 +20,10 @@ type LiveStreamPayload = {
   facing?: string;
 };
 
+
+
 export function useLiveStream() {
-  const { userId } = useAuth();
+  const { userId, token } = useAuth();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +33,7 @@ export function useLiveStream() {
   const [livestreamId, setLivestreamId] = useState<number | null>(null);
   const [streams, setStreams] = useState<LiveStream[]>([]);
 
-  const cameraRef = useRef<any>(null);
+const cameraRef = useRef<CameraView>(null as any);
   const recorderRef = useRef<Audio.Recording | null>(null);
   const startTimeRef = useRef<Date | null>(null);
 
@@ -36,10 +43,12 @@ export function useLiveStream() {
   }, []);
 
   const loadStreams = async () => {
+
     try {
-      const data = await LiveStreamService.getLiveStreams();
+      const data = await LiveStreamService.getLiveStreams(token!);
       setStreams(data || []);
     } catch (error) {
+      console.error("Get LiveStreams error:", error);
       Alert.alert('Erreur', 'Impossible de charger les streams');
     }
   };
@@ -75,7 +84,9 @@ export function useLiveStream() {
         facing: facing as string,
         startedAt: new Date().toISOString(),
       };
-      const response = await LiveStreamService.sendLiveStreamData(payload);
+
+      
+      const response = await LiveStreamService.sendLiveStreamData(payload, token!);
       setLivestreamId(response?.livestreamId || null);
       console.log("Stream démarré ID:", response?.livestreamId);
     } catch (error) {
@@ -86,26 +97,69 @@ export function useLiveStream() {
 
   const startRecording = async () => {
     try {
-      await Audio.requestPermissionsAsync();
+      console.log('=== START RECORDING DEBUG ===');
+      
+      // Cleanup previous
+      if (recorderRef.current) {
+        console.log('Cleanup previous recording');
+        await recorderRef.current.stopAndUnloadAsync();
+        recorderRef.current = null;
+      }
+      
+      const { status } = await Audio.requestPermissionsAsync();
+      console.log('Audio permission:', status);
+      if (status !== 'granted') {
+        Alert.alert('Erreur', 'Permission audio refusée');
+        return;
+      }
+      
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        interruptionModeIOS: 0,
+        shouldDuckAndroid: false,
+        interruptionModeAndroid: 1,
+        playThroughEarpieceAndroid: false
       });
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HighQuality
-      );
+      
+      const recordingOptions: Audio.RecordingOptions = {
+        android: {
+          extension: '.m4a',
+          audioEncoder: Audio.AndroidAudioEncoder.AAC,
+          outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+        },
+        ios: {
+          extension: '.m4a',
+          audioQuality: Audio.IOSAudioQuality.MAX,
+          numberOfChannels: 2,
+          sampleRate: 44100,
+        },
+        web: {}
+      } as Audio.RecordingOptions;
+      
+      console.log('Custom recording options:', recordingOptions);
+      
+      const { recording } = await Audio.Recording.createAsync(recordingOptions);
       recorderRef.current = recording;
+      console.log('New recorder created:', recording);
+      
+// Direct start - no prepare needed
       await recorderRef.current.startAsync();
+      console.log('Recording STARTED SUCCESS');
       setRecording(true);
-    } catch (err) {
-      console.error('Failed to start recording', err);
-      Alert.alert('Erreur', 'Impossible de démarrer l\'enregistrement');
+      setRecording(true);
+    } catch (err: any) {
+      console.error('RECORDING ERROR FULL:', err);
+      console.error('Error name:', err.name);
+      console.error('Error message:', err.message);
+      Alert.alert('Erreur enregistrement', err.message || 'Erreur inconnue');
     }
   };
 
   const stopRecording = async () => {
     try {
-      if (!recorderRef.current) return;
+      if (recorderRef.current == null) return;
 
       await recorderRef.current.stopAndUnloadAsync();
       const uri = recorderRef.current.getURI();
@@ -113,7 +167,7 @@ export function useLiveStream() {
       setRecording(false);
 
       // Upload video
-      const mediaResponse = await MediaService.uploadVideo(uri!);
+      const mediaResponse = await MediaService.uploadVideo(uri!, token!);
       const videoUrl = mediaResponse?.url;
 
       // Update LiveStream with video
@@ -121,7 +175,7 @@ export function useLiveStream() {
         await LiveStreamService.updateLiveStream(livestreamId, {
           videoUrl,
           mediaId: mediaResponse?.mediaId,
-        });
+        }, token!);
       }
 
       console.log('Video uploaded:', videoUrl);
@@ -133,16 +187,17 @@ export function useLiveStream() {
 
   const sendStopStream = useCallback(async () => {
     try {
-      if (!startTimeRef.current) return;
+      if (startTimeRef.current == null) return;
 
       const duration = (new Date().getTime() - startTimeRef.current.getTime()) / 1000;
 
-      const payload: LiveStreamPayload = {
+      const payload: any = {
         userId: userId || '123',
         endedAt: new Date().toISOString(),
         duration: Math.floor(duration),
+        livestreamId: livestreamId,
       };
-      await LiveStreamService.sendLiveStreamData(payload);
+      await LiveStreamService.sendLiveStreamData(payload, token!);
       console.log("Stream arrêté envoyé au backend");
     } catch (error) {
       console.error("Erreur envoi stop stream:", error);

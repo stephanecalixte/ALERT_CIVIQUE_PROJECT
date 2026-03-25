@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public record LiveStreamDTO(
     Long livestreamId,
+    String userId,
     LocalDateTime startedAt,
     LocalDateTime endedAt,
     String streamUrl,

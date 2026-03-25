@@ -5,26 +5,29 @@ import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 import com.enterprise.alert_civique.dto.UserCreateDTO;
-import com.enterprise.alert_civique.dto.UserResponseDTO;
-import com.enterprise.alert_civique.entity.Roles;
+import com.enterprise.alert_civique.dto.UserResponseDto;
+
 import com.enterprise.alert_civique.entity.Users;
 
 @Service
 public class UserMapperService {
 
     // Conversion entité -> DTO de réponse (SANS mot de passe)
-    public UserResponseDTO toResponseDto(Users user) {
+    public UserResponseDto toResponseDto(Users user) {
         if (user == null) {
             return null;
         }
 
-        return new UserResponseDTO(
-                user.getUserId(),
-                user.getName(),
-                null,  // No single role; uses Set<RoleEnum>
-                user.getEmail(),
-                user.getRegistrationDate()
-        );
+        return UserResponseDto.builder()
+                .id(user.getUserId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .email(user.getEmail())
+                .birthdate(user.getBirthdate())
+                .active(user.isActive())
+                .createdAt(user.getCreatedAt())
+                .roles(null)
+                .build();
     }
 
     // Conversion DTO de création -> entité (AVEC mot de passe hashé)

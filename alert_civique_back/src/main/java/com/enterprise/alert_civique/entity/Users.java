@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import com.enterprise.alert_civique.enum1.RoleEnum;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +28,7 @@ public class Users {
 
     @Column(name = "name")
     private String name;
-    
+
     @Column(name = "firstname")
     private String firstname;
 
@@ -44,14 +42,15 @@ public class Users {
     private LocalDate birthdate;
 
     @Column(name = "password")
-    private String password; 
-    
+    private String password;
+
     @Column(name = "registration_date")
     private LocalDate registrationDate;
 
     @Column(name = "email")
     private String email;
 
+    @Builder.Default // ✅ Fix du warning Lombok
     @Column(name = "active")
     private boolean active = false;
 
@@ -61,10 +60,15 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ReportMessage> reportMessages;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="user_roles", joinColumns = @JoinColumn(name="user_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name="role")
-    private Set<RoleEnum> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Roles> roles;
 
+    // ✅ Ajout de la relation vers Reports
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Reports> reports;
 }

@@ -1,6 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+if (Platform.OS === 'web') {
+  // @ts-ignore
+  global.MapView = MapView;
+}
 
 type MapScreenProps = {
   onMapReady: () => void;

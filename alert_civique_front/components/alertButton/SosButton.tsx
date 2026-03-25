@@ -71,13 +71,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
+     borderColor: 'red',
+      width:'33%',
+    borderWidth: 2,
+  
   },
   button: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FF3B30', 
-    height: '33%',
-    width: '33%',
+    height: '100%',
+    width:'100%',
+    
     borderRadius: 100,
     elevation: 5,
     shadowColor: '#000',
@@ -96,17 +101,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
   },
-  locationContainer: {
-    marginTop: 30,
-    padding: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 10,
-    maxWidth: '90%',
-  },
-  locationText: {
-    fontWeight: '600',
-    fontSize: 14,
-    textAlign: 'left',
-    color: '#333',
-  },
+  // locationContainer: {
+  //   marginTop: 30,
+  //   padding: 15,
+  //   backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  //   borderRadius: 10,
+  //   maxWidth: '90%',
+  // },
+  // locationText: {
+  //   fontWeight: '600',
+  //   fontSize: 14,
+  //   textAlign: 'left',
+  //   color: '#333',
+  // },
 });
