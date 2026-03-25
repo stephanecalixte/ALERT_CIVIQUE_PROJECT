@@ -21,7 +21,7 @@ export default function RegisterScreen() {
 
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (field, value) => {
+  const handleChange = (field:any, value:any) => {
     setForm({ ...form, [field]: value });
   };
 
@@ -46,7 +46,7 @@ export default function RegisterScreen() {
       });
 
     } catch (error) {
-      Alert.alert("Erreur", error.message);
+      Alert.alert("Erreur"+ error);
     } finally {
       setLoading(false);
     }

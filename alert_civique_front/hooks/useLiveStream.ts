@@ -1,16 +1,10 @@
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
-import { Audio } from 'expo-av';
 import { useEffect, useRef, useState, useCallback } from 'react';
-// import LiveStreamService from '../lib/services/LiveStreamService';
-// import MediaService from '../lib/services/MediaService';
+import { Alert } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import type { LiveStream } from '../models/LiveStream';
-import { Alert } from 'react-native';
-import LiveStreamCamera from '@/components/LiveStreamCamera';
 import LiveStreamService from '@/app/lib/services/LiveStreamService';
-import MediaService from '@/app/lib/services/MediaService';
-
-
+import { MediaService } from '@/app/lib/services/MediaService';
 
 type LiveStreamPayload = {
   userId: string;
@@ -19,8 +13,6 @@ type LiveStreamPayload = {
   duration?: number;
   facing?: string;
 };
-
-
 
 export function useLiveStream() {
   const { userId, token } = useAuth();
@@ -32,9 +24,10 @@ export function useLiveStream() {
   const [recording, setRecording] = useState(false);
   const [livestreamId, setLivestreamId] = useState<number | null>(null);
   const [streams, setStreams] = useState<LiveStream[]>([]);
+  const [videoUri, setVideoUri] = useState<string | null>(null);
+  const [isCameraReady, setIsCameraReady] = useState(false); // ✅ Nouvel état
 
-const cameraRef = useRef<CameraView>(null as any);
-  const recorderRef = useRef<Audio.Recording | null>(null);
+  const cameraRef = useRef<CameraView>(null);
   const startTimeRef = useRef<Date | null>(null);
 
   // Load streams
@@ -43,13 +36,11 @@ const cameraRef = useRef<CameraView>(null as any);
   }, []);
 
   const loadStreams = async () => {
-
     try {
       const data = await LiveStreamService.getLiveStreams(token!);
       setStreams(data || []);
     } catch (error) {
       console.error("Get LiveStreams error:", error);
-      Alert.alert('Erreur', 'Impossible de charger les streams');
     }
   };
 
@@ -77,6 +68,12 @@ const cameraRef = useRef<CameraView>(null as any);
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }, []);
 
+  // ✅ Callback quand la caméra est prête
+  const onCameraReady = useCallback(() => {
+    console.log('✅ Caméra prête');
+    setIsCameraReady(true);
+  }, []);
+
   const sendStartStream = useCallback(async () => {
     try {
       const payload: LiveStreamPayload = {
@@ -85,105 +82,90 @@ const cameraRef = useRef<CameraView>(null as any);
         startedAt: new Date().toISOString(),
       };
 
-      
       const response = await LiveStreamService.sendLiveStreamData(payload, token!);
       setLivestreamId(response?.livestreamId || null);
       console.log("Stream démarré ID:", response?.livestreamId);
+      return response?.livestreamId;
     } catch (error) {
       Alert.alert('Erreur', 'Échec démarrage stream');
       console.error("Erreur envoi start stream:", error);
+      throw error;
     }
-  }, [userId, facing]);
+  }, [userId, facing, token]);
 
-  const startRecording = async () => {
+  // ✅ Version corrigée avec vérification que la caméra est prête
+  const startRecording = useCallback(async () => {
+    // ✅ Vérifier que la caméra est prête ET que le ref existe
+    if (!isCameraReady || !cameraRef.current) {
+      console.log('⏳ Caméra pas encore prête, attente...');
+      return false;
+    }
+
     try {
-      console.log('=== START RECORDING DEBUG ===');
+      console.log('🎥 Début enregistrement vidéo...');
       
-      // Cleanup previous
-      if (recorderRef.current) {
-        console.log('Cleanup previous recording');
-        await recorderRef.current.stopAndUnloadAsync();
-        recorderRef.current = null;
-      }
-      
-      const { status } = await Audio.requestPermissionsAsync();
-      console.log('Audio permission:', status);
-      if (status !== 'granted') {
-        Alert.alert('Erreur', 'Permission audio refusée');
-        return;
-      }
-      
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        interruptionModeIOS: 0,
-        shouldDuckAndroid: false,
-        interruptionModeAndroid: 1,
-        playThroughEarpieceAndroid: false
+      const video = await cameraRef.current.recordAsync({
+        maxDuration: 60,
       });
-      
-      const recordingOptions: Audio.RecordingOptions = {
-        android: {
-          extension: '.m4a',
-          audioEncoder: Audio.AndroidAudioEncoder.AAC,
-          outputFormat: Audio.AndroidOutputFormat.MPEG_4,
-        },
-        ios: {
-          extension: '.m4a',
-          audioQuality: Audio.IOSAudioQuality.MAX,
-          numberOfChannels: 2,
-          sampleRate: 44100,
-        },
-        web: {}
-      } as Audio.RecordingOptions;
-      
-      console.log('Custom recording options:', recordingOptions);
-      
-      const { recording } = await Audio.Recording.createAsync(recordingOptions);
-      recorderRef.current = recording;
-      console.log('New recorder created:', recording);
-      
-// Direct start - no prepare needed
-      await recorderRef.current.startAsync();
-      console.log('Recording STARTED SUCCESS');
-      setRecording(true);
-      setRecording(true);
-    } catch (err: any) {
-      console.error('RECORDING ERROR FULL:', err);
-      console.error('Error name:', err.name);
-      console.error('Error message:', err.message);
-      Alert.alert('Erreur enregistrement', err.message || 'Erreur inconnue');
-    }
-  };
 
-  const stopRecording = async () => {
-    try {
-      if (recorderRef.current == null) return;
-
-      await recorderRef.current.stopAndUnloadAsync();
-      const uri = recorderRef.current.getURI();
-      recorderRef.current = null;
-      setRecording(false);
-
-      // Upload video
-      const mediaResponse = await MediaService.uploadVideo(uri!, token!);
-      const videoUrl = mediaResponse?.url;
-
-      // Update LiveStream with video
-      if (livestreamId && videoUrl) {
-        await LiveStreamService.updateLiveStream(livestreamId, {
-          videoUrl,
-          mediaId: mediaResponse?.mediaId,
-        }, token!);
+      if (video && video.uri) {
+        console.log('✅ Vidéo enregistrée:', video.uri);
+        setVideoUri(video.uri);
+        setRecording(true);
+        return true;
+      } else {
+        console.error('❌ Enregistrement sans URI');
+        Alert.alert('Erreur', 'L\'enregistrement vidéo a échoué');
+        setRecording(false);
+        return false;
       }
-
-      console.log('Video uploaded:', videoUrl);
-    } catch (err) {
-      console.error('Failed to stop recording', err);
-      Alert.alert('Erreur', 'Échec enregistrement/upload');
+      
+    } catch (error) {
+      console.error('❌ Erreur enregistrement:', error);
+      Alert.alert('Erreur', 'Impossible d\'enregistrer la vidéo');
+      setRecording(false);
+      return false;
     }
-  };
+  }, [isCameraReady]);
+
+  const stopRecording = useCallback(async () => {
+    if (!cameraRef.current || !recording) {
+      return;
+    }
+
+    try {
+      console.log('🛑 Arrêt enregistrement...');
+      
+      await cameraRef.current.stopRecording();
+      setRecording(false);
+      
+      console.log('📹 Vidéo sauvegardée:', videoUri);
+      
+      if (videoUri && livestreamId) {
+        console.log('📤 Upload de la vidéo...');
+        
+        try {
+          const mediaResponse = await MediaService.uploadVideo(videoUri, token!);
+          
+          if (mediaResponse?.url) {
+            await LiveStreamService.updateLiveStream(livestreamId, {
+              videoUrl: mediaResponse.url,
+              mediaId: mediaResponse?.mediaId,
+            }, token!);
+            
+            console.log('✅ Vidéo uploadée:', mediaResponse.url);
+          }
+        } catch (uploadError) {
+          console.error('❌ Upload error:', uploadError);
+          Alert.alert('Erreur', 'La vidéo a été enregistrée mais l\'upload a échoué');
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur arrêt:', error);
+      Alert.alert('Erreur', 'Erreur lors de l\'arrêt');
+    }
+  }, [recording, videoUri, livestreamId, token]);
 
   const sendStopStream = useCallback(async () => {
     try {
@@ -198,25 +180,51 @@ const cameraRef = useRef<CameraView>(null as any);
         livestreamId: livestreamId,
       };
       await LiveStreamService.sendLiveStreamData(payload, token!);
-      console.log("Stream arrêté envoyé au backend");
+      console.log("Stream arrêté envoyé");
     } catch (error) {
       console.error("Erreur envoi stop stream:", error);
     }
-  }, [userId]);
+  }, [userId, livestreamId, token]);
 
+  // ✅ Version corrigée de toggleCamera
   const toggleCamera = useCallback(async () => {
     if (!isCameraActive) {
-      startTimeRef.current = new Date();
-      await sendStartStream();
-      await startRecording();
+      // Activer la caméra d'abord
+      setIsCameraActive(true);
+      
+      // Attendre que la caméra soit prête avant de démarrer l'enregistrement
+      // Le onCameraReady s'occupera de démarrer l'enregistrement
     } else {
-      await sendStopStream();
+      // Désactiver la caméra
       await stopRecording();
+      await sendStopStream();
       startTimeRef.current = null;
+      setIsCameraActive(false);
+      setIsCameraReady(false); // Reset l'état de préparation
     }
-    setIsCameraActive(prev => !prev);
-    loadStreams(); // Refresh list
-  }, [isCameraActive, sendStartStream, sendStopStream]);
+  }, [isCameraActive, stopRecording, sendStopStream]);
+
+  // ✅ Effet pour démarrer l'enregistrement quand la caméra est prête
+  useEffect(() => {
+    const startStreamAndRecording = async () => {
+      if (isCameraActive && isCameraReady && !recording) {
+        console.log('🎬 Caméra prête, démarrage du stream...');
+        startTimeRef.current = new Date();
+        
+        try {
+          await sendStartStream();
+          await startRecording();
+        } catch (error) {
+          console.error('Erreur démarrage:', error);
+          // En cas d'erreur, désactiver la caméra
+          setIsCameraActive(false);
+          setIsCameraReady(false);
+        }
+      }
+    };
+    
+    startStreamAndRecording();
+  }, [isCameraActive, isCameraReady, recording, sendStartStream, startRecording]);
 
   return {
     facing,
@@ -229,6 +237,6 @@ const cameraRef = useRef<CameraView>(null as any);
     checkCameraPermission,
     recording,
     streams,
+    onCameraReady, // ✅ Exporter le callback
   };
 }
-

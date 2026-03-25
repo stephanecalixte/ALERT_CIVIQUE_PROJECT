@@ -1199,3 +1199,256 @@
         ls1_0.video_url 
     from
         lives_stream ls1_0
+2026-03-25 12:21:03 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 12:22:46 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 12:25:09 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 12:26:15 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 12:26:17 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:21:46 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:25:02 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:25:35 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:25:38 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:25:43 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:25:47 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:26:54 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:27:03 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:34:47 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:34:51 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:36:33 WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content-Type 'multipart/form-data;boundary=61697522-0bcf-4bf4-bda8-e32d16bdd0db;charset=UTF-8' is not supported]
+2026-03-25 13:36:33 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:45:50 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:45:55 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 13:46:01 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 14:12:05 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
+2026-03-25 14:12:08 DEBUG org.hibernate.SQL - 
+    select
+        ls1_0.livestream_id,
+        ls1_0.duration,
+        ls1_0.ended_at,
+        ls1_0.media_id,
+        ls1_0.started_at,
+        ls1_0.status,
+        ls1_0.stream_url,
+        ls1_0.video_url 
+    from
+        lives_stream ls1_0
