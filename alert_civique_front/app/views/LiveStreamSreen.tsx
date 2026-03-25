@@ -1,14 +1,259 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { CameraView } from 'expo-camera';
-import { useLiveStream } from '../../hooks/useLiveStream';
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { Alert } from 'react-native';
+// import { useAuth } from '../contexts/AuthContext';
+// import type { LiveStream } from '../models/LiveStream';
+import LiveStreamService from '@/app/lib/services/LiveStreamService';
+import { MediaService } from '@/app/lib/services/MediaService';
+import { useAuth } from '@/contexts/AuthContext';
+import { LiveStream } from '@/models';
 
-interface LiveStreamScreenProps {
-  onClose?: () => void;
-}
+type LiveStreamPayload = {
+  userId: string;
+  startedAt?: string;
+  endedAt?: string;
+  duration?: number;
+  facing?: string;
+};
 
-export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
-  const {
+export function useLiveStream() {
+  const { userId, token } = useAuth();
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [livestreamId, setLivestreamId] = useState<number | null>(null);
+  const [streams, setStreams] = useState<LiveStream[]>([]);
+  const [videoUri, setVideoUri] = useState<string | null>(null);
+  const [cameraInitialized, setCameraInitialized] = useState(false);
+
+  const cameraRef = useRef<CameraView>(null);
+  const startTimeRef = useRef<Date | null>(null);
+  const initTimerRef = useRef<number | null>(null);
+  const recordTimerRef = useRef<number | null>(null);
+
+  // Load streams
+  useEffect(() => {
+    loadStreams();
+  }, []);
+
+  const loadStreams = async () => {
+    try {
+      const data = await LiveStreamService.getLiveStreams(token!);
+      setStreams(data || []);
+    } catch (error) {
+      console.error("Get LiveStreams error:", error);
+    }
+  };
+
+  useEffect(() => {
+    checkCameraPermission();
+  }, []);
+
+  const checkCameraPermission = useCallback(async () => {
+    try {
+      if (!permission) {
+        const { status } = await requestPermission();
+        setHasPermission(status === 'granted');
+      } else {
+        setHasPermission(permission.granted);
+      }
+    } catch (error) {
+      console.error('Permission error:', error);
+      setHasPermission(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [permission, requestPermission]);
+
+  const toggleCameraFacing = useCallback(() => {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }, []);
+
+  const sendStartStream = useCallback(async () => {
+    try {
+      const payload = {
+        userId: userId || '123',
+        facing: facing as string,
+        startedAt: new Date().toISOString(),
+      };
+
+      console.log('📡 Envoi au serveur:', payload);
+      const response = await LiveStreamService.sendLiveStreamData(payload, token!);
+      setLivestreamId(response?.livestreamId || null);
+      console.log("✅ Stream démarré ID:", response?.livestreamId);
+      return response?.livestreamId;
+    } catch (error) {
+      console.error("❌ Erreur envoi start stream:", error);
+      return null;
+    }
+  }, [userId, facing, token]);
+
+  const startRecording = useCallback(async () => {
+    if (!cameraRef.current) {
+      console.error('❌ Camera ref is null');
+      return false;
+    }
+
+    try {
+      console.log('🎥 DÉMARRAGE ENREGISTREMENT VIDEO...');
+      
+      // Attendre un peu que la caméra soit vraiment prête
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const video = await cameraRef.current.recordAsync({
+        maxDuration: 60,
+      });
+      
+      console.log('✅ Enregistrement terminé:', video);
+      
+      if (video && video.uri) {
+        setVideoUri(video.uri);
+        setRecording(true);
+        console.log('✅ ENREGISTREMENT RÉUSSI! URI:', video.uri);
+        return true;
+      } else {
+        console.error('❌ Pas d\'URI dans la réponse');
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Erreur recordAsync:', error);
+      Alert.alert('Erreur', `Impossible d'enregistrer: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      return false;
+    }
+  }, []);
+
+  const stopRecording = useCallback(async () => {
+    if (!cameraRef.current || !recording) {
+      return;
+    }
+
+    try {
+      console.log('🛑 Arrêt enregistrement...');
+      await cameraRef.current.stopRecording();
+      setRecording(false);
+      console.log('✅ Enregistrement arrêté');
+      
+      if (videoUri && livestreamId) {
+        console.log('📤 Upload vidéo...');
+        try {
+          const mediaResponse = await MediaService.uploadVideo(videoUri, token!);
+          if (mediaResponse?.url) {
+            await LiveStreamService.updateLiveStream(livestreamId, {
+              videoUrl: mediaResponse.url,
+              videoId: mediaResponse?.videoId,
+            }, token!);
+            console.log('✅ Vidéo uploadée:', mediaResponse.url);
+          }
+        } catch (uploadError) {
+          console.error('❌ Upload error:', uploadError);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Erreur stopRecording:', error);
+    }
+  }, [recording, videoUri, livestreamId, token]);
+
+  const sendStopStream = useCallback(async () => {
+    try {
+      if (!startTimeRef.current) return;
+
+      const duration = (Date.now() - startTimeRef.current.getTime()) / 1000;
+
+      const payload = {
+        userId: userId || '123',
+        endedAt: new Date().toISOString(),
+        duration: Math.floor(duration),
+        livestreamId: livestreamId,
+      };
+      await LiveStreamService.sendLiveStreamData(payload, token!);
+      console.log("✅ Stream arrêté envoyé");
+    } catch (error) {
+      console.error("❌ Erreur envoi stop stream:", error);
+    }
+  }, [userId, livestreamId, token]);
+
+  const toggleCamera = useCallback(async () => {
+    console.log('🔄 toggleCamera appelé, isCameraActive:', isCameraActive);
+    
+    if (!isCameraActive) {
+      console.log('🚀 Démarrage de la caméra...');
+      setCameraInitialized(false);
+      setIsCameraActive(true);
+    } else {
+      console.log('🛑 Arrêt de la caméra...');
+      if (recording) {
+        await stopRecording();
+      }
+      await sendStopStream();
+      startTimeRef.current = null;
+      setIsCameraActive(false);
+      setCameraInitialized(false);
+      
+      // Nettoyer les timers
+      if (initTimerRef.current) {
+        clearTimeout(initTimerRef.current);
+        initTimerRef.current = null;
+      }
+      if (recordTimerRef.current) {
+        clearTimeout(recordTimerRef.current);
+        recordTimerRef.current = null;
+      }
+    }
+  }, [isCameraActive, recording, stopRecording, sendStopStream]);
+
+  // Démarrer l'enregistrement après un délai fixe (plus fiable que onCameraReady)
+  useEffect(() => {
+    if (isCameraActive && !recording && !cameraInitialized) {
+      console.log('⏳ Attente 2 secondes pour initialisation caméra...');
+      
+      if (initTimerRef.current) {
+        clearTimeout(initTimerRef.current);
+      }
+      
+      initTimerRef.current = setTimeout(() => {
+        console.log('✅ Caméra considérée comme prête après délai');
+        setCameraInitialized(true);
+      }, 2000);
+    }
+    
+    return () => {
+      if (initTimerRef.current) {
+        clearTimeout(initTimerRef.current);
+      }
+    };
+  }, [isCameraActive, recording, cameraInitialized]);
+
+  // Démarrer le stream et l'enregistrement
+  useEffect(() => {
+    const startStreamAndRecording = async () => {
+      if (isCameraActive && cameraInitialized && !recording) {
+        console.log('🎬 DÉMARRAGE STREAM ET ENREGISTREMENT');
+        startTimeRef.current = new Date();
+        
+        // Démarrer le stream sur le serveur
+        await sendStartStream();
+        
+        // Démarrer l'enregistrement
+        console.log('📹 Lancement de l\'enregistrement...');
+        const success = await startRecording();
+        
+        if (success) {
+          console.log('✅ ENREGISTREMENT VIDÉO ACTIF !');
+        } else {
+          console.log('❌ ÉCHEC ENREGISTREMENT - Désactivation caméra');
+          setIsCameraActive(false);
+          setCameraInitialized(false);
+        }
+      }
+    };
+    
+    startStreamAndRecording();
+  }, [isCameraActive, cameraInitialized, recording, sendStartStream, startRecording]);
+
+  return {
     facing,
     toggleCameraFacing,
     isLoading,
@@ -16,220 +261,8 @@ export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
     hasPermission,
     cameraRef,
     toggleCamera,
-    recording,
-    onCameraReady, // ✅ Récupérer le callback
     checkCameraPermission,
-  } = useLiveStream();
-
-  // ✅ Demander la permission au montage
-  useEffect(() => {
-    checkCameraPermission();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Chargement...</Text>
-      </View>
-    );
-  }
-
-  if (!hasPermission) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Permission caméra requise</Text>
-        <TouchableOpacity onPress={checkCameraPermission} style={styles.permissionButton}>
-          <Text style={styles.permissionButtonText}>Autoriser la caméra</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      {onClose && (
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>Fermer</Text>
-        </TouchableOpacity>
-      )}
-      
-      {isCameraActive ? (
-        // ✅ Caméra active
-        <View style={styles.cameraContainer}>
-          <CameraView
-            ref={cameraRef}
-            style={styles.camera}
-            facing={facing}
-            mode="video"
-            onCameraReady={onCameraReady} // ✅ Important : appelé quand la caméra est prête
-          />
-          
-          {/* Bouton d'enregistrement */}
-          <TouchableOpacity 
-            style={[styles.recordButton, recording && styles.recordingActive]} 
-            onPress={toggleCamera}
-          >
-            <Text style={styles.recordButtonText}>
-              {recording ? 'Arrêter' : 'Enregistrer'}
-            </Text>
-          </TouchableOpacity>
-          
-          {/* Bouton flip caméra */}
-          <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
-            <Text style={styles.flipButtonText}>⟳</Text>
-          </TouchableOpacity>
-          
-          {/* Indicateur d'enregistrement */}
-          {recording && (
-            <View style={styles.recordingIndicator}>
-              <View style={styles.recordingDot} />
-              <Text style={styles.recordingText}>ENREGISTREMENT</Text>
-            </View>
-          )}
-        </View>
-      ) : (
-        // ✅ Écran de démarrage
-        <View style={styles.startContainer}>
-          <Text style={styles.title}>Live Stream</Text>
-          <Text style={styles.subtitle}>Partagez votre vidéo en direct</Text>
-          <TouchableOpacity style={styles.startButton} onPress={toggleCamera}>
-            <Text style={styles.startButtonText}>Démarrer Live Stream</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
-  );
+    recording,
+    streams,
+  };
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  cameraContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  camera: {
-    flex: 1,
-  },
-  startContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    zIndex: 100,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 10,
-    borderRadius: 20,
-  },
-  closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  recordButton: {
-    position: 'absolute',
-    bottom: 30,
-    alignSelf: 'center',
-    backgroundColor: '#FF3B30',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'white',
-  },
-  recordingActive: {
-    backgroundColor: '#FF0000',
-    transform: [{ scale: 1.1 }],
-  },
-  recordButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  flipButton: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  flipButtonText: {
-    color: 'white',
-    fontSize: 24,
-  },
-  startButton: {
-    backgroundColor: '#FF3B30',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  startButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#999',
-    marginBottom: 30,
-  },
-  text: {
-    fontSize: 18,
-    color: 'white',
-    textAlign: 'center',
-  },
-  permissionButton: {
-    backgroundColor: '#FF3B30',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  permissionButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  recordingIndicator: {
-    position: 'absolute',
-    top: 50,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  recordingDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#FF3B30',
-    marginRight: 8,
-  },
-  recordingText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-});
