@@ -226,18 +226,16 @@ export function useLiveStream() {
 
   // Démarrer le stream et l'enregistrement
   useEffect(() => {
-    const startStreamAndRecording = async () => {
-      if (isCameraActive && cameraInitialized && !recording) {
-        console.log('🎬 DÉMARRAGE STREAM ET ENREGISTREMENT');
-        startTimeRef.current = new Date();
-        
-        // Démarrer le stream sur le serveur
-        await sendStartStream();
-        
-        // Démarrer l'enregistrement
-        console.log('📹 Lancement de l\'enregistrement...');
-        const success = await startRecording();
-        
+    if (isCameraActive && cameraInitialized && !recording && !videoUri) {
+      console.log('🎬 DÉMARRAGE STREAM ET ENREGISTREMENT');
+      startTimeRef.current = new Date();
+      
+      // Démarrer le stream sur le serveur
+      sendStartStream();
+      
+      // Démarrer l'enregistrement
+      console.log('📹 Lancement de l\'enregistrement...');
+      startRecording().then(success => {
         if (success) {
           console.log('✅ ENREGISTREMENT VIDÉO ACTIF !');
         } else {
@@ -245,11 +243,9 @@ export function useLiveStream() {
           setIsCameraActive(false);
           setCameraInitialized(false);
         }
-      }
-    };
-    
-    startStreamAndRecording();
-  }, [isCameraActive, cameraInitialized, recording, sendStartStream, startRecording]);
+      });
+    }
+  }, [isCameraActive, cameraInitialized]);
 
   return {
     facing,

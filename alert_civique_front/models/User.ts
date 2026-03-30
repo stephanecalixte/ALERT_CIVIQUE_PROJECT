@@ -10,6 +10,29 @@ export interface UserRegisterRequest {
   password: string;
   phone: string;
   birthdate: string; // YYYY-MM-DD
+  trustedContacts: {
+    person1: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      smsEnabled: boolean;
+    },
+    person2: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      smsEnabled: boolean;
+    },
+    person3: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      smsEnabled: boolean;
+    }
+  };
 }
 
 export interface UserResponse {

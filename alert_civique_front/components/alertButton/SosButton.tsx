@@ -8,30 +8,30 @@ export default function SosButton() {
   const { requestLocation, location, error, loading } = useGeolocalisation();
   const [showCamera, setShowCamera] = useState(false);
    const [showMessages, setShowMessages] = useState(false);
-  const blinkAnim = useRef(new Animated.Value(0)).current;
+  // const blinkAnim = useRef(new Animated.Value(0)).current;
 
-  // useEffect(() => {
-  //   const blink = Animated.loop(
-  //     Animated.sequence([
-  //       Animated.timing(blinkAnim, {
-  //         toValue: 1,
-  //         duration: 1000,
-  //         useNativeDriver: false,
-  //       }),
-  //       Animated.timing(blinkAnim, {
-  //         toValue: 0,
-  //         duration: 1000,
-  //         useNativeDriver: false,
-  //       }),
-  //     ])
-  //   );
-  //   blink.start();
-  // }, [blinkAnim]);
+  // // useEffect(() => {
+  // //   const blink = Animated.loop(
+  // //     Animated.sequence([
+  // //       Animated.timing(blinkAnim, {
+  // //         toValue: 1,
+  // //         duration: 1000,
+  // //         useNativeDriver: false,
+  // //       }),
+  // //       Animated.timing(blinkAnim, {
+  // //         toValue: 0,
+  // //         duration: 1000,
+  // //         useNativeDriver: false,
+  // //       }),
+  // //     ])
+  // //   );
+  // //   blink.start();
+  // // }, [blinkAnim]);
 
-  const backgroundColor = blinkAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['#FF3B30', '#000000'], // Red to lighter red
-  });
+  // const backgroundColor = blinkAnim.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: ['#FF3B30', '#000000'], // Red to lighter red
+  // });
 
   // const handlePress = () => {
   //   try {
@@ -52,7 +52,7 @@ export default function SosButton() {
   // Sinon, on affiche le bouton d'alerte
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.button, { backgroundColor }]}>
+      <Animated.View style={[styles.button]}>
         <TouchableOpacity onPress={()=>setShowMessages(true)}>
           <Text style={styles.buttonText}>SOS</Text>
         </TouchableOpacity>

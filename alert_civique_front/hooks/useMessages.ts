@@ -18,7 +18,7 @@ export interface Message {
   type?: 'text' | 'alert' | 'system';
 }
 
-const SOCKET_URL = 'http://10.0.2.2:9091';
+const SOCKET_URL = 'http://localhost:9091';
 
 console.log('🔧 Chat hook loaded, SOCKET_URL:', SOCKET_URL);
 
@@ -122,7 +122,7 @@ export function useMessages() {
     });
 
     newSocket.on('connect_error', (error: any) => {
-      console.error('❌ Erreur de connexion:', error.message);
+      console.error('❌ Erreur de connexion: timeout');
       setIsConnected(false);
       setLoading(false);
     });

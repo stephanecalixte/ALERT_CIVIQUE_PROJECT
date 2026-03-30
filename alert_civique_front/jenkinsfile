@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Docker') {
+            steps {
+                sh 'docker build -t mobile-app .'
+            }
+        }
+
+        stage('Run Expo') {
+            steps {
+                sh 'docker run -p 19000:19000 mobile-app'
+            }
+        }
+    }
+}

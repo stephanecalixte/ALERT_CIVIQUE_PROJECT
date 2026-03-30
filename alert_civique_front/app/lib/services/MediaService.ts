@@ -26,7 +26,7 @@ export class MediaService {
       } as any);
       
       // Upload
-      const response = await fetch('http://10.0.2.2:9092/api/upload/video', {
+      const response = await fetch('http://10.0.2.2:9091/api/upload/video', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

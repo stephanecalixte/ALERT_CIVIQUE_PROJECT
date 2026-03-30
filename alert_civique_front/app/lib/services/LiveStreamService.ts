@@ -4,7 +4,7 @@
 import { LiveStream } from "@/models";
 
 export default class LiveStreamService {
-  static BASE_URL = 'http://10.0.2.2:9092'; // ✅ Utilisez le bon port (9092 pour le serveur vidéo)
+  static BASE_URL = 'http://10.0.2.2:9091';
   
   static async sendLiveStreamData(payload: any, token: string) {
     try {

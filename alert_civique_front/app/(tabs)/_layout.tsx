@@ -16,7 +16,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarStyle: styles.tabScreen, // Style appliqué à la barre d'onglets
+        tabBarStyle: styles.tabScreen,
       }}>
       <Tabs.Screen
         name="index"
@@ -57,12 +57,19 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="ellipsis.circle" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="Register"
+        options={{
+          title: 'Register',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.badge.plus" color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
   tabScreen: {
-    backgroundColor: "blue"
+    backgroundColor: Colors.light.background
   }
 });
