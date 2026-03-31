@@ -5,9 +5,10 @@ import { useLiveStream } from '../../hooks/useLiveStream';
 
 interface LiveStreamScreenProps {
   onClose?: () => void;
+  autoStart?: boolean;
 }
 
-export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
+export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStreamScreenProps) {
   const {
     facing,
     toggleCameraFacing,
@@ -18,14 +19,13 @@ export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
     toggleCamera,
     recording,
     checkCameraPermission,
-  } = useLiveStream();
+  } = useLiveStream(autoStart);
 
   useEffect(() => {
     console.log('🟢 LiveStreamScreen monté');
     checkCameraPermission();
   }, []);
 
-  // Log pour debug
   useEffect(() => {
     console.log('📱 État:', { isCameraActive, recording, hasPermission });
   }, [isCameraActive, recording, hasPermission]);
@@ -56,7 +56,7 @@ export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
           <Text style={styles.closeButtonText}>Fermer</Text>
         </TouchableOpacity>
       )}
-      
+
       {isCameraActive ? (
         <View style={styles.cameraContainer}>
           <CameraView
@@ -65,18 +65,18 @@ export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
             facing={facing}
             mode="video"
           />
-          
+
           {recording && (
             <View style={styles.recordingIndicator}>
               <View style={styles.recordingDot} />
               <Text style={styles.recordingText}>ENREGISTREMENT EN COURS</Text>
             </View>
           )}
-          
+
           <TouchableOpacity style={styles.stopButton} onPress={toggleCamera}>
             <Text style={styles.stopButtonText}>Arrêter</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
             <Text style={styles.flipButtonText}>⟳</Text>
           </TouchableOpacity>

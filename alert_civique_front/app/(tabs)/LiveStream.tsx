@@ -9,7 +9,12 @@ interface LiveStreamScreenProps {
   onClose?: () => void;
 }
 
-export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
+interface LiveStreamScreenProps {
+  onClose?: () => void;
+  autoStart?: boolean;
+}
+
+export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStreamScreenProps) {
   const { userId } = useAuth();
   const {
     facing,
@@ -23,6 +28,14 @@ export default function LiveStreamScreen({ onClose }: LiveStreamScreenProps) {
     streams,
     checkCameraPermission,
   } = useLiveStream();
+
+  // Auto-start live stream if prop set
+  React.useEffect(() => {
+    if (autoStart && hasPermission && !isLoading && !isCameraActive) {
+      console.log('🚀 AUTO-START LIVE STREAM');
+      toggleCamera();
+    }
+  }, [autoStart, hasPermission, isLoading, isCameraActive, toggleCamera]);
 
   if (isLoading) {
     return (
