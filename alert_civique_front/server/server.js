@@ -20,22 +20,29 @@ const io = socketIo(server, {
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
 // ============ CONFIGURATION UPLOAD VIDÉOS ============
-const UPLOAD_DIR = path.join(__dirname, 'uploads','videos');
+const UPLOAD_DIR = path.join(__dirname, 'uploads', 'videos');
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  console.log(`📁 Created upload directory: ${UPLOAD_DIR}`);
 }
 
-// Configuration multer pour les vidéos
+// Configuration multer pour les vidéos avec meilleure gestion des erreurs
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    // Vérifier que le dossier existe toujours
+    if (!fs.existsSync(UPLOAD_DIR)) {
+      fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+    }
     cb(null, UPLOAD_DIR);
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
+    // Gérer le cas où originalname est undefined
+    const originalName = file.originalname || 'video.mp4';
+    const ext = path.extname(originalName);
     const filename = `${uuidv4()}${ext}`;
     cb(null, filename);
   }
@@ -47,11 +54,23 @@ const upload = multer({
     fileSize: 100 * 1024 * 1024 // 100MB
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['video/mp4', 'video/mpeg', 'video/quicktime', 'video/x-msvideo'];
+    // Support plus de formats vidéo
+    const allowedTypes = [
+      'video/mp4', 
+      'video/mpeg', 
+      'video/quicktime', 
+      'video/x-msvideo',
+      'video/3gpp',
+      'video/x-matroska',
+      'video/webm'
+    ];
+    
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Format vidéo non supporté. Utilisez MP4, MOV, ou AVI.'));
+      const err = new multer.MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname);
+      err.message = `Format vidéo non supporté: ${file.mimetype}. Utilisez MP4, MOV, 3GP, ou AVI.`;
+      cb(err);
     }
   }
 });
@@ -59,7 +78,10 @@ const upload = multer({
 // ============ MONGODB CONNECTION ============
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/alert-civique';
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
@@ -88,26 +110,31 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Video Schema (NOUVEAU)
+// Video Schema (amélioré)
 const videoSchema = new mongoose.Schema({
   videoId: { type: String, unique: true, default: () => uuidv4() },
-  filename: String,
+  filename: { type: String, required: true },
   originalName: String,
-  url: String,
+  url: { type: String, required: true },
   size: Number,
   mimeType: String,
   userId: String,
   livestreamId: Number,
   duration: Number,
+  thumbnailUrl: String,
   uploadedAt: { type: Date, default: Date.now }
 });
 
+// Ajouter un index pour les recherches
+videoSchema.index({ userId: 1, uploadedAt: -1 });
+videoSchema.index({ livestreamId: 1 });
+
 const Video = mongoose.model('Video', videoSchema);
 
-// LiveStream Schema (NOUVEAU)
+// LiveStream Schema (amélioré)
 const liveStreamSchema = new mongoose.Schema({
   livestreamId: { type: Number, unique: true },
-  userId: { type: String, required: true },
+  userId: { type: String, required: true, index: true },
   startedAt: { type: Date, default: Date.now },
   endedAt: Date,
   duration: Number,
@@ -117,6 +144,10 @@ const liveStreamSchema = new mongoose.Schema({
   videoId: String,
   createdAt: { type: Date, default: Date.now }
 });
+
+// Ajouter des index
+liveStreamSchema.index({ userId: 1, status: 1 });
+liveStreamSchema.index({ createdAt: -1 });
 
 const LiveStream = mongoose.model('LiveStream', liveStreamSchema);
 
@@ -326,46 +357,95 @@ app.delete('/api/messages', async (req, res) => {
   }
 });
 
-// --- Vidéos (NOUVEAUX) ---
+// --- Vidéos (amélioré avec meilleure gestion des erreurs) ---
 app.post('/api/upload/video', upload.single('video'), async (req, res) => {
   try {
+    console.log('📥 Received video upload request');
+    console.log('Request headers:', req.headers);
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+    
     if (!req.file) {
+      console.error('❌ No file in request');
       return res.status(400).json({ error: 'Aucune vidéo envoyée' });
     }
 
     const { userId, livestreamId } = req.body;
-    const videoUrl = `${req.protocol}://${req.get('host')}/videos/${req.file.filename}`;
+    
+    // Vérifier que le fichier a bien été sauvegardé
+    const filePath = path.join(UPLOAD_DIR, req.file.filename);
+    const fileExists = fs.existsSync(filePath);
+    
+    if (!fileExists) {
+      console.error('❌ File not saved properly:', filePath);
+      return res.status(500).json({ error: 'Erreur lors de la sauvegarde du fichier' });
+    }
+    
+    const fileStats = fs.statSync(filePath);
+    console.log('✅ File saved successfully:', {
+      path: filePath,
+      size: fileStats.size,
+      filename: req.file.filename,
+      originalName: req.file.originalname
+    });
+    
+    // Générer l'URL publique
+    const protocol = req.protocol === 'https' ? 'https' : 'http';
+    const videoUrl = `${protocol}://${req.get('host')}/videos/${req.file.filename}`;
     
     const video = new Video({
       filename: req.file.filename,
-      originalName: req.file.originalname,
+      originalName: req.file.originalname || 'video.mp4',
       url: videoUrl,
       size: req.file.size,
       mimeType: req.file.mimetype,
-      userId: userId,
+      userId: userId || 'unknown',
       livestreamId: livestreamId ? parseInt(livestreamId) : null
     });
     
     await video.save();
     
-    console.log(`✅ Vidéo uploadée: ${req.file.filename}`);
+    console.log(`✅ Video saved to database: ${video.videoId}`);
+    console.log(`🔗 Public URL: ${videoUrl}`);
     
     res.json({
       success: true,
       videoId: video.videoId,
       url: videoUrl,
       filename: req.file.filename,
-      size: req.file.size
+      size: req.file.size,
+      originalName: req.file.originalname
     });
   } catch (error) {
     console.error('❌ Upload error:', error);
-    res.status(500).json({ error: 'Erreur lors de l\'upload' });
+    // Nettoyer le fichier en cas d'erreur
+    if (req.file && req.file.filename) {
+      const filePath = path.join(UPLOAD_DIR, req.file.filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`🗑️ Deleted partial file: ${req.file.filename}`);
+      }
+    }
+    res.status(500).json({ 
+      error: 'Erreur lors de l\'upload',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
 app.get('/api/videos', async (req, res) => {
   try {
-    const videos = await Video.find().sort({ uploadedAt: -1 }).limit(50);
+    const { userId, limit = 50 } = req.query;
+    let query = {};
+    
+    if (userId) {
+      query.userId = userId;
+    }
+    
+    const videos = await Video.find(query)
+      .sort({ uploadedAt: -1 })
+      .limit(parseInt(limit));
+      
     res.json(videos);
   } catch (error) {
     console.error('Error fetching videos:', error);
@@ -386,7 +466,31 @@ app.get('/api/videos/:videoId', async (req, res) => {
   }
 });
 
-// --- Live Streams (NOUVEAUX) ---
+app.delete('/api/videos/:videoId', async (req, res) => {
+  try {
+    const video = await Video.findOne({ videoId: req.params.videoId });
+    if (!video) {
+      return res.status(404).json({ error: 'Vidéo non trouvée' });
+    }
+    
+    // Supprimer le fichier physique
+    const filePath = path.join(UPLOAD_DIR, video.filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log(`🗑️ Deleted video file: ${video.filename}`);
+    }
+    
+    // Supprimer l'entrée de la base de données
+    await Video.deleteOne({ videoId: req.params.videoId });
+    
+    res.json({ success: true, message: 'Vidéo supprimée avec succès' });
+  } catch (error) {
+    console.error('Error deleting video:', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression de la vidéo' });
+  }
+});
+
+// --- Live Streams (amélioré) ---
 app.post('/api/livestream/start', async (req, res) => {
   try {
     const { userId, facing } = req.body;
@@ -395,8 +499,21 @@ app.post('/api/livestream/start', async (req, res) => {
       return res.status(400).json({ error: 'userId requis' });
     }
     
-    const count = await LiveStream.countDocuments();
-    const livestreamId = count + 1;
+    // Vérifier s'il y a déjà un stream actif pour cet utilisateur
+    const existingStream = await LiveStream.findOne({ userId, status: 'active' });
+    if (existingStream) {
+      console.log(`⚠️ User ${userId} already has an active stream: ${existingStream.livestreamId}`);
+      return res.json({
+        success: true,
+        livestreamId: existingStream.livestreamId,
+        startedAt: existingStream.startedAt,
+        existing: true
+      });
+    }
+    
+    // Générer un nouvel ID unique
+    const lastStream = await LiveStream.findOne().sort({ livestreamId: -1 });
+    const livestreamId = lastStream ? lastStream.livestreamId + 1 : 1;
     
     const liveStream = new LiveStream({
       livestreamId,
@@ -408,7 +525,7 @@ app.post('/api/livestream/start', async (req, res) => {
     
     await liveStream.save();
     
-    console.log(`✅ Live stream démarré: ${livestreamId} pour user ${userId}`);
+    console.log(`✅ Live stream started: ${livestreamId} for user ${userId}`);
     
     res.json({
       success: true,
@@ -425,10 +542,14 @@ app.post('/api/livestream/end', async (req, res) => {
   try {
     const { livestreamId, endedAt, duration } = req.body;
     
+    if (!livestreamId) {
+      return res.status(400).json({ error: 'livestreamId requis' });
+    }
+    
     const liveStream = await LiveStream.findOneAndUpdate(
       { livestreamId },
       {
-        endedAt: new Date(endedAt || Date.now()),
+        endedAt: endedAt ? new Date(endedAt) : new Date(),
         duration: duration || 0,
         status: 'ended'
       },
@@ -439,7 +560,7 @@ app.post('/api/livestream/end', async (req, res) => {
       return res.status(404).json({ error: 'Stream non trouvé' });
     }
     
-    console.log(`✅ Live stream terminé: ${livestreamId}`);
+    console.log(`✅ Live stream ended: ${livestreamId} for user ${liveStream.userId}`);
     
     res.json({
       success: true,
@@ -455,6 +576,10 @@ app.post('/api/livestream/update', async (req, res) => {
   try {
     const { livestreamId, videoUrl, videoId } = req.body;
     
+    if (!livestreamId) {
+      return res.status(400).json({ error: 'livestreamId requis' });
+    }
+    
     const liveStream = await LiveStream.findOneAndUpdate(
       { livestreamId },
       { videoUrl, videoId },
@@ -464,6 +589,8 @@ app.post('/api/livestream/update', async (req, res) => {
     if (!liveStream) {
       return res.status(404).json({ error: 'Stream non trouvé' });
     }
+    
+    console.log(`✅ Live stream updated: ${livestreamId} with video ${videoId}`);
     
     res.json({
       success: true,
@@ -477,11 +604,38 @@ app.post('/api/livestream/update', async (req, res) => {
 
 app.get('/api/livestream/list', async (req, res) => {
   try {
-    const streams = await LiveStream.find().sort({ createdAt: -1 }).limit(50);
+    const { userId, status, limit = 50 } = req.query;
+    let query = {};
+    
+    if (userId) query.userId = userId;
+    if (status) query.status = status;
+    
+    const streams = await LiveStream.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit));
+      
     res.json(streams);
   } catch (error) {
     console.error('Error listing streams:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération des streams' });
+  }
+});
+
+app.get('/api/livestream/active/:userId', async (req, res) => {
+  try {
+    const stream = await LiveStream.findOne({ 
+      userId: req.params.userId, 
+      status: 'active' 
+    });
+    
+    if (!stream) {
+      return res.status(404).json({ error: 'Aucun stream actif trouvé' });
+    }
+    
+    res.json(stream);
+  } catch (error) {
+    console.error('Error fetching active stream:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération du stream actif' });
   }
 });
 
@@ -498,21 +652,46 @@ app.get('/api/livestream/:livestreamId', async (req, res) => {
   }
 });
 
-// Servir les vidéos statiquement
-app.use('/videos', express.static(UPLOAD_DIR));
+// Servir les vidéos statiquement avec configuration CORS
+app.use('/videos', express.static(UPLOAD_DIR, {
+  setHeaders: (res, path) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+  }
+}));
 
 // Health check amélioré
 app.get('/health', (req, res) => {
   const uploadDirExists = fs.existsSync(UPLOAD_DIR);
-  const videosCount = uploadDirExists ? fs.readdirSync(UPLOAD_DIR).length : 0;
+  let videosCount = 0;
+  let uploadDirSize = 0;
+  
+  if (uploadDirExists) {
+    try {
+      const files = fs.readdirSync(UPLOAD_DIR);
+      videosCount = files.length;
+      
+      // Calculer la taille totale du dossier
+      files.forEach(file => {
+        const filePath = path.join(UPLOAD_DIR, file);
+        const stats = fs.statSync(filePath);
+        uploadDirSize += stats.size;
+      });
+    } catch (error) {
+      console.error('Error reading upload directory:', error);
+    }
+  }
   
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
     connectedUsers: connectedUsers.size,
     mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     uploadDir: uploadDirExists ? 'ready' : 'missing',
-    videosCount: videosCount
+    videosCount: videosCount,
+    uploadDirSize: `${(uploadDirSize / (1024 * 1024)).toFixed(2)} MB`,
+    memoryUsage: process.memoryUsage()
   });
 });
 
@@ -520,7 +699,8 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     name: 'Alert Civique Server',
-    version: '2.0.0',
+    version: '2.1.0',
+    description: 'Serveur pour l\'application Alert Civique avec support vidéo',
     endpoints: {
       chat: {
         websocket: 'ws://localhost:9091',
@@ -531,17 +711,49 @@ app.get('/', (req, res) => {
       video: {
         upload: 'POST /api/upload/video',
         videos: 'GET /api/videos',
-        videoById: 'GET /api/videos/:videoId'
+        videoById: 'GET /api/videos/:videoId',
+        deleteVideo: 'DELETE /api/videos/:videoId'
       },
       livestream: {
         start: 'POST /api/livestream/start',
         end: 'POST /api/livestream/end',
         update: 'POST /api/livestream/update',
         list: 'GET /api/livestream/list',
+        active: 'GET /api/livestream/active/:userId',
         get: 'GET /api/livestream/:livestreamId'
       },
-      health: 'GET /health'
+      system: {
+        health: 'GET /health',
+        root: 'GET /'
+      }
+    },
+    documentation: 'Pour utiliser l\'API vidéo, envoyez un fichier multipart/form-data avec le champ "video"'
+  });
+});
+
+// Gestion des erreurs 404
+app.use((req, res) => {
+  res.status(404).json({ 
+    error: 'Route non trouvée',
+    path: req.path,
+    method: req.method
+  });
+});
+
+// Gestion globale des erreurs
+app.use((err, req, res, next) => {
+  console.error('❌ Global error handler:', err);
+  
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'Fichier trop volumineux. Maximum 100MB' });
     }
+    return res.status(400).json({ error: err.message });
+  }
+  
+  res.status(500).json({ 
+    error: 'Erreur interne du serveur',
+    message: err.message 
   });
 });
 
@@ -560,4 +772,16 @@ server.listen(PORT, () => {
   console.log(`📁 Upload directory: ${UPLOAD_DIR}`);
   console.log(`✅ MongoDB: ${MONGODB_URI}`);
   console.log(`🚀 ========================================\n`);
+});
+
+// Gestion de l'arrêt propre du serveur
+process.on('SIGINT', () => {
+  console.log('\n🛑 Shutting down server...');
+  server.close(() => {
+    console.log('✅ Server closed');
+    mongoose.connection.close(() => {
+      console.log('✅ MongoDB connection closed');
+      process.exit(0);
+    });
+  });
 });

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { CameraView } from 'expo-camera';
-import { useLiveStream } from '../../hooks/useLiveStream';
+import { useLiveStreamManager } from '../../hooks/useLiveStreamManager';
 
 interface LiveStreamScreenProps {
   onClose?: () => void;
@@ -19,7 +19,7 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
     toggleCamera,
     recording,
     checkCameraPermission,
-  } = useLiveStream(autoStart);
+  } = useLiveStreamManager(autoStart);
 
   useEffect(() => {
     console.log('🟢 LiveStreamScreen monté');

@@ -29,8 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="LiveStream"
         options={{
-          title: 'Live Stream',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="video.fill" color={color} />,
+          href: null,
         }}
       />
       

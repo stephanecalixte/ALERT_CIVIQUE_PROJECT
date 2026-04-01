@@ -1452,3 +1452,760 @@
         ls1_0.video_url 
     from
         lives_stream ls1_0
+2026-03-31 16:02:59 INFO  c.e.a.AlertCiviqueApplication - Starting AlertCiviqueApplication using Java 17.0.12 with PID 23512 (C:\PROJET_DORANCO\ALERT-CIVIQUE-PROJECT\alert_civique_back\target\classes started by steph in C:\PROJET_DORANCO\ALERT-CIVIQUE-PROJECT\alert_civique_back)
+2026-03-31 16:02:59 INFO  c.e.a.AlertCiviqueApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-31 16:02:59 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-03-31 16:02:59 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-03-31 16:03:00 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-31 16:03:00 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 101 ms. Found 15 JPA repository interfaces.
+2026-03-31 16:03:01 INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 9090 (http)
+2026-03-31 16:03:01 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-31 16:03:01 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-03-31 16:03:01 INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1788 ms
+2026-03-31 16:03:01 INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-31 16:03:01 INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-03-31 16:03:02 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-31 16:03:02 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-31 16:03:02 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-03-31 16:03:02 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-31 16:03:02 WARN  org.hibernate.orm.deprecation - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-31 16:03:02 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TESTDB/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-31 16:03:04 INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists activation_tokens cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists ai_validation cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists analyses cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists categories cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists emergencies_alert cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists geolocalisation cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists history cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists lives_stream cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists media cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists messages cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists push_notification cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists report_categories cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists report_message cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists reports cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists roles cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists trusted_contact cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists user_roles cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    drop table if exists users cascade 
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table activation_tokens (
+        used boolean not null,
+        expiry_date timestamp(6) not null,
+        id bigint generated by default as identity,
+        user_id bigint,
+        token_hash varchar(128) not null unique,
+        primary key (id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table ai_validation (
+        score float(53),
+        ai_validation_id bigint generated by default as identity,
+        created_at timestamp(6),
+        report_id bigint not null,
+        analysis_result TEXT,
+        decision_level varchar(255),
+        model_version varchar(255),
+        primary key (ai_validation_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table analyses (
+        confidence_score float(53),
+        ai_validation_id bigint,
+        analysis_id bigint generated by default as identity,
+        created_at timestamp(6),
+        report_id bigint,
+        analyse TEXT,
+        analysis_type varchar(255),
+        details TEXT,
+        primary key (analysis_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table categories (
+        categori_id bigint generated by default as identity,
+        description varchar(255),
+        name varchar(255),
+        primary key (categori_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table emergencies_alert (
+        emergencies_alert_id bigint generated by default as identity,
+        sent_at timestamp(6),
+        email varchar(255) not null,
+        primary key (emergencies_alert_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table geolocalisation (
+        latitude float(53),
+        longitude float(53),
+        timestamp date,
+        geolocalisation_id bigint generated by default as identity,
+        primary key (geolocalisation_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table history (
+        created_at timestamp(6),
+        history_id bigint generated by default as identity,
+        report_id bigint,
+        user_id bigint,
+        action varchar(255),
+        analyse TEXT,
+        details TEXT,
+        primary key (history_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table lives_stream (
+        duration integer,
+        ended_at timestamp(6),
+        livestream_id bigint generated by default as identity,
+        media_id bigint,
+        started_at timestamp(6),
+        status varchar(255),
+        stream_url varchar(255),
+        video_url varchar(255),
+        primary key (livestream_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table media (
+        duration_seconds integer,
+        date_upload timestamp(6) not null,
+        file_size bigint,
+        media_id bigint generated by default as identity,
+        report_id bigint not null,
+        file_name varchar(255),
+        mime_type varchar(255),
+        thumbnail_path varchar(255),
+        type_media varchar(255) not null,
+        url varchar(255) not null,
+        primary key (media_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table messages (
+        is_read boolean,
+        alert_id bigint,
+        created_at timestamp(6),
+        message_id bigint generated by default as identity,
+        report_id bigint,
+        message TEXT,
+        sender_email varchar(255),
+        type enum ('ALERT_COMMENT','CHAT','SYSTEM_NOTIFICATION'),
+        primary key (message_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table push_notification (
+        push_notification_id bigint generated by default as identity,
+        report_id bigint,
+        sent_at timestamp(6),
+        user_id bigint,
+        message varchar(255),
+        primary key (push_notification_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table report_categories (
+        category_id bigint not null,
+        report_id bigint not null,
+        primary key (category_id, report_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table report_message (
+        message_id bigint not null,
+        report_id bigint not null,
+        report_message_id bigint generated by default as identity,
+        user_id bigint not null,
+        created_at varchar(255) not null,
+        reason varchar(255) not null,
+        primary key (report_message_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table reports (
+        anonymous boolean,
+        category_id bigint,
+        created_at timestamp(6),
+        geolocalisation_id bigint unique,
+        report_id bigint generated by default as identity,
+        user_id bigint,
+        description varchar(255),
+        priority enum ('CRITICAL','HIGH','LOW','MEDIUM'),
+        status enum ('ARCHIVED','IN_REVIEW','PENDING','REJECTED','RESOLVED','VALIDATED'),
+        primary key (report_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table roles (
+        role_id bigint generated by default as identity,
+        name varchar(255) not null unique,
+        primary key (role_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table trusted_contact (
+        trusted_contact_id bigint generated by default as identity,
+        user_id bigint not null,
+        email varchar(255),
+        name varchar(255) not null,
+        phone varchar(255),
+        primary key (trusted_contact_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table user_roles (
+        role_id bigint not null,
+        user_id bigint not null,
+        primary key (role_id, user_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create table users (
+        active boolean,
+        birthdate date,
+        registration_date date,
+        created_at timestamp(6),
+        user_id bigint generated by default as identity,
+        email varchar(255),
+        firstname varchar(255),
+        lastname varchar(255),
+        name varchar(255),
+        password varchar(255),
+        phone varchar(255),
+        primary key (user_id)
+    )
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create index idx_activation_token_hash 
+       on activation_tokens (token_hash)
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    create index idx_activation_user 
+       on activation_tokens (user_id)
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists activation_tokens 
+       add constraint FKgtry5rof27b5hdur1a11y0gsn 
+       foreign key (user_id) 
+       references users
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists ai_validation 
+       add constraint FK13op0gsw9efnffrisd8fxild3 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists analyses 
+       add constraint FKt04vw2vp2h041s1yjaq62yn0a 
+       foreign key (ai_validation_id) 
+       references ai_validation
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists analyses 
+       add constraint FK2xj188l24wx4ryr9apjvi1sph 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists history 
+       add constraint FK1kle1omcays6xlyfj7pk1jaxp 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists history 
+       add constraint FKq4kh99ws9lhtls5i3o73gw30t 
+       foreign key (user_id) 
+       references users
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists media 
+       add constraint FKkbhvdfynws1h7517mkomt4xuj 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists messages 
+       add constraint FKkg7yt0s5iducrv1nb9iro532p 
+       foreign key (alert_id) 
+       references emergencies_alert
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists messages 
+       add constraint FK5na31h126tmkkaubg2ghupml9 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists push_notification 
+       add constraint FKa690cexoo5ofy628yxyl1b57u 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists push_notification 
+       add constraint FKkgrjosfijj7f7oyq2gqgg9rfu 
+       foreign key (user_id) 
+       references users
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists report_categories 
+       add constraint FKa6v6afv41bxdb3ldqe4glri2o 
+       foreign key (category_id) 
+       references categories
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists report_categories 
+       add constraint FKpk69di6porvnf02oeu6dx6tb5 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists report_message 
+       add constraint FKhjf18lrgyf14f90inoswob73u 
+       foreign key (message_id) 
+       references messages
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists report_message 
+       add constraint FKgpjd2i0mfcb66pyhw9wt48qap 
+       foreign key (report_id) 
+       references reports
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists report_message 
+       add constraint FK5eefo5f7dax744dojkc08dw0f 
+       foreign key (user_id) 
+       references users
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists reports 
+       add constraint FKgx1d6oxj8222h86hg0fqmsj6a 
+       foreign key (geolocalisation_id) 
+       references geolocalisation
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists reports 
+       add constraint FK2o32rer9hfweeylg7x8ut8rj2 
+       foreign key (user_id) 
+       references users
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists user_roles 
+       add constraint FKh8ciramu9cc9q3qcqiv4ue8a6 
+       foreign key (role_id) 
+       references roles
+2026-03-31 16:03:04 DEBUG org.hibernate.SQL - 
+    alter table if exists user_roles 
+       add constraint FKhfh9dx7w3ubf1co1vdev94g3f 
+       foreign key (user_id) 
+       references users
+2026-03-31 16:03:04 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-31 16:03:04 INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-31 16:03:05 WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-31 16:03:05 WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Found 2 UserDetailsService beans, with names [securityCustomUserDetailsService, serviceCustomUserDetailsService]. Global Authentication Manager will not use a UserDetailsService for username/password login. Consider publishing a single UserDetailsService bean.
+2026-03-31 16:03:06 INFO  org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.6.3"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/17.0.12+8-LTS-286"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@1af5fe5f, com.mongodb.Jep395RecordCodecProvider@119408cc, com.mongodb.KotlinCodecProvider@724f5f2f, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-03-31 16:03:06 INFO  org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=27, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=33216600, minRoundTripTimeNanos=0}
+2026-03-31 16:03:06 INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 9090 (http) with context path '/'
+2026-03-31 16:03:06 INFO  c.e.a.AlertCiviqueApplication - Started AlertCiviqueApplication in 7.512 seconds (process running for 7.96)
+2026-03-31 16:52:46 INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-03-31 16:52:46 INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-03-31 16:52:46 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists activation_tokens cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists ai_validation cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists analyses cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists categories cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists emergencies_alert cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists geolocalisation cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists history cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists lives_stream cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists media cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists messages cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists push_notification cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists report_categories cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists report_message cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists reports cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists roles cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists trusted_contact cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists user_roles cascade 
+2026-03-31 16:52:46 DEBUG org.hibernate.SQL - 
+    drop table if exists users cascade 
+2026-03-31 16:52:46 WARN  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: La base de données est déjà fermée (pour désactiver la fermeture automatique à l'arrêt de la VM, ajoutez "; DB_CLOSE_ON_EXIT = FALSE" à l'URL db)
+Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-240]
+2026-03-31 16:52:46 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-03-31 16:52:46 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-03-31 19:06:54 INFO  c.e.a.AlertCiviqueApplication - Starting AlertCiviqueApplication using Java 17.0.12 with PID 45728 (C:\PROJET_DORANCO\ALERT-CIVIQUE-PROJECT\alert_civique_back\target\classes started by steph in C:\PROJET_DORANCO\ALERT-CIVIQUE-PROJECT\alert_civique_back)
+2026-03-31 19:06:54 INFO  c.e.a.AlertCiviqueApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-31 19:06:54 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-03-31 19:06:54 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-03-31 19:06:55 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-31 19:06:55 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 109 ms. Found 15 JPA repository interfaces.
+2026-03-31 19:06:56 INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 9090 (http)
+2026-03-31 19:06:56 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-31 19:06:56 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-03-31 19:06:56 INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1834 ms
+2026-03-31 19:06:56 INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-31 19:06:57 INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-03-31 19:06:57 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-31 19:06:57 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-31 19:06:57 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-03-31 19:06:57 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-31 19:06:57 WARN  org.hibernate.orm.deprecation - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-31 19:06:57 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TESTDB/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-31 19:06:59 INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists activation_tokens cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists ai_validation cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists analyses cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists categories cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists emergencies_alert cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists geolocalisation cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists history cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists lives_stream cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists media cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists messages cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists push_notification cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists report_categories cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists report_message cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists reports cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists roles cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists trusted_contact cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists user_roles cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    drop table if exists users cascade 
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table activation_tokens (
+        used boolean not null,
+        expiry_date timestamp(6) not null,
+        id bigint generated by default as identity,
+        user_id bigint,
+        token_hash varchar(128) not null unique,
+        primary key (id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table ai_validation (
+        score float(53),
+        ai_validation_id bigint generated by default as identity,
+        created_at timestamp(6),
+        report_id bigint not null,
+        analysis_result TEXT,
+        decision_level varchar(255),
+        model_version varchar(255),
+        primary key (ai_validation_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table analyses (
+        confidence_score float(53),
+        ai_validation_id bigint,
+        analysis_id bigint generated by default as identity,
+        created_at timestamp(6),
+        report_id bigint,
+        analyse TEXT,
+        analysis_type varchar(255),
+        details TEXT,
+        primary key (analysis_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table categories (
+        categori_id bigint generated by default as identity,
+        description varchar(255),
+        name varchar(255),
+        primary key (categori_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table emergencies_alert (
+        emergencies_alert_id bigint generated by default as identity,
+        sent_at timestamp(6),
+        email varchar(255) not null,
+        primary key (emergencies_alert_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table geolocalisation (
+        latitude float(53),
+        longitude float(53),
+        timestamp date,
+        geolocalisation_id bigint generated by default as identity,
+        primary key (geolocalisation_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table history (
+        created_at timestamp(6),
+        history_id bigint generated by default as identity,
+        report_id bigint,
+        user_id bigint,
+        action varchar(255),
+        analyse TEXT,
+        details TEXT,
+        primary key (history_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table lives_stream (
+        duration integer,
+        ended_at timestamp(6),
+        livestream_id bigint generated by default as identity,
+        media_id bigint,
+        started_at timestamp(6),
+        status varchar(255),
+        stream_url varchar(255),
+        video_url varchar(255),
+        primary key (livestream_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table media (
+        duration_seconds integer,
+        date_upload timestamp(6) not null,
+        file_size bigint,
+        media_id bigint generated by default as identity,
+        report_id bigint not null,
+        file_name varchar(255),
+        mime_type varchar(255),
+        thumbnail_path varchar(255),
+        type_media varchar(255) not null,
+        url varchar(255) not null,
+        primary key (media_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table messages (
+        is_read boolean,
+        alert_id bigint,
+        created_at timestamp(6),
+        message_id bigint generated by default as identity,
+        report_id bigint,
+        message TEXT,
+        sender_email varchar(255),
+        type enum ('ALERT_COMMENT','CHAT','SYSTEM_NOTIFICATION'),
+        primary key (message_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table push_notification (
+        push_notification_id bigint generated by default as identity,
+        report_id bigint,
+        sent_at timestamp(6),
+        user_id bigint,
+        message varchar(255),
+        primary key (push_notification_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table report_categories (
+        category_id bigint not null,
+        report_id bigint not null,
+        primary key (category_id, report_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table report_message (
+        message_id bigint not null,
+        report_id bigint not null,
+        report_message_id bigint generated by default as identity,
+        user_id bigint not null,
+        created_at varchar(255) not null,
+        reason varchar(255) not null,
+        primary key (report_message_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table reports (
+        anonymous boolean,
+        category_id bigint,
+        created_at timestamp(6),
+        geolocalisation_id bigint unique,
+        report_id bigint generated by default as identity,
+        user_id bigint,
+        description varchar(255),
+        priority enum ('CRITICAL','HIGH','LOW','MEDIUM'),
+        status enum ('ARCHIVED','IN_REVIEW','PENDING','REJECTED','RESOLVED','VALIDATED'),
+        primary key (report_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table roles (
+        role_id bigint generated by default as identity,
+        name varchar(255) not null unique,
+        primary key (role_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table trusted_contact (
+        trusted_contact_id bigint generated by default as identity,
+        user_id bigint not null,
+        email varchar(255),
+        name varchar(255) not null,
+        phone varchar(255),
+        primary key (trusted_contact_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table user_roles (
+        role_id bigint not null,
+        user_id bigint not null,
+        primary key (role_id, user_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create table users (
+        active boolean,
+        birthdate date,
+        registration_date date,
+        created_at timestamp(6),
+        user_id bigint generated by default as identity,
+        email varchar(255),
+        firstname varchar(255),
+        lastname varchar(255),
+        name varchar(255),
+        password varchar(255),
+        phone varchar(255),
+        primary key (user_id)
+    )
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create index idx_activation_token_hash 
+       on activation_tokens (token_hash)
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    create index idx_activation_user 
+       on activation_tokens (user_id)
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists activation_tokens 
+       add constraint FKgtry5rof27b5hdur1a11y0gsn 
+       foreign key (user_id) 
+       references users
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists ai_validation 
+       add constraint FK13op0gsw9efnffrisd8fxild3 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists analyses 
+       add constraint FKt04vw2vp2h041s1yjaq62yn0a 
+       foreign key (ai_validation_id) 
+       references ai_validation
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists analyses 
+       add constraint FK2xj188l24wx4ryr9apjvi1sph 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists history 
+       add constraint FK1kle1omcays6xlyfj7pk1jaxp 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists history 
+       add constraint FKq4kh99ws9lhtls5i3o73gw30t 
+       foreign key (user_id) 
+       references users
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists media 
+       add constraint FKkbhvdfynws1h7517mkomt4xuj 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists messages 
+       add constraint FKkg7yt0s5iducrv1nb9iro532p 
+       foreign key (alert_id) 
+       references emergencies_alert
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists messages 
+       add constraint FK5na31h126tmkkaubg2ghupml9 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists push_notification 
+       add constraint FKa690cexoo5ofy628yxyl1b57u 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists push_notification 
+       add constraint FKkgrjosfijj7f7oyq2gqgg9rfu 
+       foreign key (user_id) 
+       references users
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists report_categories 
+       add constraint FKa6v6afv41bxdb3ldqe4glri2o 
+       foreign key (category_id) 
+       references categories
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists report_categories 
+       add constraint FKpk69di6porvnf02oeu6dx6tb5 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists report_message 
+       add constraint FKhjf18lrgyf14f90inoswob73u 
+       foreign key (message_id) 
+       references messages
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists report_message 
+       add constraint FKgpjd2i0mfcb66pyhw9wt48qap 
+       foreign key (report_id) 
+       references reports
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists report_message 
+       add constraint FK5eefo5f7dax744dojkc08dw0f 
+       foreign key (user_id) 
+       references users
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists reports 
+       add constraint FKgx1d6oxj8222h86hg0fqmsj6a 
+       foreign key (geolocalisation_id) 
+       references geolocalisation
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists reports 
+       add constraint FK2o32rer9hfweeylg7x8ut8rj2 
+       foreign key (user_id) 
+       references users
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists user_roles 
+       add constraint FKh8ciramu9cc9q3qcqiv4ue8a6 
+       foreign key (role_id) 
+       references roles
+2026-03-31 19:06:59 DEBUG org.hibernate.SQL - 
+    alter table if exists user_roles 
+       add constraint FKhfh9dx7w3ubf1co1vdev94g3f 
+       foreign key (user_id) 
+       references users
+2026-03-31 19:06:59 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-31 19:06:59 INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-31 19:07:00 WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-31 19:07:00 WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Found 2 UserDetailsService beans, with names [securityCustomUserDetailsService, serviceCustomUserDetailsService]. Global Authentication Manager will not use a UserDetailsService for username/password login. Consider publishing a single UserDetailsService bean.
+2026-03-31 19:07:01 INFO  org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.6.3"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/17.0.12+8-LTS-286"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@4760abf6, com.mongodb.Jep395RecordCodecProvider@6493c976, com.mongodb.KotlinCodecProvider@7ac7213a, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-03-31 19:07:01 INFO  org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=27, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=26041400, minRoundTripTimeNanos=0}
+2026-03-31 19:07:01 INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 9090 (http) with context path '/'
+2026-03-31 19:07:01 INFO  c.e.a.AlertCiviqueApplication - Started AlertCiviqueApplication in 7.07 seconds (process running for 7.56)

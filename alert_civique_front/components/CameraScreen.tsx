@@ -44,7 +44,7 @@ export default function CameraScreen({ onClose, onPhotoTaken }: { onClose: () =>
 
         {/* Flash */}
         <TouchableOpacity style={styles.controlButton} onPress={cycleFlash}>
-          <Ionicons name={['flash-off', 'flash', 'flashlight', 'flash-outline'][[FlashMode.off, FlashMode.on, FlashMode.torch, FlashMode.auto].indexOf(cameraState.flash)] || 'flash-off'} size={28} color="white" />
+          <Ionicons name={(['flash-off', 'flash', 'flashlight', 'flash-outline'][(['off', 'on', 'torch', 'auto'] as const).indexOf(cameraState.flash)] || 'flash-off') as any} size={28} color="white" />
         </TouchableOpacity>
 
         {/* Switch camera */}

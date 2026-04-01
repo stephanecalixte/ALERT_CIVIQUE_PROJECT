@@ -18,7 +18,7 @@ export interface Message {
   type?: 'text' | 'alert' | 'system';
 }
 
-const SOCKET_URL = 'http://localhost:9091';
+const SOCKET_URL = 'http://10.0.2.2:9091';
 
 console.log('🔧 Chat hook loaded, SOCKET_URL:', SOCKET_URL);
 
@@ -71,7 +71,7 @@ export function useMessages() {
 
     newSocket.on('newMessage', (message: Message) => {
       console.log(`💬 Nouveau message de ${message.sender}`);
-      setMessages(prev => [...prev, message]);
+      setMessages((prev: Message[]) => [...prev, message]);
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
@@ -87,7 +87,7 @@ export function useMessages() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         type: 'system'
       };
-      setMessages(prev => [...prev, systemMessage]);
+      setMessages((prev: Message[]) => [...prev, systemMessage]);
     });
 
     newSocket.on('userDisconnected', (userData: User) => {
@@ -100,7 +100,7 @@ export function useMessages() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         type: 'system'
       };
-      setMessages(prev => [...prev, systemMessage]);
+      setMessages((prev: Message[]) => [...prev, systemMessage]);
     });
 
     newSocket.on('alertMessage', (alert: { text: string; priority: 'high' | 'medium' | 'low' }) => {
@@ -113,7 +113,7 @@ export function useMessages() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         type: 'alert'
       };
-      setMessages(prev => [...prev, alertMessage]);
+      setMessages((prev: Message[]) => [...prev, alertMessage]);
     });
 
     newSocket.on('disconnect', () => {

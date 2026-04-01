@@ -1,5 +1,5 @@
 import sendData from "./SendData";
-// import type { Report } from '../../models/Report';
+import type { Report } from '@/models/Report';
 
 type ReportCreate = Omit<Report, 'reportId' | 'createdAt' | 'status' | 'mediaCount' | 'aiConfidenceScore'>;
 

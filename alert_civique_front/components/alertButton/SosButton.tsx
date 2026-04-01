@@ -1,26 +1,13 @@
-import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import LiveStreamScreen from '@/app/(tabs)/LiveStream';
+import { useRouter } from 'expo-router';
 
 export default function SosButton() {
-  const [isLiveStreamActive, setIsLiveStreamActive] = useState(false);
+  const router = useRouter();
 
   const launchSOSLiveStream = () => {
     console.log('=== 🚨 SOS ACTIVATED - LIVE STREAM START ===');
-    setIsLiveStreamActive(true);
+    router.push({ pathname: '/LiveStream', params: { autoStart: 'true' } });
   };
-
-  if (isLiveStreamActive) {
-    return (
-      <LiveStreamScreen
-        autoStart={true}
-        onClose={() => {
-          console.log('=== 🛑 SOS LIVE STREAM STOPPED ===');
-          setIsLiveStreamActive(false);
-        }}
-      />
-    );
-  }
 
   return (
     <View style={styles.container}>

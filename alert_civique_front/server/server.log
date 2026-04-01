@@ -1,0 +1,47 @@
+(node:18648) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18648) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+
+🚀 ========================================
+🚀 Alert Civique Server Started
+🚀 ========================================
+📡 Port: 9091
+🔌 Socket.IO: http://localhost:9091
+💬 Chat API: http://localhost:9091/api
+📹 Video Upload: http://localhost:9091/api/upload/video
+🎥 Videos: http://localhost:9091/videos/
+📁 Upload directory: C:\PROJET_DORANCO\ALERT-CIVIQUE-PROJECT\alert_civique_front\server\uploads\videos
+✅ MongoDB: mongodb://localhost:27017/alert-civique
+🚀 ========================================
+
+✅ Connected to MongoDB
+⚠️ User 123 already has an active stream: 11
+⚠️ User 123 already has an active stream: 11
+⚠️ User 123 already has an active stream: 11
+⚠️ User 123 already has an active stream: 11
+⚠️ User 123 already has an active stream: 11
+⚠️ User 123 already has an active stream: 11
+⚠️ User 123 already has an active stream: 11
+⚠️ User 123 already has an active stream: 11
+🔌 New client connected: gpsyohK4rR8yM8NqAAAB from ::ffff:127.0.0.1
+📝 User data received: { userId: 'temp_1774991168797', userName: 'Citoyen_236' }
+✅ User Citoyen_236 (temp_1774991168797) connected
+📜 Sent 6 messages to client gpsyohK4rR8yM8NqAAAB
+⚠️ User 123 already has an active stream: 11
+✅ Live stream ended: 11 for user 123
+⚠️ User 123 already has an active stream: 13
+✅ Live stream ended: 13 for user 123
+⚠️ User 123 already has an active stream: 16
+✅ Live stream ended: 16 for user 123
+⚠️ User 123 already has an active stream: 17
+✅ Live stream ended: 17 for user 123
+👋 User temp_1774991168797 disconnected
+⚠️ User 123 already has an active stream: 1774895786992
+✅ Live stream ended: 1774895786992 for user 123
+⚠️ User 123 already has an active stream: 1774897263942
+⚠️ User 123 already has an active stream: 1774897263942
+⚠️ User 123 already has an active stream: 1774897263942
+✅ Live stream ended: 1774897263942 for user 123
+⚠️ User 123 already has an active stream: 39
+✅ Live stream ended: 39 for user 123
+⚠️ User 123 already has an active stream: 40

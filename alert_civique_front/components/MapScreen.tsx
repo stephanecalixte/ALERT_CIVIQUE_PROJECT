@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import { useGeolocalisation } from '@/components/GeolocalisationContext';
+
 if (Platform.OS === 'web') {
   // @ts-ignore
   global.MapView = MapView;
@@ -10,8 +12,15 @@ type MapScreenProps = {
   onMapReady: () => void;
 };
 
-export default function MapScreen({onMapReady}: MapScreenProps) {
+const DEFAULT_LOCATION = { latitude: 48.8566, longitude: 2.3522 };
+
+export default function MapScreen({ onMapReady }: MapScreenProps) {
   const bounceValue = useRef(new Animated.Value(1)).current;
+  const { location } = useGeolocalisation();
+
+  const currentLocation = location
+    ? { latitude: location.latitude, longitude: location.longitude }
+    : DEFAULT_LOCATION;
 
   console.log('MapScreen rendered');
 
@@ -42,26 +51,21 @@ export default function MapScreen({onMapReady}: MapScreenProps) {
     return () => clearTimeout(testReady);
   }, [bounceValue, onMapReady]);
 
-  const testLocation = {
-    latitude: 48.8566,
-    longitude: 2.3522,
-  };
-
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
         onMapReady={onMapReady}
         region={{
-          latitude: testLocation.latitude,
-          longitude: testLocation.longitude,
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         }}
       >
         <Marker
-          coordinate={testLocation}
-          title="Test Location"
+          coordinate={currentLocation}
+          title="Ma position"
         >
           <Animated.View
             style={{

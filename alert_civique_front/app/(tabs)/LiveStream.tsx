@@ -1,21 +1,21 @@
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { useLiveStream } from '../../hooks/useLiveStream';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLiveStreamManager } from '../../hooks/useLiveStreamManager';
 import LiveStreamCamera from '../../components/LiveStreamCamera';
 import { useAuth } from '../../contexts/AuthContext';
-import CameraView from 'expo-camera/build/CameraView';
-
-interface LiveStreamScreenProps {
-  onClose?: () => void;
-}
 
 interface LiveStreamScreenProps {
   onClose?: () => void;
   autoStart?: boolean;
 }
 
-export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStreamScreenProps) {
+export default function LiveStreamScreen({ onClose, autoStart: autoStartProp = false }: LiveStreamScreenProps) {
   const { userId } = useAuth();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ autoStart?: string }>();
+  const autoStart = autoStartProp || params.autoStart === 'true';
+  const handleClose = onClose ?? (() => router.back());
   const {
     facing,
     toggleCameraFacing,
@@ -26,16 +26,7 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
     toggleCamera,
     recording,
     streams,
-    checkCameraPermission,
-  } = useLiveStream();
-
-  // Auto-start live stream if prop set
-  React.useEffect(() => {
-    if (autoStart && hasPermission && !isLoading && !isCameraActive) {
-      console.log('🚀 AUTO-START LIVE STREAM');
-      toggleCamera();
-    }
-  }, [autoStart, hasPermission, isLoading, isCameraActive, toggleCamera]);
+  } = useLiveStreamManager(autoStart);
 
   if (isLoading) {
     return (
@@ -56,19 +47,14 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
 
   return (
     <View style={styles.container}>
-      {onClose && (
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>Fermer</Text>
-        </TouchableOpacity>
-      )}
       {isCameraActive ? (
         <LiveStreamCamera
           facing={facing}
           isCameraActive={isCameraActive}
-          cameraRef={cameraRef as React.RefObject<CameraView>}
+          cameraRef={cameraRef}
           toggleCameraFacing={toggleCameraFacing}
           toggleCamera={toggleCamera}
-          onClose={onClose}
+          onClose={handleClose}
           recording={recording}
         />
       ) : (

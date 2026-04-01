@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { CameraType, CameraView } from 'expo-camera';
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
-import { Camera } from 'expo-camera';
 
 type FlashMode = 'off' | 'on' | 'torch' | 'auto';
 
@@ -16,26 +15,27 @@ interface CameraState {
 }
 
 export function useCamera() {
+  const [, requestPermission] = useCameraPermissions();
   const [cameraState, setCameraState] = useState<CameraState>({
     hasPermission: false,
-type: 'back' as any,
+    type: 'back' as CameraType,
     flash: 'off',
     zoom: 0,
     isProcessing: false,
   });
-const cameraRef = useRef<CameraView>(null);
+  const cameraRef = useRef<CameraView>(null);
 
   // Permissions
   useEffect(() => {
     (async () => {
-      const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+      const camResult = await requestPermission();
       const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
-      setCameraState(prev => ({ 
-        ...prev, 
-        hasPermission: cameraStatus === 'granted' && mediaStatus === 'granted' 
+      setCameraState(prev => ({
+        ...prev,
+        hasPermission: camResult.granted && mediaStatus === 'granted'
       }));
     })();
-  }, []);
+  }, [requestPermission]);
 
   const toggleCameraType = useCallback(() => {
     setCameraState(prev => ({ 

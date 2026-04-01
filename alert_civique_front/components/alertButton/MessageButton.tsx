@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
-import MessagesScreen from '@/app/(tabs)/MessagesScreen';
+import MessagesScreen from '@/app/(tabs)/Messages';
 
 export default function MessageButton() {
   const [showMessages, setShowMessages] = useState(false);

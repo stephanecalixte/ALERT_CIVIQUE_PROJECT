@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, type RefObject } from 'react';
 import { CameraType, CameraView } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -6,7 +6,7 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 interface LiveStreamCameraProps {
   facing: CameraType;
   isCameraActive: boolean;
-  cameraRef: React.RefObject<CameraView>;
+  cameraRef: RefObject<CameraView | null>;
   toggleCameraFacing: () => void;
   toggleCamera: () => void;
   onClose?: () => void;
