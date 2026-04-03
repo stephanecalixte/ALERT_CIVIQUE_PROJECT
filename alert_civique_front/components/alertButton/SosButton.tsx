@@ -25,13 +25,14 @@ export default function SosButton() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '40%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   sosButton: {
     backgroundColor: '#FF0000',
-    width: 120,
-    height: 120,
+    width: '100%',
+    height: '100%',
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',

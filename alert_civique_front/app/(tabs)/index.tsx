@@ -6,6 +6,8 @@ import LoadingPage from '../views/loadingPage/LoadingPage';
 import SosButton from '@/components/alertButton/SosButton';
 import PhotoButton from '@/components/alertButton/photoButton';
 import MessageButton from '@/components/alertButton/MessageButton';
+import CameraButton from '@/components/alertButton/CameraButton';
+import MicButton from '@/components/alertButton/MicButton';
 
 export default function HomeScreen() {
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -15,8 +17,10 @@ export default function HomeScreen() {
 
       {mapLoaded && (
         <View style={styles.topLayout}>
-          <SosButton />
+          <CameraButton />
           <PhotoButton/>
+          <SosButton />
+          <MicButton />
           <MessageButton />
         </View>
       )}
@@ -32,17 +36,23 @@ const styles = StyleSheet.create({
   },
   topLayout: {
     position: 'absolute',
-    top: 60,
-    left: 20,
-    right: 20,
-    height: 130,
+   
+    bottom: 0,
+    left: 0,
+  
+    
+    height: 70,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: 'rgba(255,0,0,0.4)',
+    backgroundColor: 'white',
+    padding: 10,
+    
+    
+
+    // borderWidth: 2,
+    // borderColor: 'rgba(255,0,0,0.4)',
     paddingHorizontal: 20,
     zIndex: 20,
   },

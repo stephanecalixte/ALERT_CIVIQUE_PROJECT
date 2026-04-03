@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
-import MessagesScreen from '@/app/(tabs)/Messages';
+import LiveStreamScreen from '@/app/views/LiveStreamSreen';
 
-export default function MessageButton() {
-  const [showMessages, setShowMessages] = useState(false);
+export default function CameraButton() {
+  const [showCamera, setShowCamera] = useState(false);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => setShowMessages(true)}
+        onPress={() => setShowCamera(true)}
       >
-        <Text style={styles.buttonText}>💬</Text>
+        <Text style={styles.buttonText}>📷</Text>
       </TouchableOpacity>
 
       <Modal
-        visible={showMessages}
+        visible={showCamera}
         animationType="slide"
-        onRequestClose={() => setShowMessages(false)}
+        onRequestClose={() => setShowCamera(false)}
         presentationStyle="pageSheet"
       >
-        <MessagesScreen />
+        <LiveStreamScreen onClose={() => setShowCamera(false)} autoStart />
       </Modal>
     </View>
   );
@@ -29,7 +29,6 @@ export default function MessageButton() {
 const styles = StyleSheet.create({
   container: {
     width: '20%',
-  
     justifyContent: 'center',
     alignItems: 'center',
   },

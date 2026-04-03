@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { CameraView } from 'expo-camera';
 import { useLiveStreamManager } from '../../hooks/useLiveStreamManager';
 
@@ -18,17 +18,13 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
     cameraRef,
     toggleCamera,
     recording,
+    isUploading,
     checkCameraPermission,
-  } = useLiveStreamManager(autoStart);
+  } = useLiveStreamManager(autoStart, onClose);
 
   useEffect(() => {
-    console.log('🟢 LiveStreamScreen monté');
     checkCameraPermission();
   }, []);
-
-  useEffect(() => {
-    console.log('📱 État:', { isCameraActive, recording, hasPermission });
-  }, [isCameraActive, recording, hasPermission]);
 
   if (isLoading) {
     return (
@@ -49,9 +45,21 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
     );
   }
 
+  // Overlay upload en cours
+  if (isUploading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.uploadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.uploadingText}>Enregistrement de la vidéo...</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {onClose && (
+      {onClose && !isCameraActive && (
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeButtonText}>Fermer</Text>
         </TouchableOpacity>
@@ -83,10 +91,10 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
         </View>
       ) : (
         <View style={styles.startContainer}>
-          <Text style={styles.title}>Live Stream</Text>
-          <Text style={styles.subtitle}>Partagez votre vidéo en direct</Text>
+          <Text style={styles.title}>Enregistrement vidéo</Text>
+          <Text style={styles.subtitle}>La vidéo sera sauvegardée automatiquement</Text>
           <TouchableOpacity style={styles.startButton} onPress={toggleCamera}>
-            <Text style={styles.startButtonText}>Démarrer Live Stream</Text>
+            <Text style={styles.startButtonText}>▶ Démarrer</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -111,6 +119,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  uploadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+  },
+  uploadingText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   closeButton: {
     position: 'absolute',
@@ -160,27 +179,28 @@ const styles = StyleSheet.create({
   },
   startButton: {
     backgroundColor: '#FF3B30',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 10,
+    paddingHorizontal: 40,
+    paddingVertical: 18,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 20,
   },
   startButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
     color: 'white',
     marginBottom: 10,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#999',
     marginBottom: 30,
+    textAlign: 'center',
   },
   text: {
     fontSize: 18,

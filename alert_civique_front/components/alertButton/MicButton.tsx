@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
-import MessagesScreen from '@/app/(tabs)/Messages';
+import LiveStreamScreen from '@/app/views/LiveStreamSreen';
 
-export default function MessageButton() {
-  const [showMessages, setShowMessages] = useState(false);
+export default function MicButton() {
+  const [showStream, setShowStream] = useState(false);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => setShowMessages(true)}
+        onPress={() => setShowStream(true)}
       >
-        <Text style={styles.buttonText}>💬</Text>
+        <Text style={styles.buttonText}>🎤</Text>
       </TouchableOpacity>
 
       <Modal
-        visible={showMessages}
+        visible={showStream}
         animationType="slide"
-        onRequestClose={() => setShowMessages(false)}
+        onRequestClose={() => setShowStream(false)}
         presentationStyle="pageSheet"
       >
-        <MessagesScreen />
+        <LiveStreamScreen onClose={() => setShowStream(false)} autoStart />
       </Modal>
     </View>
   );
@@ -29,7 +29,6 @@ export default function MessageButton() {
 const styles = StyleSheet.create({
   container: {
     width: '20%',
-  
     justifyContent: 'center',
     alignItems: 'center',
   },
