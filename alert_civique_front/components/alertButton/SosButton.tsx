@@ -1,26 +1,30 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import LiveStreamScreen from '@/app/views/LiveStreamSreen';
 
 export default function SosButton() {
-  const router = useRouter();
-
-  const launchSOSLiveStream = () => {
-    console.log('=== 🚨 SOS ACTIVATED - LIVE STREAM START ===');
-    router.push({ pathname: '/LiveStream', params: { autoStart: 'true' } });
-  };
+  const [showStream, setShowStream] = useState(false);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={launchSOSLiveStream}
+        onPress={() => setShowStream(true)}
         style={styles.sosButton}
         activeOpacity={0.8}
       >
         <View style={styles.innerContainer}>
           <Text style={styles.sosText}>SOS</Text>
         </View>
-        
       </TouchableOpacity>
+
+      <Modal
+        visible={showStream}
+        animationType="slide"
+        onRequestClose={() => setShowStream(false)}
+        presentationStyle="pageSheet"
+      >
+        <LiveStreamScreen onClose={() => setShowStream(false)} autoStart />
+      </Modal>
     </View>
   );
 }

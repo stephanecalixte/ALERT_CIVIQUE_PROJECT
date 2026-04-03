@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { SERVER_BASE_URL } from '@/lib/config';
 
 const BASE_URL = SERVER_BASE_URL;

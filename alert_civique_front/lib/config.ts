@@ -20,3 +20,4 @@ function getServerBaseUrl(): string {
 }
 
 export const SERVER_BASE_URL = getServerBaseUrl();
+console.log('🌐 SERVER_BASE_URL:', SERVER_BASE_URL);

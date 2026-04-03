@@ -23,7 +23,7 @@ function xhrRequest(method: 'GET' | 'POST', url: string, token: string, body?: a
     xhr.open(method, url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-    xhr.timeout = 10000;
+    xhr.timeout = 4000;
 
     xhr.onload = () => {
       // React Native: xhr.responseText can be empty even on success; fall back to xhr.response

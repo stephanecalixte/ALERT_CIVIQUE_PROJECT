@@ -1,6 +1,6 @@
 import { CameraView } from 'expo-camera';
 import { useCallback, useRef, useState, type RefObject } from 'react';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Alert } from 'react-native';
 
 export function useVideoRecording() {

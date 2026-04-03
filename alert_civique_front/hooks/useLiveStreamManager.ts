@@ -102,6 +102,7 @@ export function useLiveStreamManager(autoStart = false, onComplete?: () => void)
     hasPermission: cameraManager.hasPermission,
     cameraRef: cameraManager.cameraRef,
     checkCameraPermission: cameraManager.checkCameraPermission,
+    onCameraReady: cameraManager.onCameraReady,
     recording: videoRecording.recording,
     videoUri: videoRecording.videoUri,
     uploadProgress: videoRecording.uploadProgress,

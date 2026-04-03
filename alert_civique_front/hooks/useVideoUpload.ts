@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { MediaService } from '@/app/lib/services/MediaService';
 
 export function useVideoUpload(token: string | undefined, userId: string | undefined) {

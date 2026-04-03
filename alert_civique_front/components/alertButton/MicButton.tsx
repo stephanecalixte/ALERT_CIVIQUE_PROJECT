@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import LiveStreamScreen from '@/app/views/LiveStreamSreen';
+import AudioRecordScreen from '@/components/AudioRecordScreen';
 
 export default function MicButton() {
-  const [showStream, setShowStream] = useState(false);
+  const [showAudio, setShowAudio] = useState(false);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => setShowStream(true)}
+        onPress={() => setShowAudio(true)}
         activeOpacity={0.85}
       >
         <Ionicons name="mic" size={26} color="#007AFF" />
       </TouchableOpacity>
 
       <Modal
-        visible={showStream}
+        visible={showAudio}
         animationType="slide"
-        onRequestClose={() => setShowStream(false)}
+        onRequestClose={() => setShowAudio(false)}
         presentationStyle="pageSheet"
       >
-        <LiveStreamScreen onClose={() => setShowStream(false)} autoStart />
+        <AudioRecordScreen onClose={() => setShowAudio(false)} />
       </Modal>
     </View>
   );

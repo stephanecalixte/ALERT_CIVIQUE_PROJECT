@@ -20,6 +20,7 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
     recording,
     isUploading,
     checkCameraPermission,
+    onCameraReady,
   } = useLiveStreamManager(autoStart, onClose);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
             style={styles.camera}
             facing={facing}
             mode="video"
+            onCameraReady={onCameraReady}
           />
 
           {recording && (

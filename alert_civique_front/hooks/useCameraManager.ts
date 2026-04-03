@@ -43,15 +43,15 @@ export function useCameraManager() {
     }
   }, []);
 
-  // Délai d'initialisation caméra
-  const initializeCamera = useCallback(() => {
-    if (isCameraActive && !cameraInitialized) {
-      if (initTimerRef.current) clearTimeout(initTimerRef.current);
-      initTimerRef.current = setTimeout(() => {
-        setCameraInitialized(true);
-      }, 1000);
+  // Appelé par onCameraReady de CameraView — garantit que le ref est prêt
+  const onCameraReady = useCallback(() => {
+    if (isCameraActive) {
+      setCameraInitialized(true);
     }
-  }, [isCameraActive, cameraInitialized]);
+  }, [isCameraActive]);
+
+  // Garde pour compatibilité (ne fait plus rien)
+  const initializeCamera = useCallback(() => {}, []);
 
   return {
     facing,
@@ -65,5 +65,6 @@ export function useCameraManager() {
     activateCamera,
     deactivateCamera,
     initializeCamera,
+    onCameraReady,
   };
 }
