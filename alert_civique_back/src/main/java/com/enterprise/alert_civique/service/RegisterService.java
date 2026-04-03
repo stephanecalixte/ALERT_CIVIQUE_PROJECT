@@ -26,6 +26,16 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+
+/**
+ * 
+ * Service de gestion de l'inscription des utilisateurs.
+ * @since 2024-06
+ * @author Enterprise Alert Civique Team    
+ * @version 1.0
+ * @see AccountActivationService
+ * 
+ */
 public class RegisterService {
 
     private final UserRepository userRepository;
@@ -35,6 +45,22 @@ public class RegisterService {
     private final InputSanitizer sanitizer;
     private final PasswordPolicyValidator passwordValidator;
 
+
+    /**
+     * Enregistre un nouvel utilisateur après validation des données d'inscription.
+     * Valide les champs, vérifie l'unicité de l'email, applique la politique de mot de passe,
+     * hash le mot de passe, assigne le rôle par défaut, génère un token d'activation et sauvegarde l'utilisateur en base de données.   
+     * 
+     * L'activation de l'utilisateur doit être effectuée via le token envoyé par email (non implémenté ici).
+     * Le token d'activation est valide pendant 24 heures et ne peut être utilisé qu'une seule fois.
+     * En cas de données invalides, d'email déjà utilisé ou de mot de passe ne respectant pas la politique, une exception est levée.
+     * @param request Objet contenant les données d'inscription de l'utilisateur (firstname, lastname, email, password, phone, birthdate).
+     * @return Un UserResponseDto contenant les informations de l'utilisateur enregistré (sans le mot de passe).
+     * @throws Exception  En cas de données d'inscription invalides, d'email déjà utilisé ou de mot de
+     *  passe ne respectant pas la politique.
+     * @author Calixte Stéphane 
+     * 
+     */
     public UserResponseDto register(UserRegisterRequestDto request) throws Exception {
         log.info("Tentative d'inscription pour l'email : {}", request.getEmail());
 

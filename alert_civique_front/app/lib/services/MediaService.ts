@@ -1,6 +1,7 @@
 import * as FileSystem from 'expo-file-system';
+import { SERVER_BASE_URL } from '@/lib/config';
 
-const BASE_URL = 'http://10.0.2.2:9091';
+const BASE_URL = SERVER_BASE_URL;
 
 export interface VideoUploadResponse {
   success: boolean;
@@ -55,11 +56,13 @@ export class MediaService {
 
       // Get filename from URI
       const filename = videoUri.split('/').pop() || 'video.mp4';
+      const ext = filename.split('.').pop()?.toLowerCase();
+      const mimeType = ext === 'mov' ? 'video/quicktime' : 'video/mp4';
 
       // @ts-ignore - React Native FormData expects this structure
       formData.append('video', {
         uri: videoUri,
-        type: 'video/mp4',
+        type: mimeType,
         name: filename,
       });
 

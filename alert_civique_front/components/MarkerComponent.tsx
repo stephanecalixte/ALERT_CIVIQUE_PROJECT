@@ -1,5 +1,6 @@
 import React from 'react';
-import { Marker } from 'react-native-maps';
+import { View, StyleSheet } from 'react-native';
+import { PointAnnotation } from '@maplibre/maplibre-react-native';
 
 interface MarkerComponentProps {
   latitude: number;
@@ -12,18 +13,25 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
   latitude,
   longitude,
   title = 'Marker',
-  description = 'A marker on the map',
 }) => {
   return (
-    <Marker
-      coordinate={{
-        latitude,
-        longitude,
-      }}
+    <PointAnnotation
+      id={`marker-${latitude}-${longitude}`}
+      coordinate={[longitude, latitude]}
       title={title}
-      description={description}
-    />
+    >
+      <View style={styles.marker} />
+    </PointAnnotation>
   );
 };
+
+const styles = StyleSheet.create({
+  marker: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'red',
+  },
+});
 
 export default MarkerComponent;

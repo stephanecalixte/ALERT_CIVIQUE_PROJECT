@@ -15,11 +15,6 @@
     },
     "android": {
       "package": "com.alertcivique.app",
-      "config": {
-        "googleMaps": {
-          "apiKey": "REMPLACE_PAR_TA_CLE_GOOGLE_MAPS"
-        }
-      },
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -32,7 +27,11 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "CAMERA",
-        "RECORD_AUDIO"
+        "RECORD_AUDIO",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -60,6 +59,14 @@
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Autoriser $(PRODUCT_NAME) à accéder à vos photos.",
+          "savePhotosPermission": "Autoriser $(PRODUCT_NAME) à sauvegarder des photos.",
+          "isAccessMediaLocationEnabled": false
         }
       ],
       "expo-font",

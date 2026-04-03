@@ -65,7 +65,7 @@ const upload = multer({
       'video/webm'
     ];
     
-    if (allowedTypes.includes(file.mimetype)) {
+    if (allowedTypes.includes(file.mimetype) || file.mimetype === 'application/octet-stream') {
       cb(null, true);
     } else {
       const err = new multer.MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname);
@@ -760,15 +760,28 @@ app.use((err, req, res, next) => {
 // Port
 const PORT = process.env.PORT || 9091;
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
+  // Récupère l'IP locale pour l'afficher (utile pour les vrais appareils)
+  const { networkInterfaces } = require('os');
+  const nets = networkInterfaces();
+  const localIps = [];
+  for (const iface of Object.values(nets)) {
+    for (const net of iface) {
+      if (net.family === 'IPv4' && !net.internal) {
+        localIps.push(net.address);
+      }
+    }
+  }
+
   console.log(`\n🚀 ========================================`);
   console.log(`🚀 Alert Civique Server Started`);
   console.log(`🚀 ========================================`);
   console.log(`📡 Port: ${PORT}`);
-  console.log(`🔌 Socket.IO: http://localhost:${PORT}`);
-  console.log(`💬 Chat API: http://localhost:${PORT}/api`);
-  console.log(`📹 Video Upload: http://localhost:${PORT}/api/upload/video`);
-  console.log(`🎥 Videos: http://localhost:${PORT}/videos/`);
+  console.log(`🖥️  Émulateur Android : http://10.0.2.2:${PORT}`);
+  console.log(`📱 Vrais appareils   : http://<IP_CI-DESSOUS>:${PORT}`);
+  localIps.forEach(ip => console.log(`   → http://${ip}:${PORT}`));
+  console.log(`📹 Video Upload: /api/upload/video`);
+  console.log(`🎥 Videos: /videos/`);
   console.log(`📁 Upload directory: ${UPLOAD_DIR}`);
   console.log(`✅ MongoDB: ${MONGODB_URI}`);
   console.log(`🚀 ========================================\n`);
@@ -777,11 +790,10 @@ server.listen(PORT, () => {
 // Gestion de l'arrêt propre du serveur
 process.on('SIGINT', () => {
   console.log('\n🛑 Shutting down server...');
-  server.close(() => {
+  server.close(async () => {
     console.log('✅ Server closed');
-    mongoose.connection.close(() => {
-      console.log('✅ MongoDB connection closed');
-      process.exit(0);
-    });
+    await mongoose.connection.close();
+    console.log('✅ MongoDB connection closed');
+    process.exit(0);
   });
 });

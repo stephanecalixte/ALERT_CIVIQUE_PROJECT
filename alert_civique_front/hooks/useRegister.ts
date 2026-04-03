@@ -52,36 +52,79 @@ export function useRegister() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-const validateForm = useCallback((): FormErrors => {
+const REGEX = {
+    name:      /^[a-zA-ZÀ-ÿ\s'\-]{2,50}$/,
+    email:     /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/,
+    phone:     /^\+?[\d\s\-\.]{9,15}$/,
+    birthdate: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
+    password:  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+\[\]{};:'",.<>?/\\|`~]).{12,}$/,
+  };
+
+  const validateForm = useCallback((): FormErrors => {
     const newErrors: FormErrors = {};
 
-    if (!form.firstname.trim()) newErrors.firstname = 'Prénom requis';
-    if (!form.lastname.trim()) newErrors.lastname = 'Nom requis';
+    if (!form.firstname.trim()) {
+      newErrors.firstname = 'Prénom requis';
+    } else if (!REGEX.name.test(form.firstname.trim())) {
+      newErrors.firstname = 'Prénom invalide (lettres, tirets, apostrophes uniquement)';
+    }
+
+    if (!form.lastname.trim()) {
+      newErrors.lastname = 'Nom requis';
+    } else if (!REGEX.name.test(form.lastname.trim())) {
+      newErrors.lastname = 'Nom invalide (lettres, tirets, apostrophes uniquement)';
+    }
+
     if (!form.email.trim()) {
       newErrors.email = 'Email requis';
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      newErrors.email = 'Email invalide';
+    } else if (!REGEX.email.test(form.email.trim())) {
+      newErrors.email = 'Format email invalide (ex: nom@domaine.fr)';
     }
-    if (!form.password || form.password.length < 6) {
-      newErrors.password = 'Mot de passe (6+ caractères) requis';
+
+    if (!form.phone.trim()) {
+      newErrors.phone = 'Téléphone requis';
+    } else if (!REGEX.phone.test(form.phone.trim())) {
+      newErrors.phone = 'Numéro invalide (9 à 15 chiffres, ex: +33612345678)';
     }
-    if (!form.phone.trim()) newErrors.phone = 'Téléphone requis';
+
     if (!form.birthdate.trim()) {
-      newErrors.birthdate = 'Date de naissance requise (YYYY-MM-DD)';
-    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(form.birthdate)) {
-      newErrors.birthdate = 'Format date: YYYY-MM-DD';
+      newErrors.birthdate = 'Date de naissance requise';
+    } else if (!REGEX.birthdate.test(form.birthdate.trim())) {
+      newErrors.birthdate = 'Format invalide (AAAA-MM-JJ, ex: 1990-06-15)';
     }
-    // Validate trusted contacts optional
+
+    if (!form.password) {
+      newErrors.password = 'Mot de passe requis';
+    } else if (!REGEX.password.test(form.password)) {
+      newErrors.password =
+        'Minimum 12 caractères avec majuscule, minuscule, chiffre et caractère spécial';
+    }
+
     return newErrors;
   }, [form]);
 
   const handleChange = useCallback((field: keyof UserRegisterRequest, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
-    // Clear error on change
     if (errors[field as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [field as keyof FormErrors]: undefined }));
     }
   }, [errors]);
+
+  const handleTrustedContactChange = useCallback(
+    (person: 'person1' | 'person2' | 'person3', field: string, value: string | boolean) => {
+      setForm(prev => ({
+        ...prev,
+        trustedContacts: {
+          ...prev.trustedContacts,
+          [person]: {
+            ...prev.trustedContacts[person],
+            [field]: value,
+          },
+        },
+      }));
+    },
+    []
+  );
 
   const register = useCallback(async () => {
     const formErrors = validateForm();
@@ -158,6 +201,7 @@ const validateForm = useCallback((): FormErrors => {
     isLoading,
     isSuccess,
     handleChange,
+    handleTrustedContactChange,
     register,
     resetForm,
   };

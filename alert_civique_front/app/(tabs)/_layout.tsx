@@ -28,27 +28,29 @@ export default function TabLayout() {
       
       <Tabs.Screen
         name="LiveStream"
-        options={{
-          href: null,
-        }}
+        options={{ href: null }}
       />
-      
       <Tabs.Screen
         name="Photo"
-        options={{
-          title: 'Photos',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="photo" color={color} />,
-        }}
+        options={{ href: null }}
       />
-      
       <Tabs.Screen
         name="Messages"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="Priority"
         options={{
-          title: 'Messages',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="message" color={color} />,
+          title: 'Priorité',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="exclamationmark.triangle.fill" color={color} />,
         }}
       />
-      
+
       <Tabs.Screen
         name="Option"
         options={{

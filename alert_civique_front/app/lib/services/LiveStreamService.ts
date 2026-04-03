@@ -1,4 +1,5 @@
 import { LiveStream } from "@/models";
+import { SERVER_BASE_URL } from '@/lib/config';
 
 export interface LiveStreamStartResponse {
   success: boolean;
@@ -47,7 +48,7 @@ function xhrRequest(method: 'GET' | 'POST', url: string, token: string, body?: a
 }
 
 export default class LiveStreamService {
-  static BASE_URL = 'http://10.0.2.2:9091';
+  static BASE_URL = SERVER_BASE_URL;
 
   static async sendLiveStreamData(payload: any, token: string) {
     const isStart = !payload.livestreamId;

@@ -29,10 +29,18 @@ export function useCamera() {
   useEffect(() => {
     (async () => {
       const camResult = await requestPermission();
-      const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
+      let mediaGranted = false;
+      try {
+        // writeOnly=true : demande uniquement WRITE (pas READ_MEDIA_AUDIO)
+        const { status } = await MediaLibrary.requestPermissionsAsync(true);
+        mediaGranted = status === 'granted';
+      } catch {
+        // Permission non déclarée dans le manifest — on continue sans galerie
+        mediaGranted = false;
+      }
       setCameraState(prev => ({
         ...prev,
-        hasPermission: camResult.granted && mediaStatus === 'granted'
+        hasPermission: camResult.granted
       }));
     })();
   }, [requestPermission]);
@@ -68,8 +76,12 @@ type: prev.type === 'back' ? 'front' : 'back' as any
         exif: true,
       });
 
-      await MediaLibrary.saveToLibraryAsync(photo.uri);
-      Alert.alert('Succès', 'Photo sauvegardée dans la galerie !');
+      try {
+        await MediaLibrary.saveToLibraryAsync(photo.uri);
+        Alert.alert('Succès', 'Photo sauvegardée dans la galerie !');
+      } catch {
+        Alert.alert('Succès', 'Photo prise avec succès !');
+      }
       setCameraState(prev => ({ ...prev, isProcessing: false }));
     } catch (error) {
       console.error('Capture error:', error);

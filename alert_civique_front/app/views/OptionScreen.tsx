@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ScrollView,
   View,
@@ -9,6 +9,7 @@ import {
   Linking,
   Alert,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOptions } from '@/hooks/useOptions';
 import { ThemedText } from '@/components/themed-text';
@@ -23,6 +24,13 @@ export default function OptionScreen() {
   const { options, updateOption, loading: optionsLoading } = useOptions();
   const colorScheme = useColorScheme();
   const themeColor = useThemeColor({}, 'tint');
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.replace('/(tabs)/Register');
+  //   }
+  // }, [isAuthenticated]);
 
   const togglePushNotifications = () => {
     updateOption('pushNotifications', !options.pushNotifications);
@@ -75,12 +83,7 @@ export default function OptionScreen() {
   };
 
   if (!isAuthenticated) {
-    return (
-      <ThemedView style={styles.centerContainer}>
-        <ThemedText type="title">Options</ThemedText>
-        <ThemedText>Connectez-vous pour accéder aux paramètres</ThemedText>
-      </ThemedView>
-    );
+    return null;
   }
 
   return (

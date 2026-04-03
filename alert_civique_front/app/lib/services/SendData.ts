@@ -1,4 +1,5 @@
-const BASE_URL = "http://10.0.2.2:9091";  // Android emulator default
+import { SERVER_BASE_URL } from '@/lib/config';
+const BASE_URL = SERVER_BASE_URL;
 
 async function sendData(url: string, body: any, token?: string) {
   const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;

@@ -21,25 +21,25 @@ export default function RootLayout() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 500); // Reduced loading for faster start
+    }, 4000);
   }, []);
 
-  if (loading) {
-    return <LoadingPage />;
-  }
-
   return (
-      <AuthProvider>
-        <GeolocalisationProvider>
+    <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        </Stack>
+        {loading ? (
+          <LoadingPage />
+        ) : (
+          <GeolocalisationProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+            </Stack>
+          </GeolocalisationProvider>
+        )}
         <StatusBar style="auto" />
       </ThemeProvider>
-      </GeolocalisationProvider>
-      </AuthProvider>
+    </AuthProvider>
   );
 }
 

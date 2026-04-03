@@ -26,13 +26,12 @@ export function useVideoRecording() {
 
       const recordingPromise = cameraRef.current.recordAsync({ maxDuration: 60 });
       recordingPromiseRef.current = recordingPromise;
-      
+
       recordingPromise
         .then((video: { uri: string } | undefined) => {
           if (video?.uri) {
             setVideoUri(video.uri);
             videoUriRef.current = video.uri;
-            
             FileSystem.getInfoAsync(video.uri).then(fileInfo => {
               console.log('📁 Info fichier vidéo:', {
                 exists: fileInfo.exists,
@@ -40,14 +39,19 @@ export function useVideoRecording() {
               });
             });
           } else {
-            Alert.alert('Erreur', 'La vidéo n\'a pas pu être sauvegardée');
+            console.error('❌ recordAsync: pas d\'URI dans la réponse');
           }
         })
         .catch((error: unknown) => {
           const msg = error instanceof Error ? error.message : 'Erreur inconnue';
-          if (!msg.includes('stopped before any data')) {
+          if (msg.includes('RECORD_AUDIO') || msg.includes('permission') || msg.includes('Permission')) {
+            console.error('❌ Permission micro manquante — va dans Paramètres → Expo Go → Autorisations → Microphone');
+            Alert.alert(
+              'Permission micro requise',
+              'Va dans Paramètres Android → Apps → Expo Go → Autorisations → Microphone → Autoriser'
+            );
+          } else if (!msg.includes('stopped before any data')) {
             console.error('❌ Erreur recordAsync:', error);
-            Alert.alert('Erreur', `Impossible d'enregistrer: ${msg}`);
           }
           setRecording(false);
         });
