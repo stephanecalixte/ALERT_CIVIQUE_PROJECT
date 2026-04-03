@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import LiveStreamScreen from '@/app/views/LiveStreamSreen';
 
 export default function CameraButton() {
@@ -10,8 +11,12 @@ export default function CameraButton() {
       <TouchableOpacity
         style={styles.button}
         onPress={() => setShowCamera(true)}
+        activeOpacity={0.85}
       >
-        <Text style={styles.buttonText}>📷</Text>
+        <View>
+          <Ionicons name="videocam" size={26} color="#007AFF" />
+
+        </View>
       </TouchableOpacity>
 
       <Modal
@@ -28,25 +33,26 @@ export default function CameraButton() {
 
 const styles = StyleSheet.create({
   container: {
-    width: '20%',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#007AFF',
-    width: '100%',
-    height: '100%',
-    borderRadius: 15,
+    width: '80%',
+    height: '80%',
+    borderRadius: 16,
+    backgroundColor: '#e8ecf0',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 28,
+    shadowColor: '#a3b1c6',
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 0.7,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 1.5,
+    borderTopColor: '#ffffff',
+    borderLeftColor: '#ffffff',
+    borderBottomColor: '#c4cdd8',
+    borderRightColor: '#c4cdd8',
   },
 });

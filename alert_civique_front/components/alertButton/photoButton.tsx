@@ -1,14 +1,15 @@
 import { useGeolocalisation } from '@/components/GeolocalisationContext';
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  View, 
+import React, { useState, useRef } from 'react';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
   Animated,
   Modal,
-  ActivityIndicator 
+  ActivityIndicator,
+  Text,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import CameraScreen from '@/components/CameraScreen';
 
 export default function PhotoButton() {
@@ -42,7 +43,7 @@ export default function PhotoButton() {
           style={styles.touchableArea}
           activeOpacity={0.7}
         >
-          <Text style={styles.buttonText}>📸</Text>
+          <Ionicons name="camera" size={26} color="#007AFF" />
         </TouchableOpacity>
       </Animated.View>
 
@@ -88,31 +89,33 @@ const styles = StyleSheet.create({
     // right: 20,
   
     
-    width:'20%',
+    flex: 1,
     alignItems: 'center',
-    zIndex: 1000,
+    justifyContent: 'center',
   },
   button: {
+    width: '80%',
+    height: '80%',
+    borderRadius: 16,
+    backgroundColor: '#e8ecf0',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#30ff86',
-    width:'100%',
-    height:'100%',
-    borderRadius:15,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    shadowColor: '#a3b1c6',
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 0.7,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 1.5,
+    borderTopColor: '#ffffff',
+    borderLeftColor: '#ffffff',
+    borderBottomColor: '#c4cdd8',
+    borderRightColor: '#c4cdd8',
   },
   touchableArea: {
     // width: '100%',
     // height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 32,
   },
   buttonLabel: {
     fontSize: 10,

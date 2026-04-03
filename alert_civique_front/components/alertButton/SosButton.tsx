@@ -16,7 +16,10 @@ export default function SosButton() {
         style={styles.sosButton}
         activeOpacity={0.8}
       >
-        <Text style={styles.sosText}>SOS</Text>
+        <View style={styles.innerContainer}>
+          <Text style={styles.sosText}>SOS</Text>
+        </View>
+        
       </TouchableOpacity>
     </View>
   );
@@ -25,29 +28,39 @@ export default function SosButton() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '40%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   sosButton: {
-    backgroundColor: '#FF0000',
+    backgroundColor: '#e8ecf0',
     width: '100%',
-    height: '100%',
-    borderRadius: 60,
+    height: '90%',
+    borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    shadowColor: '#a3b1c6',
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 0.7,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 1.5,
+    borderTopColor: '#ffffff',
+    borderLeftColor: '#ffffff',
+    borderBottomColor: '#c4cdd8',
+    borderRightColor: '#c4cdd8',
+  },
+  innerContainer: {
+    justifyContent: 'center',
+    backgroundColor: 'red',
+    borderRadius: 50,
+    width: '90%',
+    height: '90%',
+    alignItems: 'center',
   },
   sosText: {
-    color: 'white',
-    fontSize: 32,
+    color: '#ffffff',
+    fontSize: 28,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0,0,0,0.75)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
+    letterSpacing: 1,
   },
 });

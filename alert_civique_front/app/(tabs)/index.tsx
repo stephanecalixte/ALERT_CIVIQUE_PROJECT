@@ -1,4 +1,4 @@
-// HomeScreen - 3 boutons (SOS, Photo, Messages) dans topLayout horizontal
+// HomeScreen - boutons (SOS, Photo, Camera, Mic, Messages) dans topLayout horizontal
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapScreen from '@/components/MapScreen';
@@ -35,26 +35,16 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   topLayout: {
-    position: 'absolute',
-   
-    bottom: 0,
-    left: 0,
-  
-    
+    // position: 'absolute',
+    // bottom: 0,
+    // left: 0,
     height: 70,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 10,
+    backgroundColor: '#e8ecf0',
     
-    
-
-    // borderWidth: 2,
-    // borderColor: 'rgba(255,0,0,0.4)',
-    paddingHorizontal: 20,
     zIndex: 20,
   },
 });
-

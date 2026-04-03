@@ -50,16 +50,16 @@ export const GeolocalisationProvider: React.FC<GeolocalisationProviderProps> = (
       });
       const { latitude, longitude } = position.coords;
 
-      // Reverse geocoding
+      // Reverse geocoding avec timeout 3s (le service Android peut être lent)
       let address = null;
       try {
-        const addressResponse = await Location.reverseGeocodeAsync({ latitude, longitude });
-        if (addressResponse.length > 0) {
-          address = addressResponse[0];
-        }
-      } catch (geocodeError) {
-        console.error('Reverse geocoding error:', geocodeError);
-        // Nous ne bloquons pas l'utilisateur pour cette erreur, nous mettons juste l'adresse à null.
+        const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000));
+        const geocode = Location.reverseGeocodeAsync({ latitude, longitude }).then(
+          (r) => (r.length > 0 ? r[0] : null)
+        );
+        address = await Promise.race([geocode, timeout]);
+      } catch {
+        // Adresse non disponible, on continue sans bloquer
       }
 
       setLocation({ latitude, longitude, address });

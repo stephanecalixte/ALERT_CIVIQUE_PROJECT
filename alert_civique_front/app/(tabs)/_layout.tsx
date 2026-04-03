@@ -4,26 +4,21 @@ import { StyleSheet, View, Text, Platform } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 // Hauteur identique à la tab bar
 const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 80 : 60;
 
 function TopLayout() {
-  const colorScheme = useColorScheme();
-  const bg = Colors[colorScheme ?? 'light'].background;
-
   return (
-    <View style={[styles.topLayout, { backgroundColor: bg, height: TAB_BAR_HEIGHT }]}>
+    <View style={[styles.topLayout, { backgroundColor: '#1a6fd4', height: TAB_BAR_HEIGHT }]}>
       <View style={styles.topLeft}>
-        <IconSymbol size={22} name="bell.fill" color={Colors[colorScheme ?? 'light'].tint} />
+        <IconSymbol size={22} name="bell.fill" color="white" />
       </View>
-      <Text style={[styles.topTitle, { color: Colors[colorScheme ?? 'light'].text }]}>
-        Alert<Text style={{ color: '#FF6600' }}>'</Text>Civique
+      <Text style={[styles.topTitle, { color: 'white' }]}>
+        Alert<Text style={{ color: '#FF6600' }}>&apos;</Text>Civique
       </Text>
       <View style={styles.topRight}>
-        <IconSymbol size={22} name="magnifyingglass" color={Colors[colorScheme ?? 'light'].tint} />
+        <IconSymbol size={22} name="magnifyingglass" color="white" />
       </View>
     </View>
   );
@@ -37,11 +32,13 @@ export default function TabLayout() {
         screenOptions={{
           tabBarActiveTintColor: '#FFFFFF',
           tabBarInactiveTintColor: 'rgba(255,255,255,0.5)',
+          tabBarLabelStyle: { color: '#FFFFFF' },
           headerShown: false,
           tabBarButton: HapticTab,
           tabBarStyle: {
-            backgroundColor: '#007AFF',
+            backgroundColor: '#1a6fd4',
             height: TAB_BAR_HEIGHT,
+            borderTopWidth: 0,
           },
         }}>
         <Tabs.Screen
@@ -66,7 +63,7 @@ export default function TabLayout() {
           name="Option"
           options={{
             title: 'Options',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="ellipsis.circle" color={color} />,
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
           }}
         />
         <Tabs.Screen
@@ -91,13 +88,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E0E0E0',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    borderTopWidth: 1.5,
+    borderTopColor: '#3d94ff',
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#0d47a1',
+    shadowColor: '#0d47a1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 10,
   },
   topLeft: {
     width: 40,
