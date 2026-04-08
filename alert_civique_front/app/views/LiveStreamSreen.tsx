@@ -3,12 +3,16 @@ import { ActivityIndicator, StyleSheet, Text, View, TouchableOpacity } from 'rea
 import { CameraView } from 'expo-camera';
 import { useLiveStreamManager } from '../../hooks/useLiveStreamManager';
 
+import { AlertType } from '@/contexts/AlertContext';
+
 interface LiveStreamScreenProps {
   onClose?: () => void;
   autoStart?: boolean;
+  reportId?: number;
+  alertType?: AlertType;
 }
 
-export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStreamScreenProps) {
+export default function LiveStreamScreen({ onClose, autoStart = false, reportId, alertType }: LiveStreamScreenProps) {
   const {
     facing,
     toggleCameraFacing,
@@ -21,7 +25,7 @@ export default function LiveStreamScreen({ onClose, autoStart = false }: LiveStr
     isUploading,
     checkCameraPermission,
     onCameraReady,
-  } = useLiveStreamManager(autoStart, onClose);
+  } = useLiveStreamManager(autoStart, onClose, reportId, alertType);
 
   useEffect(() => {
     checkCameraPermission();

@@ -1,0 +1,935 @@
+================================================================================
+         DISCOURS DE SOUTENANCE — PROJET ALERT CIVIQUE
+         Formation Développeur Full Stack — Doranco
+         Durée cible : 40 minutes
+         Rythme conseillé : parlez lentement, marquez des pauses entre sections
+================================================================================
+
+[CONSEIL : Chaque section marquée [~2 min] correspond à environ 260 mots.
+Prenez le temps de respirer entre chaque grande partie.]
+
+
+--------------------------------------------------------------------------------
+INTRODUCTION  [~2 min]
+--------------------------------------------------------------------------------
+
+Bonjour à toutes et à tous,
+
+Je me présente : je m'appelle Stéphane Calixte, et c'est avec une grande
+fierté que je vous présente aujourd'hui le projet sur lequel j'ai travaillé
+pendant ces derniers mois de formation : Alert Civique.
+
+Avant de rentrer dans le vif du sujet, je voudrais vous poser une question
+simple. Imaginez : il est 22h, vous rentrez chez vous à pied. Vous passez
+devant un immeuble et vous voyez des flammes s'échapper d'une fenêtre du
+deuxième étage. Vous n'avez pas le temps d'appeler le 18. Vous êtes sous
+le choc, le stress vous paralyse. Que faites-vous ?
+
+C'est exactement ce type de situation qu'Alert Civique cherche à résoudre.
+
+Alert Civique est une application mobile de signalement civique et d'alerte
+en temps réel. Elle permet à n'importe quel citoyen de déclencher une alerte
+depuis son smartphone — en un seul geste — avec sa position GPS, une photo,
+un enregistrement audio, ou même un flux vidéo en direct.
+
+Ce projet n'est pas qu'un exercice de fin de formation. C'est une réponse
+concrète, technique et réfléchie, à un besoin réel de notre société.
+
+Je vais vous présenter ce projet en suivant un fil conducteur qui va de
+l'analyse stratégique jusqu'au déploiement, en passant par toutes les étapes
+de conception et de développement. Installez-vous confortablement, on y va.
+
+
+================================================================================
+1. CONTEXTE & PROBLÉMATIQUE  [~3 min]
+================================================================================
+
+Commençons par le commencement : pourquoi ce projet ?
+
+En France, les services d'urgence reçoivent chaque année des dizaines de
+millions d'appels. Le 15 pour le SAMU, le 17 pour la police, le 18 pour
+les pompiers. Ces numéros sont connus de tous. Pourtant, ils ont tous un point
+commun : ils nécessitent une communication verbale. Et dans une situation
+d'urgence, parler est parfois impossible.
+
+Vous pouvez être témoin d'une agression, ne pas vouloir attirer l'attention
+de l'agresseur. Vous pouvez être une personne malentendante. Vous pouvez être
+sous le choc, incapable d'articuler une adresse précise. Vous pouvez tout
+simplement ne pas savoir dans quelle rue vous vous trouvez.
+
+Par ailleurs, les outils citoyens existants — les réseaux sociaux, les groupes
+WhatsApp de quartier — ne sont pas conçus pour l'urgence. Ils sont lents,
+bruyants, non géolocalisés, et surtout non structurés.
+
+La problématique centrale du projet est donc la suivante :
+
+  "Comment permettre à un citoyen de signaler une situation d'urgence
+   de façon immédiate, géolocalisée, multimédia et sans barrière technique,
+   depuis son téléphone mobile ?"
+
+Et la réponse que j'apporte s'appelle Alert Civique.
+
+L'idée directrice est simple : une application qui, dès l'ouverture, met
+l'utilisateur face à une carte de sa position, et lui propose en un geste
+d'envoyer une alerte avec sa localisation exacte, enrichie d'un média —
+photo, son, vidéo — pour que les secours et ses contacts de confiance
+soient informés instantanément.
+
+C'est à la fois une problématique sociale, technologique, et légale — puisque
+dès qu'on parle de données personnelles, de géolocalisation et de médias,
+on entre dans le périmètre du RGPD, sur lequel je reviendrai.
+
+
+================================================================================
+2. ANALYSE STRATÉGIQUE — PESTEL / SWOT / SMART  [~3 min]
+================================================================================
+
+Avant d'écrire la première ligne de code, j'ai réalisé une analyse stratégique
+complète pour m'assurer que le projet avait du sens dans son contexte.
+
+--- ANALYSE PESTEL ---
+
+L'analyse PESTEL m'a permis d'examiner l'environnement macro dans lequel
+s'inscrit Alert Civique :
+
+Sur le plan Politique, les gouvernements français et européens soutiennent
+de plus en plus les initiatives de civic tech — la technologie au service
+du citoyen. Le plan national de sécurité publique encourage la participation
+citoyenne dans la remontée d'information.
+
+Sur le plan Économique, le marché de la sécurité mobile est en forte croissance.
+Les assurances, les collectivités locales et les entreprises privées de
+gardiennage sont des débouchés commerciaux crédibles. Un modèle freemium
+avec des fonctionnalités premium pour les professionnels est tout à fait viable.
+
+Sur le plan Social, en 2026, plus de 80% des Français possèdent un smartphone.
+La défiance envers les institutions augmente, mais la solidarité de proximité
+se renforce. Les gens veulent agir, pas seulement observer.
+
+Sur le plan Technologique, les briques sont matures : géolocalisation GPS,
+WebSocket pour le temps réel, APIs de stockage cloud, frameworks mobiles
+cross-platform. Tout existe, il faut savoir l'assembler intelligemment.
+
+Sur le plan Environnemental, une application bien conçue réduit les interventions
+inutiles des secours grâce à un meilleur ciblage, ce qui a un impact positif
+sur les émissions liées aux déplacements d'urgence.
+
+Sur le plan Légal enfin, la RGPD encadre strictement la collecte et le
+traitement des données personnelles. C'est une contrainte que j'ai intégrée
+dès la conception, pas en dernier recours.
+
+--- ANALYSE SWOT ---
+
+Forces : Une application multimédia complète, une architecture sécurisée
+avec double base de données, une stack moderne et maîtrisée.
+
+Faiblesses : Projet réalisé en solo sur une durée limitée. Certaines
+fonctionnalités avancées comme la modération par IA sont en version MVP
+et nécessitent encore du développement.
+
+Opportunités : Partenariats avec les mairies, les associations, les bailleurs
+sociaux. Extension à d'autres types d'alertes (météo, pollution, risques
+industriels).
+
+Menaces : Le risque de fausses alertes est réel et doit être géré par la
+modération. La concurrence d'applications généralistes comme Periscope ou
+Nextdoor pourrait limiter l'adoption.
+
+--- OBJECTIFS SMART ---
+
+J'ai défini mes objectifs selon la méthode SMART pour cadrer mon travail :
+Spécifique — développer une application mobile de signalement multimédia
+avec géolocalisation. Mesurable — couvrir 100% du périmètre MVP défini.
+Atteignable — avec la stack choisie et les compétences acquises en formation.
+Réaliste — en solo, sur la durée de la formation. Temporel — livraison
+pour la soutenance de fin de formation.
+
+
+================================================================================
+3. CAHIER DES CHARGES & BENCHMARK  [~2 min]
+================================================================================
+
+Le cahier des charges a été structuré en trois axes.
+
+L'axe fonctionnel définit ce que l'application doit faire : signaler une
+urgence en un geste, géolocaliser automatiquement l'utilisateur, permettre
+l'envoi de médias, offrir une messagerie temps réel et une interface
+d'administration.
+
+L'axe technique définit comment : application mobile React Native, API REST
+Spring Boot, serveur WebSocket Node.js, bases de données MariaDB et MongoDB,
+authentification JWT, notifications push.
+
+L'axe non fonctionnel fixe les critères de qualité : chargement de la carte
+en moins de 2 secondes, disponibilité maximale, conformité RGPD, sécurité
+des données.
+
+--- BENCHMARK ---
+
+J'ai analysé les solutions existantes avant de concevoir la mienne.
+
+Nextdoor est un réseau social de voisinage utile pour le quotidien, mais
+pas conçu pour l'urgence. Il n'y a pas de bouton SOS, pas de géolocalisation
+immédiate, pas de live streaming.
+
+Periscope et d'autres plateformes de streaming permettent de diffuser de
+la vidéo en direct, mais sans contexte d'alerte structuré, sans messagerie
+dédiée, sans contacts de confiance.
+
+Les outils internes des SDIS (Services Départementaux d'Incendie et de
+Secours) sont réservés aux professionnels et non accessibles au grand public.
+
+La conclusion de ce benchmark est claire : aucun outil ne combine à la fois
+géolocalisation + alerte SOS + live streaming + messagerie + contacts de
+confiance + validation IA dans une seule application mobile accessible à tous.
+C'est le positionnement d'Alert Civique.
+
+
+================================================================================
+4. PERSONA & EXPRESSION DES BESOINS  [~2 min]
+================================================================================
+
+Pour rester centré sur l'utilisateur, j'ai défini deux personas principaux
+qui ont guidé toutes mes décisions de conception.
+
+--- Persona 1 : Marie, 34 ans ---
+
+Marie est employée dans une grande surface. Elle habite dans un quartier
+urbain dense. Un soir en rentrant du travail, elle est témoin d'un début
+d'incendie dans une cage d'escalier. Elle est seule, il fait nuit, elle
+n'a pas le temps de chercher un numéro d'urgence. Elle a besoin d'une
+application qui lui permette d'envoyer une alerte immédiatement, avec
+sa position, sans réfléchir, en un geste.
+
+Son besoin principal : simplicité, rapidité, fiabilité.
+
+--- Persona 2 : Jean-Pierre, 58 ans ---
+
+Jean-Pierre est agent de sécurité dans un site industriel en région parisienne.
+Il a besoin d'un outil professionnel pour documenter les incidents, les
+photographier, les transmettre à son responsable, et garder un historique
+traçable de ses interventions.
+
+Son besoin principal : traçabilité, historique, contacts identifiés, rôles.
+
+--- Expression des besoins ---
+
+Ces deux personas m'ont permis de dégager les besoins fonctionnels essentiels :
+alerte SOS en un clic, envoi de photo et de vidéo géolocalisés, messagerie
+instantanée, historique consultable, gestion des contacts de confiance,
+et interface d'administration pour les professionnels ou les modérateurs.
+
+
+================================================================================
+5. MVP & VERSIONS  [~2 min]
+================================================================================
+
+J'ai structuré le développement du projet en trois versions pour rester
+pragmatique et livrer quelque chose de fonctionnel dans les temps impartis.
+
+--- MVP — Version 1 (soutenance) ---
+
+Le MVP couvre l'essentiel de la proposition de valeur :
+inscription et activation sécurisée par email, carte interactive avec
+géolocalisation, bouton SOS, envoi de photo et d'audio, live streaming vidéo,
+messagerie temps réel via Socket.IO, contacts de confiance, administration
+des signalements, notifications push, et historique des alertes dans MongoDB.
+
+--- Version 2 (évolution à court terme) ---
+
+La version 2 prévoit l'intégration d'une intelligence artificielle pour valider
+automatiquement les alertes (détecter si une photo contient réellement un
+incendie ou une situation d'urgence), un tableau de bord statistique pour
+les autorités, et un mode hors-ligne avec synchronisation différée pour
+les zones à faible connectivité.
+
+--- Version 3 (vision long terme) ---
+
+La version 3 envisage l'intégration de l'API 112 (numéro d'urgence européen),
+une application web complémentaire pour les autorités et un module de
+génération automatique de rapports d'incidents pour les professionnels.
+
+
+================================================================================
+6. MÉTHODOLOGIE DE TRAVAIL  [~2 min]
+================================================================================
+
+Travailler seul sur un projet de cette envergure nécessite une discipline
+et une méthodologie rigoureuses. J'ai adopté une approche Agile adaptée
+au contexte solo.
+
+J'ai découpé le développement en sprints d'une semaine avec des objectifs
+définis le lundi matin et évalués le vendredi soir. Chaque matin, je faisais
+un daily self-review : qu'est-ce que j'ai fait hier ? Qu'est-ce que je fais
+aujourd'hui ? Y a-t-il un obstacle ?
+
+Pour la gestion des tâches, j'ai utilisé un board Kanban avec trois colonnes :
+À faire, En cours, Terminé. Cela m'a permis de garder une vision claire de
+l'avancement sans me perdre dans les détails.
+
+Pour le versioning, j'ai utilisé Git avec une discipline de commit rigoureuse :
+des messages de commit conventionnels (feat, fix, refactor, style, docs),
+des branches par fonctionnalité, et une fusion dans la branche principale
+uniquement quand la feature était testée et fonctionnelle.
+
+Les outils qui m'ont accompagné au quotidien : VSCode comme IDE principal,
+Postman pour tester tous les endpoints de l'API, Android Emulator et Expo Go
+pour tester l'application mobile sur Android, DBeaver pour administrer
+MariaDB, et MongoDB Compass pour visualiser les documents NoSQL.
+
+
+================================================================================
+7. SPÉCIFICATIONS FONCTIONNELLES  [~3 min]
+================================================================================
+
+Rentrons maintenant dans le détail des fonctionnalités de l'application.
+
+--- MODULE AUTHENTIFICATION ---
+
+L'utilisateur commence par s'inscrire. Le formulaire collecte son prénom,
+nom, email, mot de passe, numéro de téléphone et date de naissance. Chaque
+champ est validé côté serveur Java avec des annotations Bean Validation.
+
+Une fois inscrit, l'utilisateur reçoit un email d'activation avec un lien
+unique contenant un token JWT à usage unique, valide 24 heures. Il doit cliquer
+sur ce lien pour activer son compte. Une fois activé, il reçoit un deuxième
+email de confirmation. Ce flux double garantit que l'email fourni est valide
+et que le compte appartient bien à la personne qui s'est inscrite.
+
+La connexion génère un token JWT signé qui est stocké dans l'AsyncStorage
+du téléphone. Ce token est joint à chaque requête HTTP dans le header
+Authorization.
+
+Les rôles gérés sont ROLE_USER pour les citoyens lambda et ROLE_ADMIN pour
+les modérateurs et administrateurs.
+
+--- MODULE ALERTES ---
+
+C'est le cœur de l'application. Depuis l'écran principal, l'utilisateur
+voit sa position sur une carte. En haut de l'écran, une barre d'actions
+lui propose cinq boutons :
+
+Le bouton SOS déclenche immédiatement une alerte géolocalisée sans aucune
+autre action requise. C'est l'alerte la plus rapide : un seul appui.
+
+Le bouton Photo ouvre l'appareil photo pour capturer une image associée
+à l'alerte.
+
+Le bouton Caméra démarre un live stream vidéo en direct, diffusé aux
+contacts de confiance et aux administrateurs en temps réel.
+
+Le bouton Micro permet d'enregistrer un message audio géolocalisé.
+
+Le bouton Message ouvre la messagerie instantanée.
+
+--- MODULE CARTE ---
+
+La carte est le centre névralgique de l'application. Elle affiche en temps
+réel la position de l'utilisateur, les marqueurs des alertes actives dans
+la zone, et une bannière superposée indiquant le type d'alerte en cours.
+
+--- MODULE MESSAGERIE ---
+
+La messagerie fonctionne via Socket.IO connecté au serveur Node.js sur le
+port 9091. Les messages sont échangés en temps réel entre utilisateurs. Quand
+une alerte est envoyée, une carte d'alerte est automatiquement publiée dans
+le chat, et un badge de notification apparaît sur l'icône de la cloche.
+
+--- MODULE CONTACTS DE CONFIANCE ---
+
+L'utilisateur peut définir des contacts de confiance — famille, amis proches,
+collègues. Ces contacts sont automatiquement notifiés lors du déclenchement
+d'une alerte SOS. C'est une fonctionnalité essentielle pour la dimension
+sociale de sécurité que porte le projet.
+
+--- MODULE ADMINISTRATION ---
+
+Les administrateurs accèdent à une interface dédiée pour modérer les
+signalements, gérer les utilisateurs, attribuer ou retirer des rôles,
+et valider ou rejeter les alertes remontées.
+
+--- MODULE HISTORIQUE ---
+
+Toutes les alertes sont archivées dans MongoDB pour constituer un historique
+consultable. Cette traçabilité est importante pour les usages professionnels
+et pour la production éventuelle de statistiques.
+
+
+================================================================================
+8. ARCHITECTURE & STACK TECHNIQUE  [~3 min]
+================================================================================
+
+Passons maintenant à l'architecture technique, qui est l'une des parties
+dont je suis le plus fier dans ce projet.
+
+Alert Civique repose sur une architecture multi-couches, multi-services,
+avec une séparation claire des responsabilités.
+
+--- LE FRONTEND MOBILE ---
+
+L'application mobile est développée en React Native avec le framework Expo,
+en TypeScript. J'ai utilisé Expo Router pour la navigation, un système basé
+sur les fichiers similaire à ce que fait Next.js sur le web. Cela donne une
+structure de navigation claire et prévisible.
+
+La gestion d'état repose sur l'API Context de React : AlertContext pour
+gérer le type et l'état de l'alerte en cours, MessagesContext pour la
+messagerie temps réel. J'ai délibérément évité Redux pour garder le projet
+accessible et lisible, les Context étant suffisants pour l'échelle du MVP.
+
+Chaque domaine fonctionnel est encapsulé dans un service TypeScript dédié :
+AuthService, RegisterService, LoginService, ReportService, MediaService,
+LiveStreamService, GeolocalisationService, TrustedContactService,
+EmergenciesAlertService, PushNotificationService, AdminService.
+
+Cette séparation garantit que la logique métier n'est pas mélangée avec
+les composants d'interface, ce qui facilite la maintenance et les tests.
+
+--- LE BACKEND JAVA (Port 9090) ---
+
+Le backend principal est un projet Spring Boot 3, en Java 17, organisé
+selon une architecture en couches classique :
+les Controllers exposent les endpoints REST,
+les Services contiennent la logique métier,
+les Repositories accèdent aux données.
+
+Pour la persistance SQL, j'utilise Spring Data JPA avec Hibernate comme ORM,
+connecté à une base MariaDB sur le port 3307.
+
+Pour la persistance NoSQL, j'utilise Spring Data MongoDB connecté à MongoDB
+sur le port 27017.
+
+La sécurité est assurée par Spring Security avec un filtre JWT personnalisé
+(JwtAuthenticationFilter) qui intercepte chaque requête et valide le token.
+
+Les emails sont gérés par Spring Mail avec une configuration SMTP Gmail,
+et j'ai implémenté le pattern Strategy pour les différents types d'emails
+(création de compte, activation de compte).
+
+--- LE SERVEUR NODE.JS (Port 9091) ---
+
+Le serveur Node.js joue un rôle spécifique : il gère la messagerie et
+la diffusion temps réel via Socket.IO. Ce découplage est un choix architectural
+délibéré. Java est excellent pour les APIs REST et la logique métier,
+mais Node.js est plus naturellement adapté aux connexions WebSocket persistantes
+et à la haute concurrence qu'implique la messagerie temps réel.
+
+Cette architecture à deux backends illustre le principe de responsabilité
+unique appliqué à l'échelle des services.
+
+
+================================================================================
+9. CONCEPTION UML  [~2 min]
+================================================================================
+
+La phase de conception UML a précédé tout le développement. Je vais vous
+présenter les principaux diagrammes réalisés.
+
+--- DIAGRAMME DE CAS D'UTILISATION ---
+
+Les acteurs du système sont : le Citoyen, l'Administrateur, et le Système
+de notification. Les cas d'utilisation principaux sont : s'inscrire, activer
+son compte, se connecter, envoyer une alerte SOS, partager un média, démarrer
+un live stream, consulter la carte, gérer ses contacts de confiance,
+consulter l'historique, et pour l'administrateur : modérer les alertes et
+gérer les utilisateurs.
+
+--- DIAGRAMME DE CLASSES ---
+
+Les classes principales du système sont : User, Role, Report, ReportMessage,
+TrustedContact, EmergenciesAlert, LiveStream, Media, Geolocalisation, History,
+AiValidation, ActivationToken, Messages, Analysis.
+
+Les relations clés : un User peut avoir plusieurs Roles (Many-to-Many),
+un Report appartient à un User, une Geolocalisation est liée à une
+EmergenciesAlert, un User peut avoir plusieurs TrustedContacts.
+
+--- DIAGRAMME DE SÉQUENCE : ENVOI D'UNE ALERTE SOS ---
+
+Voici le flux complet : l'utilisateur appuie sur le bouton SOS. L'application
+récupère automatiquement les coordonnées GPS. Ces coordonnées sont envoyées
+à l'API Java. Une alerte est créée en base MariaDB. L'historique est enregistré
+dans MongoDB. Les contacts de confiance reçoivent une notification push.
+La carte est mise à jour en temps réel via le serveur Node.js/Socket.IO.
+Tout ce processus prend moins de deux secondes.
+
+
+================================================================================
+10. BASE DE DONNÉES SQL — MERISE / MariaDB  [~2 min]
+================================================================================
+
+La base de données relationnelle a été modélisée selon la méthode MERISE,
+avec un Modèle Conceptuel de Données (MCD) et un Modèle Logique de Données (MLD).
+
+J'utilise MariaDB, un fork de MySQL, sur le port 3307, avec Hibernate
+comme ORM et la stratégie ddl-auto=update pour la gestion automatique
+du schéma en développement.
+
+Les tables principales de la base alertdb sont :
+
+users — identifiant, prénom, nom, email (unique), téléphone, date de naissance,
+statut actif, date de création, rôles.
+
+roles — identifiant, nom du rôle (ROLE_USER, ROLE_ADMIN).
+
+users_roles — table de jointure Many-to-Many entre users et roles.
+
+reports — identifiant, titre, description, statut, date de création,
+identifiant de l'utilisateur créateur.
+
+trusted_contacts — identifiant, prénom, nom, email, téléphone, identifiant
+de l'utilisateur propriétaire.
+
+emergencies_alert — identifiant, niveau de décision (DecisionLevel enum),
+type de média (MediaTypes enum), coordonnées, date.
+
+geolocalisation — identifiant, latitude, longitude, timestamp.
+
+media — identifiant, type (PHOTO, VIDEO, AUDIO), chemin du fichier,
+taille, date d'upload.
+
+live_stream — identifiant, URL du flux, statut (actif/inactif), durée.
+
+activation_token — identifiant, token JWT, date d'expiration, statut utilisé.
+
+Toutes les relations sont garanties par des clés étrangères avec contraintes
+d'intégrité référentielle. Les colonnes fréquemment utilisées dans les requêtes
+de recherche sont indexées pour optimiser les performances.
+
+
+================================================================================
+11. BASE DE DONNÉES NoSQL — MongoDB  [~2 min]
+================================================================================
+
+En complément de MariaDB, j'utilise MongoDB pour deux cas d'usage spécifiques
+qui bénéficient particulièrement du modèle documentaire.
+
+--- HISTORIQUE DES ALERTES ---
+
+La collection alert_history stocke chaque alerte avec une structure flexible.
+Pourquoi flexible ? Parce qu'une alerte SOS ne contient pas les mêmes attributs
+qu'une alerte avec vidéo. Avec une base relationnelle, gérer cette variabilité
+implique soit des colonnes nullables, soit des tables d'héritage complexes.
+Avec MongoDB, chaque document porte exactement les champs dont il a besoin.
+Un document d'alerte contient : l'identifiant de l'alerte, l'identifiant de
+l'utilisateur, le type d'alerte, les coordonnées GPS, l'URL du média éventuel,
+le timestamp, et le statut de traitement.
+
+--- LOGS APPLICATIFS ---
+
+La collection logs stocke les événements système : connexions, actions
+d'administration, erreurs serveur. Ces logs sont utilisés pour auditer
+l'activité de la plateforme et détecter des comportements anormaux.
+Leur structure variable (selon le type d'événement) justifie pleinement
+l'utilisation de MongoDB.
+
+--- POURQUOI DEUX BASES ? ---
+
+C'est un choix architectural que j'assume pleinement. MariaDB garantit
+l'intégrité référentielle des données critiques — les utilisateurs, les rôles,
+les signalements structurés. MongoDB offre la flexibilité et la performance
+en lecture pour les données de log et d'historique, dont la structure évolue
+avec les fonctionnalités.
+
+Cette architecture polyglotte de persistance est une pratique professionnelle
+répandue dans les systèmes modernes. Elle démontre la capacité à choisir
+le bon outil pour le bon besoin, plutôt que d'imposer une seule technologie
+à tous les problèmes.
+
+
+================================================================================
+12. UX/UI — CHARTE GRAPHIQUE & MAQUETTES  [~2 min]
+================================================================================
+
+L'interface d'une application d'urgence a des contraintes UX très spécifiques.
+Quand quelqu'un est en situation de stress, il n'a pas le temps de chercher
+un bouton. L'interface doit être immédiate, lisible, et sans ambiguïté.
+
+--- CHARTE GRAPHIQUE ---
+
+J'ai bâti la charte autour de quatre couleurs principales :
+
+Le rouge urgence (#FF0000) pour le bouton SOS et toutes les alertes critiques.
+Le rouge est universellement associé au danger et à l'urgence. C'est un
+choix délibéré pour créer une réponse instinctive chez l'utilisateur.
+
+Le bleu confiance (#1E3A8A) pour les éléments institutionnels, la navigation,
+les informations de compte. Le bleu évoque le calme, la fiabilité, l'autorité.
+
+Le gris neutre (#E8ECF0) pour la barre d'actions supérieure et les fonds,
+pour ne pas distraire de l'essentiel.
+
+L'orange attention (#F59E0B) pour les alertes de niveau intermédiaire.
+
+--- LES ÉCRANS ---
+
+L'application comprend les écrans suivants : LoadingPage (écran de démarrage
+avec logo), RegisterScreen (formulaire d'inscription), LoginScreen,
+HomeScreen (carte + barre d'actions), LiveStream, Messages, Contact, Priority,
+Admin, et Option pour les paramètres.
+
+--- PRINCIPES UX ---
+
+Trois principes ont guidé toute la conception d'interface.
+
+One-tap action : toute alerte doit être déclenchable en un seul geste.
+Pas de confirmation, pas de sous-menus pour les actions critiques.
+
+Feedback immédiat : dès qu'une alerte est envoyée, une bannière apparaît,
+un marqueur est ajouté sur la carte, un badge s'affiche sur la cloche.
+L'utilisateur sait immédiatement que son action a été prise en compte.
+
+Contraste maximal : les éléments importants sont clairement visibles,
+même sous stress, même en plein soleil, même d'une main.
+
+
+================================================================================
+13. DÉVELOPPEMENT & INTÉGRATION  [~3 min]
+================================================================================
+
+Parlons maintenant du développement et des défis d'intégration, qui ont
+été au cœur de mon travail quotidien.
+
+--- L'INTÉGRATION FRONTEND/BACKEND JAVA ---
+
+Tous les appels HTTP depuis le mobile passent par des services TypeScript
+dédiés. Les URLs de base sont centralisées dans un fichier de configuration :
+JAVA_BASE_URL pointe vers le backend Spring Boot sur le port 9090,
+NODE_BASE_URL pointe vers le serveur Node.js sur le port 9091.
+
+Cette centralisation est importante pour le déploiement : il suffit de
+changer les URLs dans un seul fichier pour passer du développement local
+à la production.
+
+Prenons l'exemple du RegisterService : quand l'utilisateur valide son
+formulaire d'inscription, une requête POST est envoyée vers /api/auth/register
+avec le payload JSON. Si le serveur répond avec une erreur 500, le message
+d'erreur est extrait de la réponse et remonté à l'interface. Si la réponse
+est correcte, l'objet UserResponse est retourné à l'écran d'inscription
+pour déclencher la suite du flux.
+
+--- L'INTÉGRATION SOCKET.IO ---
+
+La messagerie temps réel est l'une des parties les plus délicates à intégrer.
+Le client Socket.IO est initialisé au chargement de l'application dans
+le MessagesContext. Il maintient une connexion persistante avec le serveur
+Node.js. Quand une alerte est déclenchée, un événement est émis via Socket.IO,
+et tous les utilisateurs connectés reçoivent la mise à jour en temps réel.
+Le badge de notification sur l'icône de la cloche est mis à jour via le contexte.
+
+--- LE FLUX JWT COMPLET ---
+
+L'authentification JWT est le mécanisme qui sécurise toutes les communications
+entre le mobile et le backend Java. Voici le flux complet :
+
+Étape 1 : l'utilisateur s'inscrit. Le serveur Java valide les données,
+crée le compte en base, génère un token d'activation JWT à usage unique,
+et envoie un email avec le lien d'activation.
+
+Étape 2 : l'utilisateur clique sur le lien. Le serveur valide le token,
+active le compte, et envoie un email de confirmation.
+
+Étape 3 : l'utilisateur se connecte. Le serveur vérifie les credentials,
+génère un token JWT d'accès signé avec HS256, et le retourne au mobile.
+
+Étape 4 : le token JWT est stocké dans l'AsyncStorage du téléphone.
+Il est joint à chaque requête HTTP dans le header Authorization: Bearer.
+
+Étape 5 : le JwtAuthenticationFilter, configuré dans Spring Security,
+intercepte chaque requête, extrait et valide le token, et charge les
+informations de l'utilisateur dans le contexte de sécurité Spring.
+
+Ce mécanisme garantit que seuls les utilisateurs authentifiés et activés
+peuvent accéder aux fonctionnalités de l'application.
+
+--- LE PATTERN EMAIL STRATEGY ---
+
+Pour les emails, j'ai implémenté le pattern Strategy, l'un des patterns
+du Gang of Four. J'ai défini une interface IEmailStrategy, une classe
+abstraite AbstractEmailStrategy avec le comportement commun, et deux
+implémentations concrètes : AccountCreatedEmailStrategy pour l'email
+d'activation, et AccountActivatedEmailStrategy pour l'email de confirmation.
+
+Ce pattern permet d'ajouter facilement de nouveaux types d'emails (réinitialisation
+de mot de passe, alerte à un contact de confiance) sans modifier le code existant.
+C'est le principe Open/Closed de SOLID.
+
+
+================================================================================
+14. SÉCURITÉ, RGPD & QUALITÉ DU CODE  [~3 min]
+================================================================================
+
+La sécurité n'est pas une fonctionnalité qu'on ajoute à la fin. Elle doit
+être une contrainte transversale dès la conception. C'est le principe que
+j'ai appliqué tout au long du projet.
+
+--- SÉCURITÉ DES MOTS DE PASSE ---
+
+J'ai implémenté une politique de mots de passe stricte avec plusieurs couches.
+
+D'abord, la validation de la politique : le PasswordPolicyValidator vérifie
+que le mot de passe a une longueur minimale, contient au moins une majuscule,
+au moins un chiffre, et au moins un caractère spécial. Cette validation est
+exposée via une annotation personnalisée @ValidPassword que j'ai créée,
+utilisable directement dans les DTOs avec l'annotation Bean Validation standard.
+
+Ensuite, le hashage : j'ai implémenté deux algorithmes. BCryptPasswordService
+utilise BCrypt, l'algorithme de référence depuis des années. Argon2PasswordService
+utilise Argon2, le gagnant de la compétition Password Hashing Competition en 2015,
+considéré aujourd'hui comme le meilleur algorithme de hashage de mots de passe.
+
+Pour switcher entre les deux sans modifier le code appelant, j'ai utilisé
+le pattern Adapter avec PasswordEncoderAdapter. C'est encore un exemple
+d'application du principe Open/Closed.
+
+--- SÉCURITÉ DES ENTRÉES ---
+
+Le InputSanitizer nettoie toutes les entrées utilisateur avant traitement
+pour prévenir les injections. Les requêtes SQL sont toutes paramétrées via
+JPA/Hibernate, ce qui élimine le risque d'injection SQL. Le côté mobile
+n'injecte jamais de HTML dans les composants natifs, prévenant les attaques XSS.
+
+--- TOKENS SÉCURISÉS ---
+
+Le SecureTokenService génère des tokens aléatoires cryptographiquement sécurisés
+pour les usages sensibles. Les tokens d'activation sont des JWT à usage unique
+avec une expiration de 24 heures.
+
+--- CONFORMITÉ RGPD ---
+
+Sur le plan réglementaire, j'ai intégré plusieurs principes RGPD :
+
+Le consentement explicite : les données personnelles sont collectées lors
+de l'inscription avec un consentement clair de l'utilisateur sur leur usage.
+
+La minimisation des données : on ne collecte que ce qui est strictement
+nécessaire au fonctionnement de l'application.
+
+Le droit à l'effacement : la suppression du compte (prévue en version 2)
+entraînera la suppression de toutes les données associées.
+
+La protection des médias : les photos et vidéos sont liées au compte
+utilisateur et ne sont pas accessibles publiquement sans authentification.
+
+Les logs MongoDB ne contiennent pas de données directement identifiantes.
+
+--- QUALITÉ DU CODE ---
+
+Sur la qualité du code, j'ai appliqué plusieurs principes :
+
+L'architecture en couches assure la séparation des responsabilités.
+
+Le pattern DTO/Mapper sépare les entités de base de données des objets
+exposés par l'API, ce qui protège le modèle interne et permet de faire
+évoluer l'API indépendamment du schéma de données.
+
+Les patterns Strategy et Adapter réduisent le couplage et facilitent
+l'extension sans modification du code existant — SOLID en action.
+
+Les logs applicatifs sont structurés avec SLF4J côté Java et des conventions
+claires côté TypeScript pour faciliter le débogage en production.
+
+
+================================================================================
+15. TESTS, DÉPLOIEMENT & DEVOPS  [~3 min]
+================================================================================
+
+--- STRATÉGIE DE TESTS ---
+
+Pour un projet solo, la stratégie de tests doit être pragmatique et ciblée
+sur les risques les plus élevés.
+
+J'ai conduit des tests manuels systématiques sur l'émulateur Android après
+chaque fonctionnalité développée. Ces tests couvrent les scénarios nominaux
+(tout fonctionne) et les scénarios d'erreur (champ manquant, serveur indisponible,
+token expiré).
+
+Avec Postman, j'ai testé exhaustivement tous les endpoints de l'API :
+authentification (inscription, activation, connexion, token expiré),
+gestion des alertes, upload de médias, géolocalisation, contacts de confiance,
+administration. Chaque test Postman documente le comportement attendu de l'API
+et sert de référence pour les développements futurs.
+
+La configuration application-test.properties prépare le terrain pour des
+tests d'intégration automatisés avec une base H2 en mémoire, que je prévois
+de développer en version 2.
+
+Les scénarios de test critiques que j'ai couverts :
+inscription avec données valides et invalides, activation du compte par email,
+connexion avec token valide et token expiré, envoi d'une alerte SOS avec
+géolocalisation, upload d'une photo, démarrage d'un live stream, messagerie
+temps réel, gestion des contacts de confiance, administration des alertes.
+
+--- DÉPLOIEMENT ACTUEL ---
+
+En développement, l'infrastructure tourne entièrement en local :
+Spring Boot sur le port 9090, Node.js sur le port 9091, MariaDB sur le
+port 3307, MongoDB sur le port 27017. L'application mobile est distribuée
+via Expo Go sur Android pour les tests. Les deux services communiquent via
+l'adresse IP locale du poste de développement, configurée dans les fichiers
+de configuration du frontend.
+
+--- STRATÉGIE DE DÉPLOIEMENT EN PRODUCTION ---
+
+Pour un déploiement en production, j'ai réfléchi à une architecture cloud :
+
+Le backend Java serait conteneurisé avec Docker et déployé sur un VPS
+(OVH ou AWS EC2). Un Nginx en reverse proxy gérerait le routage des requêtes
+et le certificat HTTPS Let's Encrypt.
+
+Le serveur Node.js serait également conteneurisé, avec PM2 pour la gestion
+des processus et le redémarrage automatique en cas de crash.
+
+MariaDB serait déployée dans un conteneur Docker avec volumes persistants,
+ou remplacée par une instance managée pour la haute disponibilité.
+
+MongoDB serait migré vers MongoDB Atlas, le service cloud managé, qui offre
+la réplication, les sauvegardes automatiques, et la surveillance intégrée.
+
+L'application mobile serait compilée et distribuée via EAS Build, le service
+de build d'Expo, pour générer les APK Android et les IPA iOS.
+
+--- DEVOPS ---
+
+Les pratiques DevOps que j'ai appliquées :
+
+Git avec des branches par feature et des commits conventionnels pour un
+historique lisible et une collaboration future facilitée.
+
+Un .gitignore correctement configuré pour exclure les node_modules, les
+fichiers .env contenant les secrets, les fichiers de log volumineux et
+les uploads binaires.
+
+Les logs applicatifs sont rotatifs côté Java : le fichier alert_civique.log
+est archivé quotidiennement pour ne pas saturer le disque.
+
+Les configurations d'environnement (URLs, secrets JWT, credentials SMTP)
+sont externalisées dans application.properties et jamais codées en dur
+dans le code source.
+
+
+================================================================================
+16. VEILLES, BILAN & CONCLUSION  [~3 min]
+================================================================================
+
+--- VEILLES TECHNOLOGIQUES ---
+
+Tout au long du projet, j'ai maintenu une veille active sur plusieurs sujets.
+
+Sur React Native et Expo, j'ai suivi l'évolution du SDK Expo 52, notamment
+les changements de permissions Android qui ont impacté l'accès à la bibliothèque
+média. J'ai aussi suivi Expo Router, un changement de paradigme important
+pour la navigation dans les applications Expo.
+
+Sur Spring Boot 3, j'ai suivi la migration vers Jakarta EE (le passage de
+javax à jakarta qui casse toutes les anciennes importations), et les nouvelles
+API de configuration de Spring Security 6.
+
+Sur la sécurité, j'ai suivi l'OWASP Top 10 pour identifier les risques
+les plus courants et vérifier que mon application y répond. J'ai notamment
+approfondi ma connaissance de l'algorithme Argon2 et des bonnes pratiques
+de stockage des tokens JWT.
+
+Sur l'intelligence artificielle, j'ai exploré les API de détection d'image
+pour la future fonctionnalité de validation des alertes par IA, notamment
+les modèles de classification d'images qui pourraient confirmer qu'une photo
+contient bien un incendie, une inondation, ou un accident.
+
+--- BILAN PERSONNEL ---
+
+Ce projet m'a appris des choses que les tutoriels n'enseignent pas.
+
+J'ai appris que l'intégration est souvent plus complexe que le développement.
+Faire fonctionner le frontend React Native avec le backend Java et le serveur
+Node.js en simultané, avec une authentification JWT partagée et une synchronisation
+temps réel, c'est là que se trouvent les vraies difficultés.
+
+J'ai appris que la sécurité n'est pas une réflexion de dernière minute.
+Chaque endpoint, chaque formulaire, chaque token mérite une réflexion sur
+les attaques possibles et les protections à mettre en place.
+
+J'ai appris que choisir deux bases de données n'est pas une complexité
+inutile quand chaque technologie est utilisée là où elle excelle.
+
+J'ai appris que le découpage en MVP est une discipline intellectuelle difficile
+mais indispensable : il faut résister à la tentation de tout implémenter
+d'un coup, et se concentrer sur ce qui apporte de la valeur dès maintenant.
+
+--- CE QUE J'AI ACCOMPLI ---
+
+En synthèse, voici ce que le projet Alert Civique livre à ce stade :
+
+Une architecture full stack complète et cohérente — Mobile, Java, Node.js,
+SQL, NoSQL. Une authentification sécurisée avec JWT, BCrypt, Argon2 et
+activation email. Un système d'alerte multimédia SOS, photo, audio et vidéo
+live. Une messagerie temps réel via Socket.IO. Une géolocalisation temps réel
+intégrée à la carte. Une gestion des contacts de confiance. Des notifications
+push. Une interface d'administration. Une double persistance MariaDB et MongoDB.
+Des patterns de conception professionnels : Strategy, Adapter, DTO/Mapper.
+Une conformité RGPD intégrée dès la conception.
+
+--- PERSPECTIVES ---
+
+Alert Civique est un projet avec un vrai potentiel de croissance. La version 2
+ajoutera la validation IA des alertes et un tableau de bord statistique.
+La version 3 visera l'intégration institutionnelle avec le numéro 112 européen.
+
+Sur le plan commercial, des partenariats avec des mairies, des bailleurs
+sociaux, des entreprises de sécurité privée sont des pistes concrètes.
+
+--- MOT DE FIN ---
+
+Alert Civique est né d'une question simple : comment aider un citoyen à agir
+en situation d'urgence quand les outils existants ne suffisent pas ?
+
+La réponse que j'ai construite est technique, mais elle est surtout humaine.
+Parce qu'une application n'a de valeur que si elle est utilisée par de vraies
+personnes, dans de vraies situations, pour de vrais besoins.
+
+Ce projet m'a donné la conviction que le métier de développeur full stack,
+c'est bien plus qu'écrire du code. C'est comprendre un problème, imaginer
+une solution, la concevoir rigoureusement, la sécuriser, la tester, et la
+livrer. Du début à la fin.
+
+Je suis prêt à continuer ce travail, professionnellement, avec la même rigueur
+et le même engagement que j'ai mis dans ce projet.
+
+Je vous remercie pour votre attention et votre écoute.
+
+Je suis maintenant disponible pour répondre à vos questions.
+
+
+================================================================================
+         FIN DU DISCOURS — ALERT CIVIQUE
+         Durée estimée : 38 à 42 minutes selon le rythme de parole
+         Conseil : prévoir une démonstration live de l'application après
+================================================================================
+
+--- QUESTIONS PROBABLES DU JURY (à préparer) ---
+
+Q1 : Pourquoi avoir choisi React Native plutôt que Flutter ?
+  -> React Native + TypeScript = cohérence avec l'écosystème JS/TS.
+     Expo accélère le développement. Grande communauté, nombreuses libs.
+
+Q2 : Pourquoi deux backends (Java + Node.js) ?
+  -> Java = logique métier, REST, sécurité, ORM. Node.js = temps réel,
+     WebSocket, concurrence massive. Chaque outil là où il excelle.
+
+Q3 : Pourquoi MariaDB ET MongoDB ?
+  -> MariaDB = données structurées, intégrité référentielle, relations.
+     MongoDB = historique flexible, logs évolutifs, schéma variable.
+
+Q4 : Comment gérez-vous les fausses alertes ?
+  -> Modération admin manuelle en MVP. IA de validation d'images en v2.
+     Système de signalement des abus par les utilisateurs.
+
+Q5 : Comment assurez-vous la conformité RGPD ?
+  -> Consentement à l'inscription, minimisation des données, droit à
+     l'effacement prévu en v2, pas de revente, logs anonymisés.
+
+Q6 : Comment scalez-vous l'application en cas de forte charge ?
+  -> Backend Java : scalabilité horizontale via Docker + load balancer.
+     Node.js : clustering Node ou migration vers un service managé.
+     MongoDB Atlas : auto-scaling. MariaDB : réplication lecture/écriture.
+
+================================================================================

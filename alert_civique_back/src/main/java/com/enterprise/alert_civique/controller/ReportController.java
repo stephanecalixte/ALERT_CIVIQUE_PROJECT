@@ -37,6 +37,7 @@ public class ReportController {
         return ResponseEntity.ok(reports);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getReportById(@PathVariable Long id) {
         try {
@@ -51,14 +52,16 @@ public class ReportController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReport(@PathVariable Long id, @RequestBody ReportDTO dto) {
- try {
-        ReportDTO created = reportService.createReport(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur serveur : " + e.getMessage());
-    }
+        try {
+            ReportDTO updated = reportService.updateReport(id, dto);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur serveur : " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

@@ -89,7 +89,7 @@ public class RegisterService {
         String hashedPassword = passwordService.hash(request.getPassword());
 
         // ✅ Récupération de l'entité Roles depuis la BDD au lieu de RoleEnum.CLIENT
-        Roles defaultRole = roleRepository.findByName("ROLE_CLIENT")
+        Roles defaultRole = roleRepository.findFirstByName("ROLE_CLIENT")
                 .orElseThrow(() -> new EntityNotFoundException("Rôle ROLE_CLIENT introuvable en base de données"));
 
         Users user = Users.builder()
@@ -99,7 +99,7 @@ public class RegisterService {
                 .password(hashedPassword)
                 .phone(request.getPhone())
                 .birthdate(request.getBirthdate())
-                .active(false)
+                .active(true)
                 .createdAt(LocalDateTime.now())
                 .registrationDate(LocalDate.now())
                 .roles(Set.of(defaultRole)) // ✅ Set<Roles> au lieu de Set<RoleEnum>

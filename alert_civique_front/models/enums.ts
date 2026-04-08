@@ -1,8 +1,10 @@
 export enum ReportsStatus {
   PENDING = 'PENDING',
+  IN_REVIEW = 'IN_REVIEW',
   VALIDATED = 'VALIDATED',
   REJECTED = 'REJECTED',
-  // Ajoute d'autres si backend en a plus
+  ARCHIVED = 'ARCHIVED',
+  RESOLVED = 'RESOLVED',
 }
 
 export enum DecisionLevel {

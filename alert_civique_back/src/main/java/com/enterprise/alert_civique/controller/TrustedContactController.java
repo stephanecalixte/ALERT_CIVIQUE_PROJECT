@@ -2,7 +2,10 @@ package com.enterprise.alert_civique.controller;
 
 import java.util.List;
 
+import com.enterprise.alert_civique.dto.AlertContactNotificationRequest;
+import com.enterprise.alert_civique.dto.AlertContactNotificationResult;
 import com.enterprise.alert_civique.dto.TrustedContactDTO;
+import com.enterprise.alert_civique.service.ContactAlertService;
 import com.enterprise.alert_civique.service.TrustedContactService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class TrustedContactController {
 
     private final TrustedContactService trustedContactService;
+    private final ContactAlertService contactAlertService;
 
-    public TrustedContactController(TrustedContactService trustedContactService) {
+    public TrustedContactController(TrustedContactService trustedContactService,
+                                    ContactAlertService contactAlertService) {
         this.trustedContactService = trustedContactService;
+        this.contactAlertService = contactAlertService;
     }
 
     @PostMapping
@@ -50,15 +56,9 @@ public class TrustedContactController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getContactByUserId(@PathVariable Long userId) {
-        try {
-            TrustedContactDTO contact = trustedContactService.getTrustedContactByUserId(userId);
-            return ResponseEntity.ok(contact);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur serveur : " + e.getMessage());
-        }
+    public ResponseEntity<List<TrustedContactDTO>> getContactsByUserId(@PathVariable Long userId) {
+        List<TrustedContactDTO> contacts = trustedContactService.getByUserId(userId);
+        return ResponseEntity.ok(contacts);
     }
 
     @PutMapping("/{id}")
@@ -82,6 +82,17 @@ public class TrustedContactController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur serveur : " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/notify-alert")
+    public ResponseEntity<List<AlertContactNotificationResult>> notifyAlert(
+            @RequestBody AlertContactNotificationRequest request) {
+        try {
+            List<AlertContactNotificationResult> results = contactAlertService.notifyContacts(request);
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

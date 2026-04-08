@@ -106,6 +106,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,    
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 5,
+  },
   captureButton: {
     width: 80,
     height: 80,

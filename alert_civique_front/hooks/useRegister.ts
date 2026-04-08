@@ -3,6 +3,8 @@ import { Alert } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRegisterRequest } from '@/models/User';
 import * as RegisterService from '@/app/lib/services/RegisterService';
+import { loginUser } from '@/app/lib/services/LoginService';
+import TrustedContactService from '@/app/lib/services/TrustedContactService';
 
 interface FormErrors {
   firstname?: string;
@@ -11,6 +13,8 @@ interface FormErrors {
   password?: string;
   phone?: string;
   birthdate?: string;
+  contact1Name?: string;
+  contact1Phone?: string;
 }
 
 export function useRegister() {
@@ -55,9 +59,11 @@ export function useRegister() {
 const REGEX = {
     name:      /^[a-zA-ZÀ-ÿ\s'\-]{2,50}$/,
     email:     /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/,
-    phone:     /^\+?[\d\s\-\.]{9,15}$/,
+    // Java accepte uniquement : 8-20 chiffres, espaces ou +
+    phone:     /^[0-9+ ]{8,20}$/,
     birthdate: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
-    password:  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+\[\]{};:'",.<>?/\\|`~]).{12,}$/,
+    // Java ValidPassword : uniquement !@#$%^&*() comme caractères spéciaux
+    password:  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{12,}$/,
   };
 
   const validateForm = useCallback((): FormErrors => {
@@ -100,6 +106,17 @@ const REGEX = {
         'Minimum 12 caractères avec majuscule, minuscule, chiffre et caractère spécial';
     }
 
+    // Contact de confiance obligatoire (personne 1)
+    const p1 = form.trustedContacts.person1;
+    if (!p1.firstName.trim() && !p1.lastName.trim()) {
+      newErrors.contact1Name = 'Le nom du contact de confiance est obligatoire';
+    }
+    if (!p1.phone.trim()) {
+      newErrors.contact1Phone = 'Le téléphone du contact de confiance est obligatoire';
+    } else if (!REGEX.phone.test(p1.phone.trim())) {
+      newErrors.contact1Phone = 'Numéro invalide (9 à 15 chiffres, ex: +33612345678)';
+    }
+
     return newErrors;
   }, [form]);
 
@@ -138,18 +155,47 @@ const REGEX = {
     setErrors({});
 
     try {
-      const response = await RegisterService.registerUser(form);
-      
-      // Assume backend returns { token: string, user: { userId: number, name: string, email: string } }
-      if (response?.token && response.user) {
-        await login(response.token, response.user);
-        setIsSuccess(true);
-        Alert.alert('Succès', 'Compte créé ! Redirection...');
-        resetForm();
-        return true;
-      } else {
-        throw new Error('Réponse serveur invalide');
-      }
+      // 1. Inscription → Java retourne UserResponse (pas de token)
+      console.log('📝 Étape 1: inscription...');
+      const userResponse = await RegisterService.registerUser(form);
+      console.log('✅ Inscription OK, userId:', userResponse.id);
+
+      // 2. Auto-login — userId vient de userResponse.id (source fiable)
+      console.log('📝 Étape 2: login...');
+      const userId = userResponse.id;
+      const loginResponse = await loginUser(form.email, form.password, userId);
+      console.log('✅ Login OK, token:', loginResponse.token ? '✅' : '❌');
+      const token = loginResponse.token;
+
+      // 3. Sauvegarde les contacts de confiance AVANT d'ouvrir l'app
+      const persons = [form.trustedContacts.person1, form.trustedContacts.person2, form.trustedContacts.person3];
+      await Promise.allSettled(
+        persons
+          .filter(p => p.firstName.trim() || p.lastName.trim() || p.phone.trim())
+          .map(p =>
+            TrustedContactService.create(
+              {
+                name: `${p.firstName.trim()} ${p.lastName.trim()}`.trim(),
+                email: p.email.trim(),
+                phone: p.phone.trim(),
+                userId,
+              },
+              token
+            )
+          )
+      );
+
+      // 4. Stocke la session → déclenche la navigation vers l'app
+      await login(token, {
+        userId,
+        name: `${userResponse.firstname} ${userResponse.lastname}`,
+        email: userResponse.email,
+      });
+
+      setIsSuccess(true);
+      Alert.alert('Succès', 'Compte créé avec succès !');
+      resetForm();
+      return true;
     } catch (error) {
       console.error('Register error:', error);
       Alert.alert('Erreur', error instanceof Error ? error.message : 'Échec de l\'inscription');

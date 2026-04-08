@@ -34,7 +34,7 @@ public class RoleServiceImpl implements RoleService {
             throw new IllegalArgumentException("Un nouveau rôle ne doit pas avoir d'ID");
         }
          
-    roleRepository.findByName(roleDTO.name())
+    roleRepository.findFirstByName(roleDTO.name())
         .ifPresent(r -> { 
             throw new RuntimeException("Un rôle avec le nom '" + roleDTO.name() + "' existe déjà"); 
         });

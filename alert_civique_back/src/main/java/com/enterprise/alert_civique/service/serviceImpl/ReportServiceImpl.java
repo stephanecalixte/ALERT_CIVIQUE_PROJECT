@@ -44,20 +44,22 @@ public class ReportServiceImpl implements ReportService {
         if (dto == null) {
             throw new IllegalArgumentException("Le DTO ne peut pas être null");
         }
-        if (dto.description() == null || dto.description().trim().isEmpty()) {
-            throw new IllegalArgumentException("La description est obligatoire");
-        }
-        if (dto.userId() == null) {
-            throw new IllegalArgumentException("L'ID utilisateur est obligatoire");
-        }
 
         Reports report = reportMapper.toEntity(dto);
-        report.setCreatedAt(LocalDateTime.now());
+        report.setCreatedAt(dto.createdAt() != null ? dto.createdAt() : LocalDateTime.now());
 
-        // ✅ Récupération de l'entité Users et affectation via setUser()
-        Users user = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'ID : " + dto.userId()));
-        report.setUser(user);
+        // Description auto-générée depuis alertType si absente
+        if (report.getDescription() == null || report.getDescription().trim().isEmpty()) {
+            String fallback = dto.alertType() != null ? "Signalement : " + dto.alertType() : "Signalement anonyme";
+            report.setDescription(fallback);
+        }
+
+        // userId optionnel — si fourni, on lie l'utilisateur
+        if (dto.userId() != null) {
+            Users user = userRepository.findById(dto.userId())
+                    .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'ID : " + dto.userId()));
+            report.setUser(user);
+        }
 
         if (dto.geolocalisationId() != null) {
             Geolocalisation geo = geolocalisationRepository.findById(dto.geolocalisationId())

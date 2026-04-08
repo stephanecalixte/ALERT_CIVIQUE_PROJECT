@@ -1,23 +1,27 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-const SERVER_PORT = 9091;
+const JAVA_PORT = 9090;   // Backend Java Spring Boot (auth, livestream, media…)
+const NODE_PORT = 9091;   // Node.js (upload vidéo + Socket.IO chat)
 
-function getServerBaseUrl(): string {
-  // Expo expose l'IP de la machine hôte via hostUri (ex: "192.168.1.5:8081")
-  // On extrait l'IP pour construire l'URL du serveur Node.js
+function buildUrl(port: number): string {
   const expoHostUri = Constants.expoConfig?.hostUri;
   if (expoHostUri) {
     const ip = expoHostUri.split(':')[0];
-    return `http://${ip}:${SERVER_PORT}`;
+    return `http://${ip}:${port}`;
   }
-
-  // Fallback si hostUri n'est pas disponible (build standalone, etc.)
-  if (Platform.OS === 'android') {
-    return `http://10.0.2.2:${SERVER_PORT}`; // émulateur Android uniquement
-  }
-  return `http://localhost:${SERVER_PORT}`; // simulateur iOS
+  if (Platform.OS === 'android') return `http://10.0.2.2:${port}`;
+  return `http://localhost:${port}`;
 }
 
-export const SERVER_BASE_URL = getServerBaseUrl();
-console.log('🌐 SERVER_BASE_URL:', SERVER_BASE_URL);
+// Java – toutes les routes métier
+export const JAVA_BASE_URL = buildUrl(JAVA_PORT);
+
+// Node.js – upload vidéo + Socket.IO
+export const NODE_BASE_URL = buildUrl(NODE_PORT);
+
+// Alias conservé pour compatibilité (les services qui importent SERVER_BASE_URL)
+export const SERVER_BASE_URL = NODE_BASE_URL;
+
+console.log('🟦 JAVA_BASE_URL:', JAVA_BASE_URL);
+console.log('🟩 NODE_BASE_URL:', NODE_BASE_URL);

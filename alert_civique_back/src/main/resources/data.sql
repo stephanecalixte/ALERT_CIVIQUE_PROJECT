@@ -1,4 +1,4 @@
--- Initialize default roles - H2 (with explicit ID for primary key)
-INSERT INTO roles (role_id, name) VALUES (1, 'USER');
-INSERT INTO roles (role_id, name) VALUES (2, 'ADMIN');
-INSERT INTO roles (role_id, name) VALUES (3, 'MODERATOR');
+-- Initialisation des rôles (MariaDB compatible — ignore si déjà présent)
+INSERT IGNORE INTO roles (role_id, name) VALUES (1, 'ROLE_CLIENT');
+INSERT IGNORE INTO roles (role_id, name) VALUES (2, 'ROLE_ADMIN');
+INSERT IGNORE INTO roles (role_id, name) VALUES (3, 'ROLE_MODERATOR');

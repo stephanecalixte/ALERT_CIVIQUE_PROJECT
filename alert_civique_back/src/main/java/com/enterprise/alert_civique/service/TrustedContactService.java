@@ -13,7 +13,7 @@ public interface TrustedContactService {
     TrustedContactDTO getTrustedContactById(Long id);                   
     TrustedContactDTO updateTrustedContact(Long id, TrustedContactDTO contactDTO);  
     void deleteTrustedContact(Long id);
-    TrustedContactDTO getTrustedContactByUserId(Long userId);             
+    List<TrustedContactDTO> getByUserId(Long userId);             
 
 
 }

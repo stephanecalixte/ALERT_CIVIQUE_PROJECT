@@ -1,8 +1,11 @@
 package com.enterprise.alert_civique.controller;
 
 import com.enterprise.alert_civique.dto.LoginRequestDTO;
+import com.enterprise.alert_civique.dto.LoginResponseDto;
 import com.enterprise.alert_civique.dto.UserRegisterRequestDto;
 import com.enterprise.alert_civique.dto.UserResponseDto;
+import com.enterprise.alert_civique.entity.Users;
+import com.enterprise.alert_civique.repository.UserRepository;
 import com.enterprise.alert_civique.service.RegisterService;
 import com.enterprise.alert_civique.security.JwtService;
 import org.springframework.http.HttpStatus;
@@ -23,25 +26,40 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RegisterService registerService;
+    private final UserRepository userRepository;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, RegisterService registerService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService,
+                          RegisterService registerService, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.registerService = registerService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(), 
+                            loginRequest.getUsername(),
                             loginRequest.getPassword()
                     )
             );
 
             String token = jwtService.generateToken(loginRequest.getUsername());
-            return ResponseEntity.ok(token);
+
+            Users user = userRepository.findByEmail(loginRequest.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+            LoginResponseDto response = LoginResponseDto.builder()
+                    .token(token)
+                    .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .firstname(user.getFirstname())
+                    .lastname(user.getLastname())
+                    .build();
+
+            return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Nom d'utilisateur ou mot de passe incorrect.");

@@ -4,9 +4,11 @@ import { useVideoRecording } from './useVideoRecording';
 import { useLiveStreamAPI } from './useLiveStreamApi';
 import { useVideoUpload } from './useVideoUpload';
 import { useAuth } from '../contexts/AuthContext';
+import { AlertType } from '@/contexts/AlertContext';
 
-export function useLiveStreamManager(autoStart = false, onComplete?: () => void) {
-  const { userId, token } = useAuth();
+export function useLiveStreamManager(autoStart = false, onComplete?: () => void, reportId?: number, alertType?: AlertType) {
+  const { user, token } = useAuth();
+  const userId = user?.userId?.toString();
   const [isUploading, setIsUploading] = useState(false);
 
   // Ref pour éviter les closures périmées sur onComplete
@@ -15,8 +17,9 @@ export function useLiveStreamManager(autoStart = false, onComplete?: () => void)
 
   const cameraManager = useCameraManager();
   const videoRecording = useVideoRecording();
-  const liveStreamAPI = useLiveStreamAPI(token ?? undefined, userId ?? undefined);
-  const videoUpload = useVideoUpload(token ?? undefined, userId ?? undefined);
+  const liveStreamAPI = useLiveStreamAPI(token ?? undefined, userId ?? undefined, reportId, alertType);
+  const senderName = user?.name ?? undefined;
+  const videoUpload = useVideoUpload(token ?? undefined, userId ?? undefined, alertType, senderName);
 
   // Ref stable vers toggleCamera pour l'effet autoStart
   const toggleCameraRef = useRef<() => Promise<void>>(async () => {});

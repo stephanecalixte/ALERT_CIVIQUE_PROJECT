@@ -2,30 +2,62 @@ import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import LiveStreamScreen from '@/app/views/LiveStreamSreen';
+import AlertTypeModal from '@/components/AlertTypeModal';
+import { AlertType } from '@/contexts/AlertContext';
 
-export default function CameraButton() {
-  const [showCamera, setShowCamera] = useState(false);
+interface Props {
+  onAlertSelected?: (type: AlertType) => void;
+}
+
+export default function CameraButton({ onAlertSelected }: Props) {
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showCamera, setShowCamera]         = useState(false);
+  const [alertType, setAlertType]           = useState<AlertType | null>(null);
+
+  const handlePress = () => {
+    setShowAlertModal(true);
+  };
+
+  const handleAlertSelect = (type: AlertType) => {
+    setAlertType(type);
+    onAlertSelected?.(type);   // informe index.tsx → map + chat
+    setShowCamera(true);
+  };
+
+  const handleClose = () => {
+    setShowCamera(false);
+    setAlertType(null);
+  };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => setShowCamera(true)}
+        onPress={handlePress}
         activeOpacity={0.85}
       >
-        <View>
-          <Ionicons name="videocam" size={26} color="#007AFF" />
-
-        </View>
+        <Ionicons name="videocam" size={26} color="#007AFF" />
       </TouchableOpacity>
 
+      {/* Étape 1 — Choix du type d'alerte */}
+      <AlertTypeModal
+        visible={showAlertModal}
+        onSelect={handleAlertSelect}
+        onClose={() => setShowAlertModal(false)}
+      />
+
+      {/* Étape 2 — Stream avec alertType dans le payload */}
       <Modal
         visible={showCamera}
         animationType="slide"
-        onRequestClose={() => setShowCamera(false)}
+        onRequestClose={handleClose}
         presentationStyle="pageSheet"
       >
-        <LiveStreamScreen onClose={() => setShowCamera(false)} autoStart />
+        <LiveStreamScreen
+          onClose={handleClose}
+          autoStart
+          alertType={alertType ?? undefined}
+        />
       </Modal>
     </View>
   );

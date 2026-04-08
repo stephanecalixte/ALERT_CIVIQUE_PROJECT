@@ -1,8 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
 import LiveStreamService from '@/app/lib/services/LiveStreamService';
 import type { LiveStream } from '../models/LiveStream';
+import { AlertType } from '@/contexts/AlertContext';
 
-export function useLiveStreamAPI(token: string | undefined, userId: string | undefined) {
+export function useLiveStreamAPI(token: string | undefined, userId: string | undefined, reportId?: number, alertType?: AlertType) {
   const [streams, setStreams] = useState<LiveStream[]>([]);
   const [currentLivestreamId, setCurrentLivestreamId] = useState<number | null>(null);
   const startTimeRef = useRef<Date | null>(null);
@@ -25,6 +26,8 @@ export function useLiveStreamAPI(token: string | undefined, userId: string | und
         userId: effectiveUserId,
         facing: facing as string,
         startedAt: new Date().toISOString(),
+        ...(reportId   != null && { reportId }),
+        ...(alertType  != null && { alertType }),
       };
 
       console.log('📡 Envoi au serveur:', payload);

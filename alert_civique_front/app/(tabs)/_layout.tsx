@@ -1,11 +1,13 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View, Platform, Text, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useAlert, ALERT_CONFIGS } from '@/contexts/AlertContext';
+import { useMessagesContext } from '@/contexts/MessagesContext';
 
 const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 90 : 80;
 
@@ -40,17 +42,66 @@ function ShieldLogo({ size = 38 }: { size?: number }) {
   );
 }
 
+// ── Bannière incident persistante ─────────────────────────────────────────────
+function IncidentBanner() {
+  const { alertType } = useAlert();
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+
+  React.useEffect(() => {
+    if (!alertType) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.04, duration: 600, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1,    duration: 600, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [alertType]);
+
+  if (!alertType) return null;
+
+  const cfg = ALERT_CONFIGS[alertType];
+  return (
+    <Animated.View style={[styles.incidentBanner, { backgroundColor: cfg.color, transform: [{ scaleX: pulseAnim }] }]}>
+      <Text style={styles.incidentEmoji}>{cfg.emoji}</Text>
+      <Text style={styles.incidentLabel}>{cfg.label.toUpperCase()} EN COURS</Text>
+      <View style={styles.incidentDot} />
+    </Animated.View>
+  );
+}
+
+// ── Cloche avec badge ─────────────────────────────────────────────────────────
+function BellWithBadge() {
+  const { unreadIncidentCount } = useMessagesContext();
+  return (
+    <View>
+      <IconSymbol size={22} name="bell.fill" color="white" />
+      {unreadIncidentCount > 0 && (
+        <View style={styles.bellBadge}>
+          <Text style={styles.bellBadgeText}>
+            {unreadIncidentCount > 9 ? '9+' : unreadIncidentCount}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
 function TopLayout() {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.topLayout, { paddingTop: insets.top, height: TAB_BAR_HEIGHT + insets.top }]}>
-      <View style={styles.topLeft}>
-        <IconSymbol size={22} name="bell.fill" color="white" />
+    <View style={{ backgroundColor: '#1a6fd4' }}>
+      <View style={[styles.topLayout, { paddingTop: insets.top, height: TAB_BAR_HEIGHT + insets.top }]}>
+        <View style={styles.topLeft}>
+          <BellWithBadge />
+        </View>
+        <View style={styles.logoContainer}>
+          <ShieldLogo size={44} />
+        </View>
+        <View style={styles.topRight} />
       </View>
-      <View style={styles.logoContainer}>
-        <ShieldLogo size={44} />
-      </View>
-      <View style={styles.topRight} />
+      <IncidentBanner />
     </View>
   );
 }
@@ -80,6 +131,13 @@ export default function TabLayout() {
         <Tabs.Screen name="Messages"   options={{ href: null }} />
         <Tabs.Screen name="explore"    options={{ href: null }} />
         <Tabs.Screen
+          name="Contact"
+          options={{
+            title: 'Contacts',
+            tabBarIcon: ({ color }) => <IconSymbol size={26} name="person.2.fill" color={color} />,
+          }}
+        />
+        <Tabs.Screen
           name="Priority"
           options={{
             title: 'Priorité',
@@ -94,23 +152,21 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="Register"
+          name="Admin"
           options={{
-            title: 'Register',
-            tabBarIcon: ({ color }) => <IconSymbol size={26} name="person.badge.plus" color={color} />,
+            title: 'Admin',
+            tabBarIcon: ({ color }) => <IconSymbol size={26} name="shield.fill" color={color} />,
           }}
         />
+        <Tabs.Screen name="Register" options={{ href: null }} />
       </Tabs>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
+  root: { flex: 1 },
 
-  // Header
   topLayout: {
     width: '100%',
     flexDirection: 'row',
@@ -118,7 +174,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     backgroundColor: '#1a6fd4',
-    // Neumorphisme bleu — ombre sombre en bas
     borderTopWidth: 1.5,
     borderTopColor: '#3d94ff',
     borderBottomWidth: 2,
@@ -130,33 +185,48 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   logoContainer: {
-    width: 66,
-    height: 66,
-    borderRadius: 33,
+    width: 66, height: 66, borderRadius: 33,
     backgroundColor: '#1a6fd4',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderTopWidth: 1.5,
-    borderLeftWidth: 1.5,
-    borderTopColor: '#4da3ff',
-    borderLeftColor: '#4da3ff',
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-    borderBottomColor: '#0a3a8a',
-    borderRightColor: '#0a3a8a',
+    justifyContent: 'center', alignItems: 'center',
+    borderTopWidth: 1.5, borderLeftWidth: 1.5,
+    borderTopColor: '#4da3ff', borderLeftColor: '#4da3ff',
+    borderBottomWidth: 2, borderRightWidth: 2,
+    borderBottomColor: '#0a3a8a', borderRightColor: '#0a3a8a',
     shadowColor: '#0a3a8a',
     shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.7,
-    shadowRadius: 6,
-    elevation: 8,
+    shadowOpacity: 0.7, shadowRadius: 6, elevation: 8,
   },
-  topLeft: {
-    width: 40,
-    alignItems: 'flex-start',
+  topLeft:  { width: 40, alignItems: 'flex-start' },
+  topRight: { width: 40, alignItems: 'flex-end' },
+
+  // Cloche badge
+  bellBadge: {
+    position: 'absolute', top: -5, right: -7,
+    backgroundColor: '#e53935',
+    minWidth: 16, height: 16, borderRadius: 8,
+    justifyContent: 'center', alignItems: 'center',
+    paddingHorizontal: 2,
+    borderWidth: 1.5, borderColor: '#1a6fd4',
   },
-  topRight: {
-    width: 40,
-    alignItems: 'flex-end',
+  bellBadgeText: {
+    color: '#fff', fontSize: 9, fontWeight: '800',
+  },
+
+  // Bannière incident
+  incidentBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 5,
+    gap: 8,
+  },
+  incidentEmoji: { fontSize: 16 },
+  incidentLabel: {
+    color: '#fff', fontWeight: '800', fontSize: 12, letterSpacing: 1,
+  },
+  incidentDot: {
+    width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff',
+    opacity: 0.8,
   },
 
   // Tab bar
@@ -164,32 +234,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#1565c0',
     height: TAB_BAR_HEIGHT,
     borderTopWidth: 0,
-    // paddingHorizontal: 4,
-    // padding: 20,
   },
-
-  // Chaque item — neumorphisme bleu
   tabItem: {
-   
     borderRadius: 14,
-    // marginHorizontal: 4,
-    // marginVertical: 6,
     backgroundColor: '#1a6fd4',
-    // Bordure claire haut-gauche (source lumière)
-    borderTopWidth: 1.5,
-    borderLeftWidth: 1.5,
-    borderTopColor: '#4da3ff',
-    borderLeftColor: '#4da3ff',
-    // Bordure sombre bas-droite (ombre)
-    borderBottomWidth: 1.5,
-    borderRightWidth: 1.5,
-    borderBottomColor: '#0a3a8a',
-    borderRightColor: '#0a3a8a',
-    // Ombre portée
+    borderTopWidth: 1.5, borderLeftWidth: 1.5,
+    borderTopColor: '#4da3ff', borderLeftColor: '#4da3ff',
+    borderBottomWidth: 1.5, borderRightWidth: 1.5,
+    borderBottomColor: '#0a3a8a', borderRightColor: '#0a3a8a',
     shadowColor: '#0a3a8a',
     shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.6,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOpacity: 0.6, shadowRadius: 5, elevation: 5,
   },
 });

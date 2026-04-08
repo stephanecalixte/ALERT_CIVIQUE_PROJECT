@@ -35,11 +35,13 @@ public class ReportMapperService {
             status,
             priority,
             report.getAnonymous(),
-            userId,         // ✅ report.getUser().getUserId() au lieu de report.getUserId()
+            userId,
             null,           // categoryId
             geolocalisationId,
             0,              // mediaCount
-            0.0             // aiConfidenceScore
+            0.0,            // aiConfidenceScore
+            report.getAlertType(),
+            report.getSenderName()
         );
     }
 
@@ -55,6 +57,8 @@ public class ReportMapperService {
         report.setStatus(dto.status());
         report.setPriority(dto.priority());
         report.setAnonymous(dto.anonymous());
+        report.setAlertType(dto.alertType());
+        report.setSenderName(dto.senderName());
 
         // ✅ userId retiré ici — l'association Users est gérée dans ReportServiceImpl
         // via userRepository.findById() + report.setUser(user)

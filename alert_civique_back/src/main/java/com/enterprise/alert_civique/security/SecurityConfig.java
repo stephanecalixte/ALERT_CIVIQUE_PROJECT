@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
@@ -23,13 +24,16 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final CorsConfig corsConfig;
     private final PasswordEncoder passwordEncoder;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(@Qualifier("serviceCustomUserDetailsService") CustomUserDetailsService userDetailsService, 
+    public SecurityConfig(@Qualifier("serviceCustomUserDetailsService") CustomUserDetailsService userDetailsService,
                           CorsConfig corsConfig,
-                          @Qualifier("customPasswordEncoder") PasswordEncoder passwordEncoder) {
+                          @Qualifier("customPasswordEncoder") PasswordEncoder passwordEncoder,
+                          JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
         this.corsConfig = corsConfig;
         this.passwordEncoder = passwordEncoder;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     // ✅ Un seul AuthenticationManager, configuré correctement
@@ -74,8 +78,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
-            );
-        
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

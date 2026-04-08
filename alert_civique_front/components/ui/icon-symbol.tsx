@@ -27,6 +27,8 @@ const MAPPING = {
   'person.badge.plus': 'person-add',
   'bell.fill': 'notifications',
   'magnifyingglass': 'search',
+  'person.2.fill': 'group',
+  'shield.fill': 'security',
 } as IconMapping;
 
 /**

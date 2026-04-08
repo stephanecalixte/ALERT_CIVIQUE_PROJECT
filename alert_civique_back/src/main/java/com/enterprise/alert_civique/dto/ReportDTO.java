@@ -19,7 +19,9 @@ public record ReportDTO(
         Long categoryId,
         Long geolocalisationId,
         Integer mediaCount,
-        Double aiConfidenceScore
+        Double aiConfidenceScore,
+        String alertType,
+        String senderName
 ) {
 
 

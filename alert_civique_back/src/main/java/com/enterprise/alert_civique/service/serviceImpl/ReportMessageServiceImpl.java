@@ -59,5 +59,13 @@ public class ReportMessageServiceImpl implements ReportMessageService {
 
         repository.deleteById(id);
     }
+
+    @Override
+    public List<ReportMessageDTO> getChatReportMessages() {
+        return repository.findByAlertTypeIsNotNullOrderByCreatedAtAsc()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
 }
 

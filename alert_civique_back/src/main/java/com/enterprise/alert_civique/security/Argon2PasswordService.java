@@ -29,6 +29,6 @@ public class Argon2PasswordService implements IPasswordService {
 
     @Override
     public boolean matches(String rawPassword, String hashedPassword) throws Exception {
-        return encoder.matches(hashedPassword, rawPassword);
+        return encoder.matches(rawPassword, hashedPassword);
     }
 }

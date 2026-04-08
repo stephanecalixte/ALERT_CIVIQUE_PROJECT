@@ -29,24 +29,29 @@ public class ReportMessage {
     private Long reportMessageId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable=false)
-    private Users user; 
-
+    @JoinColumn(name = "user_id", nullable = true)
+    private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "message_id", nullable=false)
+    @JoinColumn(name = "message_id", nullable = true)
     private Messages messages;
 
     @ManyToOne
-    @JoinColumn(name = "report_id", nullable=false)
+    @JoinColumn(name = "report_id", nullable = true)
     private Reports report;
 
-
-
-    @Column(name = "reason", nullable = false)
+    @Column(name = "reason")
     private String reason;
 
-    @Column (name="created_at", nullable=false)
-    private String createdAt=LocalDate.now().toString();
+    /** Type d'alerte : agression, accident, incendie, sos */
+    @Column(name = "alert_type")
+    private String alertType;
+
+    /** Nom/pseudo de l'émetteur */
+    @Column(name = "sender_name")
+    private String senderName;
+
+    @Column(name = "created_at", nullable = false)
+    private String createdAt = LocalDate.now().toString();
 
 }

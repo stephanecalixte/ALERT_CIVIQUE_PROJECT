@@ -1,9 +1,7 @@
 package com.enterprise.alert_civique.security;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 
-@Service
 public class IPasswordServiceImpl implements IPasswordService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

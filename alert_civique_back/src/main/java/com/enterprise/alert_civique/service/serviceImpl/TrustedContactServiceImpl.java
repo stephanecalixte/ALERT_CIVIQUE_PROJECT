@@ -82,15 +82,10 @@ public class TrustedContactServiceImpl implements TrustedContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public TrustedContactDTO getTrustedContactByUserId(Long userId) {
-        
-        List<TrustedContact> allContacts = trustedContactRepository.findAll();
-        
-        TrustedContact contact = allContacts.stream()
-                .filter(c -> userId.equals(c.getUserId()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Trusted contact not found for user: " + userId));
-                
-        return mapperService.toDTO(contact);
+    public List<TrustedContactDTO> getByUserId(Long userId) {
+        return trustedContactRepository.findByUserId(userId)
+                .stream()
+                .map(mapperService::toDTO)
+                .toList();
     }
 }

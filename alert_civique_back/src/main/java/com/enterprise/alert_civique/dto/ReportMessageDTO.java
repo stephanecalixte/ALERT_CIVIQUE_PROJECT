@@ -10,5 +10,7 @@ public record ReportMessageDTO(
     Long reportId,
     Long messageId,
     String reason,
-    LocalDate createdAt
+    LocalDate createdAt,
+    String alertType,
+    String senderName
 ) {}

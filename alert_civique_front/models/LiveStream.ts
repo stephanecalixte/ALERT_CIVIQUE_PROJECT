@@ -1,10 +1,13 @@
+// ─── Correspond à LiveStreamDTO (Java) ───────────────────────────────────────
+// status Java : "LIVE" | "ENDED" | "SCHEDULED"
 export interface LiveStream {
-  livestreamId?: number;
-  startedAt?: string; // ISO
-  endedAt?: string;
+  livestreamId?: number;  // Long
+  userId?: string;        // String (mapped "dummy-user" en attendant FK user)
+  startedAt?: string;     // ISO LocalDateTime
+  endedAt?: string;       // ISO LocalDateTime
   streamUrl?: string;
-  status?: string;
-  videoUrl?: string;  // Nouvelle: URL de la vidéo enregistrée
-  mediaId?: number;   // Nouvelle: FK vers Media
-  duration?: number;  // secondes
+  status?: 'LIVE' | 'ENDED' | 'SCHEDULED';
+  videoUrl?: string;      // URL de la vidéo uploadée
+  mediaId?: number;       // Long FK vers Media
+  duration?: number;      // Integer (secondes)
 }

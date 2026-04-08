@@ -9,7 +9,9 @@ import com.enterprise.alert_civique.dto.ReportMessageDTO;
 
 public interface ReportMessageService {
     ReportMessageDTO createReportMessage(ReportMessageDTO reportMessageDTO);
-    List<ReportMessageDTO>getAllReportMessage();
-   Optional<ReportMessageDTO> getReportMessageById(Long id);
+    List<ReportMessageDTO> getAllReportMessage();
+    Optional<ReportMessageDTO> getReportMessageById(Long id);
     void deleteReportMessage(Long id);
+    /** Cartes de chat persistées (signalements avec alertType) */
+    List<ReportMessageDTO> getChatReportMessages();
 }

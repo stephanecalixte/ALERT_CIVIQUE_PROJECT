@@ -11,7 +11,7 @@ public class UserRegisterRequestDto {
 
     @NotBlank
     @Size(min = 2, max = 48)
-    @Pattern(regexp = "^[A-Za-z]")
+    @Pattern(regexp = "^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\\s'\\-]{1,47}$", message = "Le prénom doit commencer par une lettre et ne contenir que des lettres, espaces, tirets ou apostrophes")
     private String firstname;
 
     @NotBlank

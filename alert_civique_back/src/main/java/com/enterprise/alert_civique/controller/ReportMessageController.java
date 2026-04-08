@@ -52,4 +52,10 @@ public class ReportMessageController {
         reportMessageService.deleteReportMessage(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    /** Cartes de signalement pour le chat — chargées au démarrage de l'app */
+    @GetMapping("/chat")
+    public ResponseEntity<List<ReportMessageDTO>> getChatReportMessages() {
+        return new ResponseEntity<>(reportMessageService.getChatReportMessages(), HttpStatus.OK);
+    }
 }

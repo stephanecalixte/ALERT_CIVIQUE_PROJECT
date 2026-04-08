@@ -9,7 +9,7 @@ function PasswordStrength({ password }: { password: string }) {
     { label: 'Majuscule (A-Z)',        ok: /[A-Z]/.test(password) },
     { label: 'Minuscule (a-z)',        ok: /[a-z]/.test(password) },
     { label: 'Chiffre (0-9)',          ok: /\d/.test(password) },
-    { label: 'Caractère spécial',      ok: /[!@#$%^&*()\-_=+\[\]{};:'",.<>?/\\|`~]/.test(password) },
+    { label: 'Caractère spécial (!@#$%^&*())', ok: /[!@#$%^&*()]/.test(password) },
   ];
   const score = checks.filter(c => c.ok).length;
   const colors = ['#dc2626', '#dc2626', '#f97316', '#eab308', '#22c55e'];
@@ -47,7 +47,11 @@ const pwStyles = StyleSheet.create({
   check: { fontSize: 12, marginBottom: 2 },
 });
 
-export default function RegisterScreen() {
+interface Props {
+  onGoToLogin?: () => void;
+}
+
+export default function RegisterScreen({ onGoToLogin }: Props) {
   const {
     form,
     errors,
@@ -56,6 +60,7 @@ export default function RegisterScreen() {
     handleChange,
     handleTrustedContactChange,
     register,
+    resetForm,
   } = useRegister();
 
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -122,24 +127,25 @@ export default function RegisterScreen() {
       />
       {errors.birthdate && <Text style={styles.errorText}>{errors.birthdate}</Text>}
 
-      <Text style={styles.sectionTitle}>Personnes de confiance (optionnel)</Text>
+      <Text style={styles.sectionTitle}>Contact de confiance obligatoire *</Text>
 
-      {/* Personne 1 */}
-      <Text style={styles.personTitle}>Personne 1</Text>
+      {/* Personne 1 — obligatoire */}
+      <Text style={styles.personTitle}>Personne 1 *</Text>
       <TextInput
-        placeholder="Prénom Personne 1"
+        placeholder="Prénom Personne 1 *"
         value={form.trustedContacts.person1.firstName}
         onChangeText={(text) => handleTrustedContactChange('person1', 'firstName', text)}
-        style={styles.input}
+        style={[styles.input, errors.contact1Name ? styles.inputError : null]}
         autoCapitalize="words"
       />
       <TextInput
-        placeholder="Nom Personne 1"
+        placeholder="Nom Personne 1 *"
         value={form.trustedContacts.person1.lastName}
         onChangeText={(text) => handleTrustedContactChange('person1', 'lastName', text)}
-        style={styles.input}
+        style={[styles.input, errors.contact1Name ? styles.inputError : null]}
         autoCapitalize="words"
       />
+      {errors.contact1Name && <Text style={styles.errorText}>{errors.contact1Name}</Text>}
       <TextInput
         placeholder="Email Personne 1"
         keyboardType="email-address"
@@ -149,12 +155,13 @@ export default function RegisterScreen() {
         autoCapitalize="none"
       />
       <TextInput
-        placeholder="Téléphone Personne 1"
+        placeholder="Téléphone Personne 1 *"
         keyboardType="phone-pad"
         value={form.trustedContacts.person1.phone}
         onChangeText={(text) => handleTrustedContactChange('person1', 'phone', text)}
-        style={styles.input}
+        style={[styles.input, errors.contact1Phone ? styles.inputError : null]}
       />
+      {errors.contact1Phone && <Text style={styles.errorText}>{errors.contact1Phone}</Text>}
       <View style={styles.smsRow}>
         <Text style={styles.smsLabel}>SMS Personne 1</Text>
         <Switch
@@ -163,8 +170,8 @@ export default function RegisterScreen() {
         />
       </View>
 
-      {/* Personne 2 */}
-      <Text style={styles.personTitle}>Personne 2</Text>
+      {/* Personne 2 — optionnelle */}
+      <Text style={styles.personTitle}>Personne 2 (optionnel)</Text>
       <TextInput
         placeholder="Prénom Personne 2"
         value={form.trustedContacts.person2.firstName}
@@ -202,8 +209,8 @@ export default function RegisterScreen() {
         />
       </View>
 
-      {/* Personne 3 */}
-      <Text style={styles.personTitle}>Personne 3</Text>
+      {/* Personne 3 — optionnelle */}
+      <Text style={styles.personTitle}>Personne 3 (optionnel)</Text>
       <TextInput
         placeholder="Prénom Personne 3"
         value={form.trustedContacts.person3.firstName}
@@ -284,17 +291,22 @@ export default function RegisterScreen() {
         <TouchableOpacity
           style={[styles.button, (isLoading || !!confirmError || !confirmPassword) && styles.buttonDisabled]}
           onPress={() => {
-            if (!confirmPassword) {
-              return;
-            }
-            if (confirmError) {
-              return;
-            }
+            if (!confirmPassword) return;
+            if (confirmError) return;
             register();
           }}
           disabled={isLoading || !!confirmError || !confirmPassword}
         >
           <Text style={styles.buttonText}>Inscrire</Text>
+        </TouchableOpacity>
+      )}
+
+      {onGoToLogin && (
+        <TouchableOpacity style={styles.toggleBtn} onPress={onGoToLogin}>
+          <Text style={styles.toggleText}>
+            Déjà un compte ?{' '}
+            <Text style={styles.toggleLink}>Se connecter</Text>
+          </Text>
         </TouchableOpacity>
       )}
     </ScrollView>
@@ -394,5 +406,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     fontWeight: '500',
+  },
+  toggleBtn: {
+    marginTop: 24,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  toggleText: {
+    fontSize: 14,
+    color: '#546e7a',
+  },
+  toggleLink: {
+    color: '#2E86DE',
+    fontWeight: '700',
   },
 });

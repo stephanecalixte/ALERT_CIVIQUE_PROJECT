@@ -494,11 +494,11 @@ app.delete('/api/videos/:videoId', async (req, res) => {
 app.post('/api/livestream/start', async (req, res) => {
   try {
     const { userId, facing } = req.body;
-    
+
     if (!userId) {
       return res.status(400).json({ error: 'userId requis' });
     }
-    
+
     // Vérifier s'il y a déjà un stream actif pour cet utilisateur
     const existingStream = await LiveStream.findOne({ userId, status: 'active' });
     if (existingStream) {
@@ -510,11 +510,11 @@ app.post('/api/livestream/start', async (req, res) => {
         existing: true
       });
     }
-    
+
     // Générer un nouvel ID unique
     const lastStream = await LiveStream.findOne().sort({ livestreamId: -1 });
     const livestreamId = lastStream ? lastStream.livestreamId + 1 : 1;
-    
+
     const liveStream = new LiveStream({
       livestreamId,
       userId,
@@ -522,11 +522,11 @@ app.post('/api/livestream/start', async (req, res) => {
       startedAt: new Date(),
       status: 'active'
     });
-    
+
     await liveStream.save();
-    
+
     console.log(`✅ Live stream started: ${livestreamId} for user ${userId}`);
-    
+
     res.json({
       success: true,
       livestreamId,
@@ -541,11 +541,11 @@ app.post('/api/livestream/start', async (req, res) => {
 app.post('/api/livestream/end', async (req, res) => {
   try {
     const { livestreamId, endedAt, duration } = req.body;
-    
+
     if (!livestreamId) {
       return res.status(400).json({ error: 'livestreamId requis' });
     }
-    
+
     const liveStream = await LiveStream.findOneAndUpdate(
       { livestreamId },
       {
@@ -555,13 +555,13 @@ app.post('/api/livestream/end', async (req, res) => {
       },
       { new: true }
     );
-    
+
     if (!liveStream) {
       return res.status(404).json({ error: 'Stream non trouvé' });
     }
-    
+
     console.log(`✅ Live stream ended: ${livestreamId} for user ${liveStream.userId}`);
-    
+
     res.json({
       success: true,
       liveStream
@@ -575,23 +575,23 @@ app.post('/api/livestream/end', async (req, res) => {
 app.post('/api/livestream/update', async (req, res) => {
   try {
     const { livestreamId, videoUrl, videoId } = req.body;
-    
+
     if (!livestreamId) {
       return res.status(400).json({ error: 'livestreamId requis' });
     }
-    
+
     const liveStream = await LiveStream.findOneAndUpdate(
       { livestreamId },
       { videoUrl, videoId },
       { new: true }
     );
-    
+
     if (!liveStream) {
       return res.status(404).json({ error: 'Stream non trouvé' });
     }
-    
+
     console.log(`✅ Live stream updated: ${livestreamId} with video ${videoId}`);
-    
+
     res.json({
       success: true,
       liveStream
@@ -606,14 +606,14 @@ app.get('/api/livestream/list', async (req, res) => {
   try {
     const { userId, status, limit = 50 } = req.query;
     let query = {};
-    
+
     if (userId) query.userId = userId;
     if (status) query.status = status;
-    
+
     const streams = await LiveStream.find(query)
       .sort({ createdAt: -1 })
       .limit(parseInt(limit));
-      
+
     res.json(streams);
   } catch (error) {
     console.error('Error listing streams:', error);
@@ -623,15 +623,15 @@ app.get('/api/livestream/list', async (req, res) => {
 
 app.get('/api/livestream/active/:userId', async (req, res) => {
   try {
-    const stream = await LiveStream.findOne({ 
-      userId: req.params.userId, 
-      status: 'active' 
+    const stream = await LiveStream.findOne({
+      userId: req.params.userId,
+      status: 'active'
     });
-    
+
     if (!stream) {
       return res.status(404).json({ error: 'Aucun stream actif trouvé' });
     }
-    
+
     res.json(stream);
   } catch (error) {
     console.error('Error fetching active stream:', error);

@@ -11,7 +11,8 @@ interface LiveStreamScreenProps {
 }
 
 export default function LiveStreamScreen({ onClose, autoStart: autoStartProp = false }: LiveStreamScreenProps) {
-  const { userId } = useAuth();
+  const { user } = useAuth();
+  const userId = user?.userId?.toString();
   const router = useRouter();
   const params = useLocalSearchParams<{ autoStart?: string }>();
   const autoStart = autoStartProp || params.autoStart === 'true';

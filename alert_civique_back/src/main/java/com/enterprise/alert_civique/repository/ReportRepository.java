@@ -23,5 +23,6 @@ public interface ReportRepository  extends JpaRepository<Reports,Long>{
 
     @Query("SELECT r FROM Reports r WHERE r.user.userId = :userId AND r.status = :status")
     List<Reports> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") ReportsStatus status);
+
 }
 

@@ -4,41 +4,53 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { GeolocalisationProvider } from '@/components/GeolocalisationContext';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { AlertProvider } from '@/contexts/AlertContext';
+import { MessagesProvider } from '@/contexts/MessagesContext';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
 import LoadingPage from './views/loadingPage/LoadingPage';
+import RegisterScreen from './views/register-screen/RegisterScreen';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
-export default function RootLayout() {
+function AppContent() {
   const colorScheme = useColorScheme();
+  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 4000);
+    setTimeout(() => setLoading(false), 4000);
   }, []);
 
+  if (loading) return <LoadingPage />;
+
+  if (!isAuthenticated) return <RegisterScreen />;
+
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <GeolocalisationProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        </Stack>
+      </GeolocalisationProvider>
+      <StatusBar style="auto" />
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        {loading ? (
-          <LoadingPage />
-        ) : (
-          <GeolocalisationProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-            </Stack>
-          </GeolocalisationProvider>
-        )}
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <AlertProvider>
+        <MessagesProvider>
+          <AppContent />
+        </MessagesProvider>
+      </AlertProvider>
     </AuthProvider>
   );
 }

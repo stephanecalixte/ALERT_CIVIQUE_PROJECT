@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.enterprise.alert_civique.entity.ReportMessage;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -13,4 +14,7 @@ public interface ReportMessageRepository extends JpaRepository<ReportMessage, Lo
 
 
     Optional<ReportMessage> findByUser_UserId(Long userId);
+
+    /** Toutes les cartes de chat (signalements avec alertType) triées par createdAt */
+    List<ReportMessage> findByAlertTypeIsNotNullOrderByCreatedAtAsc();
 }

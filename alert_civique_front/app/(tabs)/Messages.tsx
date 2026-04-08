@@ -10,8 +10,9 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { useMessages } from '../../hooks/useMessages';
-import type { Message } from '../../hooks/useMessages';
+import { useMessagesContext } from '@/contexts/MessagesContext';
+import type { Message } from '@/contexts/MessagesContext';
+import { ALERT_CONFIGS } from '@/contexts/AlertContext';
 
 export default function MessagesScreen() {
   const {
@@ -23,7 +24,7 @@ export default function MessagesScreen() {
     flatListRef,
     setInputText,
     sendMessage,
-  } = useMessages();
+  } = useMessagesContext();
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -41,15 +42,35 @@ export default function MessagesScreen() {
 
   const renderMessage = ({ item }: { item: Message }) => {
     const isMyMessage = item.senderId === user?.id;
-    const isSystem = item.type === 'system';
-    const isAlert = item.type === 'alert';
+    const isSystem    = item.type === 'system';
+    const isAlert     = item.type === 'alert';
+    const isReport    = item.type === 'report';
+
+    // ── Carte de signalement incident ────────────────────────────────────────
+    if (isReport && item.alertType) {
+      const cfg = ALERT_CONFIGS[item.alertType];
+      return (
+        <View style={[styles.reportCard, { borderColor: cfg.color }]}>
+          <View style={[styles.reportIconCircle, { backgroundColor: cfg.color }]}>
+            <Text style={styles.reportEmoji}>{cfg.emoji}</Text>
+          </View>
+          <View style={styles.reportBody}>
+            <Text style={[styles.reportLabel, { color: cfg.color }]}>
+              {cfg.label.toUpperCase()}
+            </Text>
+            <Text style={styles.reportSender}>Signalé par {item.sender}</Text>
+            <Text style={styles.reportTime}>{item.timestamp}</Text>
+          </View>
+        </View>
+      );
+    }
 
     return (
       <View style={[
         styles.messageContainer,
         isMyMessage ? styles.myMessage :
-        isSystem ? styles.systemMessage :
-        isAlert ? styles.alertMessage :
+        isSystem    ? styles.systemMessage :
+        isAlert     ? styles.alertMessage :
         styles.otherMessage
       ]}>
         {!isSystem && !isMyMessage && (
@@ -67,8 +88,8 @@ export default function MessagesScreen() {
           <Text style={[
             styles.timestamp,
             isMyMessage && styles.timestampMine,
-            isAlert && styles.timestampAlert,
-            isSystem && styles.timestampSystem
+            isAlert     && styles.timestampAlert,
+            isSystem    && styles.timestampSystem
           ]}>
             {item.timestamp}
           </Text>
@@ -92,8 +113,7 @@ export default function MessagesScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {renderHeader()}
 
@@ -112,6 +132,8 @@ export default function MessagesScreen() {
         renderItem={renderMessage}
         style={styles.messagesList}
         contentContainerStyle={styles.messagesContainer}
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+        onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
@@ -341,5 +363,52 @@ const styles = StyleSheet.create({
   sendButtonText: {
     color: '#fff',
     fontWeight: '600',
+  },
+
+  // ── Carte rapport d'incident ──────────────────────────────────────────────
+  reportCard: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '92%',
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderRadius: 16,
+    padding: 12,
+    marginVertical: 8,
+    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  reportIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reportEmoji: {
+    fontSize: 26,
+  },
+  reportBody: {
+    flex: 1,
+  },
+  reportLabel: {
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  reportSender: {
+    fontSize: 12,
+    color: '#546e7a',
+    marginTop: 2,
+  },
+  reportTime: {
+    fontSize: 11,
+    color: '#90a4ae',
+    marginTop: 2,
   },
 });

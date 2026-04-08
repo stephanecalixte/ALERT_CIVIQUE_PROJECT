@@ -37,7 +37,9 @@ public class ReportMessageMapperService {
             entity.getReport() != null ? entity.getReport().getReportId() : null,
             entity.getMessages() != null ? entity.getMessages().getMessageId() : null,
             entity.getReason(),
-            entity.getCreatedAt() != null ? LocalDate.parse(entity.getCreatedAt()) : null
+            entity.getCreatedAt() != null ? LocalDate.parse(entity.getCreatedAt()) : null,
+            entity.getAlertType(),
+            entity.getSenderName()
         );
     }
 
@@ -65,6 +67,8 @@ public class ReportMessageMapperService {
         }
 
         reportMessage.setReason(dto.reason());
+        reportMessage.setAlertType(dto.alertType());
+        reportMessage.setSenderName(dto.senderName());
         reportMessage.setCreatedAt(
             dto.createdAt() != null ? dto.createdAt().toString() : LocalDate.now().toString()
         );

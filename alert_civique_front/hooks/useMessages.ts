@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { FlatList } from 'react-native';
 import io from 'socket.io-client';
+import { NODE_BASE_URL } from '@/lib/config';
+import { AlertType, ALERT_CONFIGS } from '@/contexts/AlertContext';
 
 export interface User {
   id: string;
@@ -15,10 +17,11 @@ export interface Message {
   sender: string;
   senderId: string;
   timestamp: string;
-  type?: 'text' | 'alert' | 'system';
+  type?: 'text' | 'alert' | 'system' | 'report';
+  alertType?: AlertType;  // présent quand type === 'report'
 }
 
-const SOCKET_URL = 'http://10.0.2.2:9091';
+const SOCKET_URL = NODE_BASE_URL;
 
 console.log('🔧 Chat hook loaded, SOCKET_URL:', SOCKET_URL);
 
@@ -164,6 +167,26 @@ export function useMessages() {
     }, 100);
   }, [inputText, socket, user, isConnected]);
 
+  // ─── Envoi d'un rapport d'incident dans le chat ───────────────────────────
+  const sendAlertReport = useCallback((type: AlertType) => {
+    if (!socket || !user) return;
+    const cfg = ALERT_CONFIGS[type];
+    const message: Message = {
+      id:        Date.now().toString(),
+      text:      cfg.chatLabel,
+      sender:    user.name,
+      senderId:  user.id,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      type:      'report',
+      alertType: type,
+    };
+    socket.emit('sendMessage', message);
+    setMessages(prev => [...prev, message]);
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  }, [socket, user]);
+
   return {
     messages,
     inputText,
@@ -173,5 +196,6 @@ export function useMessages() {
     flatListRef,
     setInputText,
     sendMessage,
+    sendAlertReport,
   };
 }

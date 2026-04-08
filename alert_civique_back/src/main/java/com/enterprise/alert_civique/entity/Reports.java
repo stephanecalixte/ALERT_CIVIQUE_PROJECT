@@ -65,4 +65,12 @@ public class Reports {
 
     @OneToMany(mappedBy = "report")
     private Set<Media> medias;
+
+    /** Type d'alerte civique : agression, accident, incendie, sos */
+    @Column(name = "alert_type")
+    private String alertType;
+
+    /** Nom de l'émetteur (citoyen anonyme ou pseudo socket) */
+    @Column(name = "sender_name")
+    private String senderName;
 }
