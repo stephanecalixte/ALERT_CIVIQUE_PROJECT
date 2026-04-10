@@ -1,7 +1,8 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View, Platform, Text, Animated, Easing } from 'react-native';
+import { StyleSheet, View, Platform, Text, Animated, Easing, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 
 import { HapticTab } from '@/components/haptic-tab';
@@ -71,20 +72,74 @@ function IncidentBanner() {
   );
 }
 
-// ── Cloche avec badge ─────────────────────────────────────────────────────────
+// ── Cloche avec badge (total incidents non résolus) ───────────────────────────
 function BellWithBadge() {
-  const { unreadIncidentCount } = useMessagesContext();
+  const { pendingIncidentCount } = useMessagesContext();
+  const shakeAnim = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (pendingIncidentCount === 0) return;
+    const shake = Animated.sequence([
+      Animated.timing(shakeAnim, { toValue:  8, duration: 80, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -8, duration: 80, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue:  6, duration: 80, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -6, duration: 80, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue:  0, duration: 80, useNativeDriver: true }),
+    ]);
+    // Secouer toutes les 4 secondes tant qu'il y a des incidents
+    const loop = Animated.loop(
+      Animated.sequence([shake, Animated.delay(4000)])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [pendingIncidentCount, shakeAnim]);
+
   return (
-    <View>
+    <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
       <IconSymbol size={22} name="bell.fill" color="white" />
-      {unreadIncidentCount > 0 && (
+      {pendingIncidentCount > 0 && (
         <View style={styles.bellBadge}>
           <Text style={styles.bellBadgeText}>
-            {unreadIncidentCount > 9 ? '9+' : unreadIncidentCount}
+            {pendingIncidentCount > 9 ? '9+' : pendingIncidentCount}
           </Text>
         </View>
       )}
-    </View>
+    </Animated.View>
+  );
+}
+
+// ── Bouton chat animé si incidents en cours ────────────────────────────────────
+function ChatAlertButton() {
+  const { pendingIncidentCount } = useMessagesContext();
+  const router = useRouter();
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+
+  React.useEffect(() => {
+    if (pendingIncidentCount === 0) {
+      pulseAnim.setValue(1);
+      return;
+    }
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.2, duration: 500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1,   duration: 500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [pendingIncidentCount, pulseAnim]);
+
+  if (pendingIncidentCount === 0) return null;
+
+  return (
+    <TouchableOpacity onPress={() => router.push('/(tabs)/Messages')} activeOpacity={0.8}>
+      <Animated.View style={[styles.chatAlertBtn, { transform: [{ scale: pulseAnim }] }]}>
+        <Text style={styles.chatAlertEmoji}>💬</Text>
+        <View style={styles.chatAlertBadge}>
+          <Text style={styles.chatAlertBadgeText}>{pendingIncidentCount > 9 ? '9+' : pendingIncidentCount}</Text>
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 }
 
@@ -99,7 +154,9 @@ function TopLayout() {
         <View style={styles.logoContainer}>
           <ShieldLogo size={44} />
         </View>
-        <View style={styles.topRight} />
+        <View style={styles.topRight}>
+          <ChatAlertButton />
+        </View>
       </View>
       <IncidentBanner />
     </View>
@@ -228,6 +285,26 @@ const styles = StyleSheet.create({
     width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff',
     opacity: 0.8,
   },
+
+  // Bouton chat animé
+  chatAlertBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: '#b71c1c',
+    justifyContent: 'center', alignItems: 'center',
+    borderWidth: 2, borderColor: '#ff6659',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4, shadowRadius: 4, elevation: 6,
+  },
+  chatAlertEmoji:     { fontSize: 16 },
+  chatAlertBadge: {
+    position: 'absolute', top: -5, right: -5,
+    backgroundColor: '#fff',
+    minWidth: 16, height: 16, borderRadius: 8,
+    justifyContent: 'center', alignItems: 'center',
+    paddingHorizontal: 2,
+    borderWidth: 1.5, borderColor: '#b71c1c',
+  },
+  chatAlertBadgeText: { color: '#b71c1c', fontSize: 9, fontWeight: '900' },
 
   // Tab bar
   tabBar: {

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat -ano)",
+      "Bash(cmd /c \"tasklist /FI \"\"PID eq 2192\"\"\")",
+      "Bash(cmd /c \"tasklist | findstr /i node\")",
+      "Bash(cmd /c \"wmic process where \"\"ProcessId=2192\"\" get Name,CommandLine 2>nul\")",
+      "Bash(curl -s http://localhost:9091/health)",
+      "Bash(curl -s http://localhost:9091/)",
+      "Bash(cmd /c \"curl -s http://localhost:9091/health\")",
+      "Bash(cmd /c \"taskkill /PID 2192 /F\")",
+      "Bash(curl -s -X POST http://localhost:9091/api/livestream/start -H \"Content-Type: application/json\" -d '{\"\"\"\"userId\"\"\"\":\"\"\"\"test123\"\"\"\",\"\"\"\"facing\"\"\"\":\"\"\"\"back\"\"\"\",\"\"\"\"startedAt\"\"\"\":\"\"\"\"2026-03-31T10:00:00.000Z\"\"\"\"}')",
+      "Bash(cmd /c \"for /f \"\"tokens=5\"\" %a in \\(''netstat -ano ^| findstr :9091 ^| findstr LISTENING''\\) do taskkill /PID %a /F\")",
+      "Bash(cmd /c \"taskkill /PID 47328 /F 2>nul & echo done\")",
+      "Bash(cmd /c \"taskkill /F /IM node.exe 2>nul & echo killed\")",
+      "Bash(cmd /c \"wmic process where ProcessId=47328 get Name,CommandLine,ProcessId 2>nul\")"
+    ]
+  }
+}

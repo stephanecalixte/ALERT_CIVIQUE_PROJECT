@@ -1,8 +1,8 @@
-import React, { createContext, useContext, ReactNode, useEffect, useRef, useState, useCallback } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import io from 'socket.io-client';
 import { NODE_BASE_URL, JAVA_BASE_URL } from '@/lib/config';
-import { AlertType, ALERT_CONFIGS } from '@/contexts/AlertContext';
+import { AlertType, ALERT_CONFIGS, useAlert } from '@/contexts/AlertContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface ChatUser {
@@ -22,6 +22,11 @@ export interface Message {
   alertType?: AlertType;
 }
 
+export interface ActiveIncident {
+  alertType: AlertType;
+  count: number;
+}
+
 interface MessagesContextType {
   messages: Message[];
   inputText: string;
@@ -33,7 +38,20 @@ interface MessagesContextType {
   sendMessage: () => void;
   sendAlertReport: (type: AlertType) => void;
   unreadIncidentCount: number;
+  pendingIncidentCount: number;
+  activeIncidents: ActiveIncident[];
   clearIncidentCount: () => void;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function formatDate(createdAt: string | number[] | undefined): string {
+  if (!createdAt) return '--:--';
+  try {
+    const d = Array.isArray(createdAt)
+      ? new Date((createdAt as number[])[0], (createdAt as number[])[1] - 1, (createdAt as number[])[2])
+      : new Date(createdAt as string);
+    return d.toLocaleDateString('fr-FR');
+  } catch { return '--:--'; }
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -41,45 +59,134 @@ const MessagesContext = createContext<MessagesContextType | undefined>(undefined
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export const MessagesProvider = ({ children }: { children: ReactNode }) => {
-  const [messages, setMessages]     = useState<Message[]>([]);
-  const [inputText, setInputText]   = useState('');
-  const [socket, setSocket]         = useState<SocketType | null>(null);
+  const [messages, setMessages]       = useState<Message[]>([]);
+  const [inputText, setInputText]     = useState('');
+  const [socket, setSocket]           = useState<SocketType | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [user, setUser]             = useState<ChatUser | null>(null);
-  const [loading, setLoading]       = useState(true);
+  const [user, setUser]               = useState<ChatUser | null>(null);
+  const [loading, setLoading]         = useState(true);
   const [unreadIncidentCount, setUnreadIncidentCount] = useState(0);
   const flatListRef = useRef<FlatList<Message> | null>(null);
+  const { setAlertType } = useAlert();
+
+  // Nb d'incidents (type 'report') visibles dans le chat — mis à jour automatiquement
+  const pendingIncidentCount = useMemo(
+    () => messages.filter(m => m.type === 'report').length,
+    [messages]
+  );
+
+  // Incidents groupés par type (pour les marqueurs carte)
+  const activeIncidents = useMemo((): ActiveIncident[] => {
+    const counts = new Map<AlertType, number>();
+    messages
+      .filter(m => m.type === 'report' && m.alertType)
+      .forEach(m => {
+        const t = m.alertType as AlertType;
+        counts.set(t, (counts.get(t) ?? 0) + 1);
+      });
+    return Array.from(counts.entries()).map(([alertType, count]) => ({ alertType, count }));
+  }, [messages]);
 
   const clearIncidentCount = useCallback(() => setUnreadIncidentCount(0), []);
 
-  // ── Chargement des cartes de signalement persistées (Java backend) ─────────
-  const loadPersistedReports = useCallback(async (): Promise<Message[]> => {
-    try {
-      const res = await fetch(`${JAVA_BASE_URL}/api/reportMessages/chat`);
-      if (!res.ok) return [];
-      const data: Array<{
-        reportMessageId: number;
-        alertType: string;
-        senderName: string;
-        createdAt: string;
-      }> = await res.json();
-      return data
-        .filter(r => r.alertType)
-        .map(r => ({
-          id:        `report_${r.reportMessageId}`,
-          text:      ALERT_CONFIGS[r.alertType as AlertType]?.chatLabel ?? r.alertType,
-          sender:    r.senderName ?? 'Citoyen',
-          senderId:  `persisted_${r.reportMessageId}`,
-          timestamp: r.createdAt
-            ? new Date(r.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            : '--:--',
-          type:      'report' as const,
-          alertType: r.alertType as AlertType,
-        }));
-    } catch {
-      return [];
+  // ── Restaure le marqueur map selon la liste de cartes persistées ─────────────
+  const restoreAlertMarker = useCallback((cards: Message[]) => {
+    const reportCards = cards.filter(c => c.type === 'report' && c.alertType);
+    if (reportCards.length > 0) {
+      // Prendre la carte la plus récente (dernière dans la liste triée)
+      const mostRecent = reportCards[reportCards.length - 1];
+      setAlertType(mostRecent.alertType as AlertType);
     }
+  }, [setAlertType]);
+
+  // ── Chargement des cartes de signalement persistées (Java backend) ─────────
+  // Fusionne ReportMessages (alertType non null) + Reports PENDING/IN_REVIEW (alertType non null)
+  const loadPersistedReports = useCallback(async (): Promise<Message[]> => {
+    const [msgRes, rptRes] = await Promise.allSettled([
+      fetch(`${JAVA_BASE_URL}/api/reportMessages/chat`),
+      fetch(`${JAVA_BASE_URL}/api/report`),
+    ]);
+
+    // ── ReportMessages ────────────────────────────────────────────────────────
+    let msgCards: Message[] = [];
+    const linkedReportIds = new Set<number>(); // reportIds déjà couverts par un ReportMessage
+
+    if (msgRes.status === 'fulfilled' && msgRes.value.ok) {
+      try {
+        const data: Array<{
+          reportMessageId: number;
+          alertType: string;
+          senderName: string;
+          createdAt: string | number[];
+          reportId?: number;
+        }> = await msgRes.value.json();
+
+        msgCards = data
+          .filter(r => r.alertType)
+          .map(r => {
+            if (r.reportId) linkedReportIds.add(r.reportId);
+            return {
+              id:        `report_${r.reportMessageId}`,
+              text:      ALERT_CONFIGS[r.alertType as AlertType]?.chatLabel ?? r.alertType,
+              sender:    r.senderName ?? 'Citoyen',
+              senderId:  `persisted_${r.reportMessageId}`,
+              timestamp: formatDate(r.createdAt),
+              type:      'report' as const,
+              alertType: r.alertType as AlertType,
+            };
+          });
+      } catch { /* ignore */ }
+    }
+
+    // ── Reports PENDING / IN_REVIEW sans ReportMessage lié ───────────────────
+    let rptCards: Message[] = [];
+    const ACTIVE_STATUSES = new Set(['PENDING', 'IN_REVIEW', 'VALIDATED']);
+
+    if (rptRes.status === 'fulfilled' && rptRes.value.ok) {
+      try {
+        const reports: Array<{
+          reportId: number;
+          alertType: string | null;
+          description: string;
+          status: string;
+          createdAt: string | number[];
+          senderName: string | null;
+        }> = await rptRes.value.json();
+
+        rptCards = reports
+          .filter(r =>
+            r.alertType &&
+            ACTIVE_STATUSES.has(r.status) &&
+            !linkedReportIds.has(r.reportId) // éviter le doublon avec ReportMessages
+          )
+          .map(r => ({
+            id:        `report_r_${r.reportId}`,
+            text:      ALERT_CONFIGS[r.alertType as AlertType]?.chatLabel ?? r.alertType!,
+            sender:    r.senderName ?? 'Citoyen',
+            senderId:  `report_${r.reportId}`,
+            timestamp: formatDate(r.createdAt),
+            type:      'report' as const,
+            alertType: r.alertType as AlertType,
+          }));
+      } catch { /* ignore */ }
+    }
+
+    return [...msgCards, ...rptCards];
   }, []);
+
+  // ── Chargement initial des signalements (indépendant du socket) ─────────────
+  useEffect(() => {
+    loadPersistedReports().then(cards => {
+      if (cards.length === 0) return;
+      // Restaurer le marqueur carte avec l'alerte la plus récente
+      restoreAlertMarker(cards);
+      setMessages(prev => {
+        const existingIds = new Set(prev.map(m => m.id));
+        const newCards = cards.filter(c => !existingIds.has(c.id));
+        return newCards.length > 0 ? [...prev, ...newCards] : prev;
+      });
+    });
+  }, [loadPersistedReports, restoreAlertMarker]);
 
   // ── Initialisation socket (une seule fois au montage du Provider) ──────────
   useEffect(() => {
@@ -110,21 +217,25 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
     newSocket.on('messageHistory', async (history: Message[]) => {
       // Fusionner les messages socket avec les cartes persistées dans le backend Java
       const persistedCards = await loadPersistedReports();
-      // Dédupliquer : si un report_X existe déjà dans history (via socket), on le retire
       const historyWithoutDupes = history.filter(
         m => !persistedCards.some(p => p.id === m.id)
       );
-      // Mélanger et trier par timestamp (les cartes persistées n'ont pas d'ordre garanti)
       const merged = [...historyWithoutDupes, ...persistedCards].sort((a, b) =>
         a.id.localeCompare(b.id)
       );
       setMessages(merged);
+      // Restaurer le marqueur map après merge
+      restoreAlertMarker(merged);
       setLoading(false);
       setTimeout(() => flatListRef.current?.scrollToEnd({ animated: false }), 150);
     });
 
     newSocket.on('newMessage', (message: Message) => {
       setMessages(prev => [...prev, message]);
+      // Si c'est un rapport d'incident temps-réel → mettre à jour le marqueur
+      if (message.type === 'report' && message.alertType) {
+        setAlertType(message.alertType);
+      }
       setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
     });
 
@@ -161,10 +272,11 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
       }]);
     });
 
-    newSocket.on('disconnect', ()       => setIsConnected(false));
-    newSocket.on('connect_error', ()    => { setIsConnected(false); setLoading(false); });
+    newSocket.on('disconnect',    () => setIsConnected(false));
+    newSocket.on('connect_error', () => { setIsConnected(false); setLoading(false); });
 
     return () => { newSocket.disconnect(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Envoi d'un message texte ──────────────────────────────────────────────
@@ -179,7 +291,6 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
     };
     socket.emit('sendMessage', message);
     setInputText('');
-    // Le serveur broadcast via 'newMessage' → pas d'ajout local pour éviter doublon
   }, [inputText, socket, user, isConnected]);
 
   // ── Persistance du signalement dans le backend Java ──────────────────────
@@ -192,7 +303,7 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
           alertType:  type,
           senderName: senderName,
           reason:     ALERT_CONFIGS[type].chatLabel,
-          createdAt:  new Date().toISOString().split('T')[0], // LocalDate format YYYY-MM-DD
+          createdAt:  new Date().toISOString().split('T')[0],
         }),
       });
     } catch {
@@ -219,7 +330,6 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
       setMessages(prev => [...prev, message]);
       setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
     }
-    // Persister dans MariaDB via le backend Java
     persistReportToBackend(type, senderName);
     setUnreadIncidentCount(prev => prev + 1);
   }, [socket, user, isConnected, persistReportToBackend]);
@@ -228,7 +338,7 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
     <MessagesContext.Provider value={{
       messages, inputText, isConnected, user, loading,
       flatListRef, setInputText, sendMessage, sendAlertReport,
-      unreadIncidentCount, clearIncidentCount,
+      unreadIncidentCount, pendingIncidentCount, activeIncidents, clearIncidentCount,
     }}>
       {children}
     </MessagesContext.Provider>

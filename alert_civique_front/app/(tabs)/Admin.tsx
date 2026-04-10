@@ -7,7 +7,7 @@ import { AdminService, AdminReport } from '@/app/lib/services/AdminService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAlert } from '@/contexts/AlertContext';
 
-type Section = 'dashboard' | 'reports' | 'users' | 'streams' | 'emergencies' | 'database';
+type Section = 'dashboard' | 'alerts' | 'reports' | 'users' | 'streams' | 'emergencies' | 'database';
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING:   '#FF6F00',
@@ -82,6 +82,129 @@ function Dashboard({ token }: { token: string }) {
         </Text>
       </View>
     </ScrollView>
+  );
+}
+
+const ALERT_TYPE_COLORS: Record<string, string> = {
+  agression: '#e53935',
+  accident:  '#FF6F00',
+  incendie:  '#FF3D00',
+  sos:       '#b71c1c',
+};
+const ALERT_TYPE_LABELS: Record<string, string> = {
+  agression: '🚨 Agression',
+  accident:  '🚗 Accident',
+  incendie:  '🔥 Incendie',
+  sos:       '🆘 SOS',
+};
+
+function formatCreatedAt(createdAt: string | number[] | undefined): string {
+  if (!createdAt) return '—';
+  if (Array.isArray(createdAt)) {
+    // Jackson LocalDate sérialise en [year, month, day]
+    const [y, m, d] = createdAt as number[];
+    return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
+  }
+  try { return new Date(createdAt).toLocaleDateString('fr-FR'); } catch { return String(createdAt); }
+}
+
+// ── CitizenAlerts ─────────────────────────────────────────────────────────────
+function CitizenAlerts({ token }: { token: string }) {
+  const [alerts, setAlerts]   = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState<string | null>(null);
+  const [filter, setFilter]   = useState<string>('ALL');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try { setAlerts(await AdminService.getReportMessages(token)); }
+    catch (e: any) {
+      setError(e?.message ?? 'Erreur réseau');
+      console.error('Admin getReportMessages:', e?.message);
+    }
+    finally { setLoading(false); }
+  }, [token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleDelete = (a: any) => {
+    Alert.alert(
+      'Supprimer l\'alerte',
+      `Supprimer l'alerte #${a.reportMessageId} ?`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer', style: 'destructive',
+          onPress: async () => {
+            try { await AdminService.deleteReportMessage(a.reportMessageId, token); load(); }
+            catch { Alert.alert('Erreur', 'Impossible de supprimer.'); }
+          },
+        },
+      ]
+    );
+  };
+
+  const alertTypes = ['ALL', 'agression', 'accident', 'incendie', 'sos'];
+  const visible = filter === 'ALL' ? alerts : alerts.filter(a => a.alertType === filter);
+
+  return (
+    <View style={styles.section}>
+      {error && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorBannerText}>⚠️ {error}</Text>
+          <TouchableOpacity onPress={load}><Text style={styles.errorBannerText}>↻ Réessayer</Text></TouchableOpacity>
+        </View>
+      )}
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
+        {alertTypes.map(f => (
+          <TouchableOpacity
+            key={f}
+            style={[styles.filterChip, filter === f && styles.filterChipActive,
+              f !== 'ALL' && { backgroundColor: ALERT_TYPE_COLORS[f] + '22' }]}
+            onPress={() => setFilter(f)}
+          >
+            <Text style={[styles.filterChipText, filter === f && styles.filterChipTextActive]}>
+              {f === 'ALL' ? 'Tous' : ALERT_TYPE_LABELS[f]}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}>
+        <Text style={styles.sectionTitle}>{visible.length} alerte{visible.length > 1 ? 's' : ''} citoyenne{visible.length > 1 ? 's' : ''}</Text>
+        {visible.length === 0 && !loading && (
+          <Text style={styles.emptyText}>Aucune alerte citoyenne</Text>
+        )}
+        {visible.map(a => (
+          <View
+            key={a.reportMessageId}
+            style={[styles.reportCard, { borderLeftWidth: 4, borderLeftColor: ALERT_TYPE_COLORS[a.alertType] ?? '#546e7a' }]}
+          >
+            <View style={styles.reportHeader}>
+              <View style={[styles.statusBadge, { backgroundColor: ALERT_TYPE_COLORS[a.alertType] ?? '#546e7a' }]}>
+                <Text style={styles.statusText}>{ALERT_TYPE_LABELS[a.alertType] ?? a.alertType}</Text>
+              </View>
+              <Text style={styles.reportId}>#{a.reportMessageId}</Text>
+            </View>
+
+            {a.reason && <Text style={styles.reportDesc} numberOfLines={2}>{a.reason}</Text>}
+            {a.senderName && <Text style={styles.reportMeta}>👤 {a.senderName}</Text>}
+            <Text style={styles.reportMeta}>🗓 {formatCreatedAt(a.createdAt)}</Text>
+
+            <View style={styles.actionRow}>
+              <TouchableOpacity
+                style={[styles.actionBtn, { backgroundColor: '#c62828' }]}
+                onPress={() => handleDelete(a)}
+              >
+                <Text style={styles.actionBtnText}>🗑 Supprimer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -522,7 +645,8 @@ export default function AdminScreen() {
 
   const tabs: { key: Section; label: string; emoji: string }[] = [
     { key: 'dashboard',   label: 'Tableau',      emoji: '📊' },
-    { key: 'reports',     label: 'Signalements', emoji: '🚨' },
+    { key: 'alerts',      label: 'Alertes',      emoji: '🚨' },
+    { key: 'reports',     label: 'Signalements', emoji: '📋' },
     { key: 'users',       label: 'Utilisateurs', emoji: '👥' },
     { key: 'streams',     label: 'Streams',      emoji: '📹' },
     { key: 'emergencies', label: 'Urgences',     emoji: '🏛️' },
@@ -555,12 +679,13 @@ export default function AdminScreen() {
 
       {/* Contenu */}
       <View style={styles.content}>
-        {activeSection === 'dashboard'   && <Dashboard   token={token} />}
-        {activeSection === 'reports'     && <Reports     token={token} />}
-        {activeSection === 'users'       && <Users       token={token} />}
-        {activeSection === 'streams'     && <Streams     token={token} />}
-        {activeSection === 'emergencies' && <Emergencies token={token} />}
-        {activeSection === 'database'    && <Database    token={token} />}
+        {activeSection === 'dashboard'   && <Dashboard      token={token} />}
+        {activeSection === 'alerts'      && <CitizenAlerts  token={token} />}
+        {activeSection === 'reports'     && <Reports        token={token} />}
+        {activeSection === 'users'       && <Users          token={token} />}
+        {activeSection === 'streams'     && <Streams        token={token} />}
+        {activeSection === 'emergencies' && <Emergencies    token={token} />}
+        {activeSection === 'database'    && <Database       token={token} />}
       </View>
     </View>
   );

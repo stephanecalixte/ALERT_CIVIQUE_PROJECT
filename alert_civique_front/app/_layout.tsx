@@ -12,6 +12,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
 import LoadingPage from './views/loadingPage/LoadingPage';
 import RegisterScreen from './views/register-screen/RegisterScreen';
+import LoginScreen from './views/login-screen/LoginScreen';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -21,6 +22,7 @@ function AppContent() {
   const colorScheme = useColorScheme();
   const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 4000);
@@ -28,7 +30,12 @@ function AppContent() {
 
   if (loading) return <LoadingPage />;
 
-  if (!isAuthenticated) return <RegisterScreen />;
+  if (!isAuthenticated) {
+    if (showLogin) {
+      return <LoginScreen onGoToRegister={() => setShowLogin(false)} />;
+    }
+    return <RegisterScreen onGoToLogin={() => setShowLogin(true)} />;
+  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

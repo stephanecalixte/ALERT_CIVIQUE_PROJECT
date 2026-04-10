@@ -24,7 +24,14 @@ export default function MessagesScreen() {
     flatListRef,
     setInputText,
     sendMessage,
+    pendingIncidentCount,
+    clearIncidentCount,
   } = useMessagesContext();
+
+  // Marquer les incidents comme lus quand on ouvre le chat
+  React.useEffect(() => {
+    clearIncidentCount();
+  }, [clearIncidentCount]);
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -122,6 +129,16 @@ export default function MessagesScreen() {
           <Text style={styles.offlineText}>
             ⚠️ Vous êtes hors ligne. Reconnexion en cours...
           </Text>
+        </View>
+      )}
+
+      {pendingIncidentCount > 0 && (
+        <View style={styles.incidentsBanner}>
+          <Text style={styles.incidentsBannerEmoji}>🚨</Text>
+          <Text style={styles.incidentsBannerText}>
+            {pendingIncidentCount} incident{pendingIncidentCount > 1 ? 's' : ''} en cours — non traité{pendingIncidentCount > 1 ? 's' : ''}
+          </Text>
+          <View style={styles.incidentsPulse} />
         </View>
       )}
 
@@ -228,6 +245,33 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 12,
     fontWeight: '500',
+  },
+  incidentsBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#b71c1c',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  incidentsBannerEmoji: {
+    fontSize: 16,
+  },
+  incidentsBannerText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    flex: 1,
+    textAlign: 'center',
+  },
+  incidentsPulse: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#fff',
+    opacity: 0.9,
   },
   messagesList: {
     flex: 1,

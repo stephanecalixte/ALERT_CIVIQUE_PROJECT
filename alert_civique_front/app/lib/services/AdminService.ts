@@ -33,6 +33,17 @@ export interface AdminReport {
   aiConfidenceScore?: number;
 }
 
+// ── ReportMessages (alertes citoyens) ─────────────────────────────────────────
+export interface AdminReportMessage {
+  reportMessageId: number;
+  alertType: string;
+  senderName: string;
+  reason: string;
+  createdAt: string | number[];
+  userId?: number;
+  reportId?: number;
+}
+
 export const AdminService = {
   // Reports
   getReports: (token: string) =>
@@ -64,6 +75,13 @@ export const AdminService = {
 
   deleteEmergency: (id: number, token: string) =>
     req('DELETE', `/api/emergencies/${id}`, token),
+
+  // ReportMessages (alertes citoyens)
+  getReportMessages: (token: string) =>
+    req<AdminReportMessage[]>('GET', '/api/reportMessages', token),
+
+  deleteReportMessage: (id: number, token: string) =>
+    req('DELETE', `/api/reportMessages/${id}`, token),
 
   // Push Notifications
   getPushNotifications: (userId: number, token: string) =>

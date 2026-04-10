@@ -52,7 +52,12 @@ public class Users {
 
     @Builder.Default // ✅ Fix du warning Lombok
     @Column(name = "active")
-    private boolean active = false;
+    private Boolean active = false;
+
+    /** Compatibilité avec isActive() généré par Lombok sur boolean primitif */
+    public boolean isActive() {
+        return active != null && active;
+    }
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
