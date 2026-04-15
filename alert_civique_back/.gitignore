@@ -59,3 +59,5 @@ docker-compose.override.yml
 .DS_Store
 .env*
 !.env.example
+.md
+.claude

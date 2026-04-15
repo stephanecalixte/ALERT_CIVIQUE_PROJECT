@@ -26,7 +26,14 @@
       "Bash(curl -s \"http://localhost:9090/api/reportMessages/chat\")",
       "Bash(curl -s \"http://localhost:9090/api/report\")",
       "Bash(curl -s \"http://localhost:9090/api/reportMessages\")",
-      "Bash(curl -s -X POST http://localhost:9090/api/reportMessages -H 'Content-Type: application/json' -d '{\"alertType\":\"incendie\",\"senderName\":\"Test\",\"reason\":\"Test incendie\",\"createdAt\":\"2026-04-15\"}')"
+      "Bash(curl -s -X POST http://localhost:9090/api/reportMessages -H 'Content-Type: application/json' -d '{\"alertType\":\"incendie\",\"senderName\":\"Test\",\"reason\":\"Test incendie\",\"createdAt\":\"2026-04-15\"}')",
+      "Bash(mysql -u root -pMindheart2025 -h localhost -P 3306 -D alertdb -e \"SELECT user_id, firstname, lastname, email, active, password FROM users LIMIT 5;\")",
+      "Bash(mysql -u root -pMindheart2025 -h localhost -P 3306 alertdb -e \"SELECT user_id, firstname, email, active, LEFT\\(password,30\\) as pwd_preview FROM users;\")",
+      "Bash(mysql --user=root --password=Mindheart2025 --port=3306 --database=alertdb --execute=\"SELECT user_id, firstname, email, active FROM users;\")",
+      "Bash(mysql --user=root --password=Mindheart2025 --port=3306 --database=alertdb --execute=\"SELECT COUNT\\(*\\) FROM users;\")",
+      "Bash(mysql --user=root --password=Mindheart2025 --port=3306 --database=alertdb --execute=\"SELECT * FROM roles;\")",
+      "Bash(mysql \"--user=root\" \"--password=Mindheart2025\" \"--port=3306\" \"--database=alertdb\" \"--execute=SHOW TABLES;\")",
+      "Bash(mysql \"--user=root\" \"--password=Mindheart2025\" \"--port=3306\" \"--database=alertdb\" \"--execute=SELECT * FROM roles;\")"
     ]
   }
 }
