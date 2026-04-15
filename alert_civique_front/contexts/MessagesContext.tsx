@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode, useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import io from 'socket.io-client';
+import * as Location from 'expo-location';
 import { NODE_BASE_URL, JAVA_BASE_URL } from '@/lib/config';
 import { AlertType, ALERT_CONFIGS, useAlert } from '@/contexts/AlertContext';
 
@@ -25,6 +26,8 @@ export interface Message {
 export interface ActiveIncident {
   alertType: AlertType;
   count: number;
+  lat?: number;  // Coordonnées GPS réelles si disponibles
+  lon?: number;
 }
 
 interface MessagesContextType {
@@ -33,6 +36,7 @@ interface MessagesContextType {
   isConnected: boolean;
   user: ChatUser | null;
   loading: boolean;
+  region: string;
   flatListRef: React.RefObject<FlatList<Message> | null>;
   setInputText: (text: string) => void;
   sendMessage: () => void;
@@ -44,6 +48,45 @@ interface MessagesContextType {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/**
+ * Détecte la région géographique de l'utilisateur via Nominatim (OpenStreetMap).
+ * Format retourné : "fr_75" (France, dép.75), "us_CA" (USA, California), "global" (fallback).
+ */
+async function detectRegion(): Promise<string> {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') return 'global';
+
+    const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    const { latitude: lat, longitude: lon } = pos.coords;
+
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+      { headers: { 'User-Agent': 'AlertCivique/1.0' } }
+    );
+    if (!res.ok) return 'global';
+
+    const data = await res.json();
+    const addr = data.address ?? {};
+    const cc   = (addr.country_code ?? 'xx').toLowerCase();
+
+    if (cc === 'fr') {
+      // France → code département (2 chiffres ou 2A/2B pour la Corse)
+      const postcode: string = addr.postcode ?? '';
+      const dept = postcode.slice(0, 2) || (addr.county ?? '').slice(0, 6).replace(/\s+/g, '_').toLowerCase();
+      return dept ? `fr_${dept}` : 'fr';
+    }
+
+    // Autres pays → pays_région (20 caractères max pour la région)
+    const state = (addr.state ?? addr.region ?? 'unknown')
+      .replace(/\s+/g, '_').toLowerCase().slice(0, 20);
+    return `${cc}_${state}`;
+  } catch {
+    return 'global';
+  }
+}
+
 function formatDate(createdAt: string | number[] | undefined): string {
   if (!createdAt) return '--:--';
   try {
@@ -65,6 +108,7 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser]               = useState<ChatUser | null>(null);
   const [loading, setLoading]         = useState(true);
+  const [region, setRegion]           = useState('global');
   const [unreadIncidentCount, setUnreadIncidentCount] = useState(0);
   const flatListRef = useRef<FlatList<Message> | null>(null);
   const { setAlertType } = useAlert();
@@ -125,14 +169,15 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
           .filter(r => r.alertType)
           .map(r => {
             if (r.reportId) linkedReportIds.add(r.reportId);
+            const at = r.alertType.toLowerCase() as AlertType;
             return {
               id:        `report_${r.reportMessageId}`,
-              text:      ALERT_CONFIGS[r.alertType as AlertType]?.chatLabel ?? r.alertType,
+              text:      ALERT_CONFIGS[at]?.chatLabel ?? r.alertType,
               sender:    r.senderName ?? 'Citoyen',
               senderId:  `persisted_${r.reportMessageId}`,
               timestamp: formatDate(r.createdAt),
               type:      'report' as const,
-              alertType: r.alertType as AlertType,
+              alertType: at,
             };
           });
       } catch { /* ignore */ }
@@ -156,18 +201,21 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
         rptCards = reports
           .filter(r =>
             r.alertType &&
-            ACTIVE_STATUSES.has(r.status) &&
-            !linkedReportIds.has(r.reportId) // éviter le doublon avec ReportMessages
+            ACTIVE_STATUSES.has(r.status?.toUpperCase()) &&
+            !linkedReportIds.has(r.reportId)
           )
-          .map(r => ({
-            id:        `report_r_${r.reportId}`,
-            text:      ALERT_CONFIGS[r.alertType as AlertType]?.chatLabel ?? r.alertType!,
-            sender:    r.senderName ?? 'Citoyen',
-            senderId:  `report_${r.reportId}`,
-            timestamp: formatDate(r.createdAt),
-            type:      'report' as const,
-            alertType: r.alertType as AlertType,
-          }));
+          .map(r => {
+            const at = r.alertType!.toLowerCase() as AlertType;
+            return {
+              id:        `report_r_${r.reportId}`,
+              text:      ALERT_CONFIGS[at]?.chatLabel ?? r.alertType!,
+              sender:    r.senderName ?? 'Citoyen',
+              senderId:  `report_${r.reportId}`,
+              timestamp: formatDate(r.createdAt),
+              type:      'report' as const,
+              alertType: at,
+            };
+          });
       } catch { /* ignore */ }
     }
 
@@ -199,12 +247,18 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
 
     setSocket(newSocket);
 
-    newSocket.on('connect', () => {
+    newSocket.on('connect', async () => {
       setIsConnected(true);
       setLoading(true);
+
+      // Détection région avant d'émettre userConnect
+      const userRegion = await detectRegion();
+      setRegion(userRegion);
+
       newSocket.emit('userConnect', {
         userId:   `temp_${Date.now()}`,
         userName: `Citoyen_${Math.floor(Math.random() * 1000)}`,
+        region:   userRegion,
       });
       newSocket.emit('getMessageHistory');
     });
@@ -214,18 +268,17 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    newSocket.on('messageHistory', async (history: Message[]) => {
-      // Fusionner les messages socket avec les cartes persistées dans le backend Java
-      const persistedCards = await loadPersistedReports();
-      const historyWithoutDupes = history.filter(
-        m => !persistedCards.some(p => p.id === m.id)
-      );
-      const merged = [...historyWithoutDupes, ...persistedCards].sort((a, b) =>
-        a.id.localeCompare(b.id)
-      );
-      setMessages(merged);
-      // Restaurer le marqueur map après merge
-      restoreAlertMarker(merged);
+    newSocket.on('messageHistory', (history: Message[]) => {
+      // Fusionner l'historique socket avec les messages déjà en mémoire
+      // (les cartes persistées Java ont été chargées par le useEffect indépendant)
+      setMessages(prev => {
+        const existingIds = new Set(prev.map(m => m.id));
+        const newFromSocket = history.filter(m => !existingIds.has(m.id));
+        if (newFromSocket.length === 0) return prev;
+        const merged = [...prev, ...newFromSocket].sort((a, b) => a.id.localeCompare(b.id));
+        restoreAlertMarker(merged);
+        return merged;
+      });
       setLoading(false);
       setTimeout(() => flatListRef.current?.scrollToEnd({ animated: false }), 150);
     });
@@ -336,7 +389,7 @@ export const MessagesProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <MessagesContext.Provider value={{
-      messages, inputText, isConnected, user, loading,
+      messages, inputText, isConnected, user, loading, region,
       flatListRef, setInputText, sendMessage, sendAlertReport,
       unreadIncidentCount, pendingIncidentCount, activeIncidents, clearIncidentCount,
     }}>

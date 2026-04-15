@@ -1,0 +1,49 @@
+# Alert Civique - Application Properties Template
+# SECURITY WARNING: This file contains sensitive configuration
+# Do NOT commit actual secrets to version control
+# 
+# For local development, copy this to application-local.properties and fill in your actual values
+# Make sure application-local.properties is in .gitignore
+
+# ===============================
+# JWT CONFIGURATION
+# ===============================
+# Generate a strong secret key:
+# On Linux/Mac:
+#   openssl rand -base64 32
+# On Windows (PowerShell):
+#   [Convert]::ToBase64String((1..32 | ForEach-Object {[byte](Get-Random -Max 256)}))
+jws.secret=${JWS_SECRET:REPLACE_WITH_STRONG_SECRET_KEY}
+jwt.secret=${JWT_SECRET:REPLACE_WITH_STRONG_SECRET_KEY}
+
+# Base64 encoded activation secret (should be 32+ characters before encoding)
+app.jwt.activation-secret=${JWT_ACTIVATION_SECRET:REPLACE_WITH_BASE64_ENCODED_SECRET}
+app.jwt.activation-expiration-ms=86400000
+
+# ===============================
+# DATABASE CONFIGURATION (OPTIONAL)
+# ===============================
+# Uncomment and set if different from defaults
+# spring.datasource.url=jdbc:mariadb://localhost:3307/alertdb
+# spring.datasource.username=root
+# spring.datasource.password=YOUR_DB_PASSWORD
+
+# ===============================
+# MONGODB CONFIGURATION (OPTIONAL)
+# ===============================
+# spring.mongodb.host=localhost
+# spring.mongodb.port=27017
+# spring.mongodb.database=alertdb
+
+# ===============================
+# MAIL CONFIGURATION
+# ===============================
+# Gmail: Use an App Password (https://myaccount.google.com/apppasswords)
+# NOT your actual Gmail password
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=${MAIL_USERNAME:your-email@gmail.com}
+spring.mail.password=${MAIL_PASSWORD:your-app-specific-password}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true

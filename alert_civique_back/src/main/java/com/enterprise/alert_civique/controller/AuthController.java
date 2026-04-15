@@ -48,8 +48,11 @@ public class AuthController {
 
             String token = jwtService.generateToken(loginRequest.getUsername());
 
-            Users user = userRepository.findByEmail(loginRequest.getUsername())
+            Users user = userRepository.findByEmailWithRoles(loginRequest.getUsername())
                     .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+            boolean isAdmin = user.getRoles() != null &&
+                    user.getRoles().stream().anyMatch(r -> "ROLE_ADMIN".equalsIgnoreCase(r.getName()));
 
             LoginResponseDto response = LoginResponseDto.builder()
                     .token(token)
@@ -57,6 +60,7 @@ public class AuthController {
                     .email(user.getEmail())
                     .firstname(user.getFirstname())
                     .lastname(user.getLastname())
+                    .isAdmin(isAdmin)
                     .build();
 
             return ResponseEntity.ok(response);

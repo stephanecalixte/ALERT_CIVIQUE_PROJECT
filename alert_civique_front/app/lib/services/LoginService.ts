@@ -6,6 +6,7 @@ export interface LoginResponse {
   email: string;
   firstname: string;
   lastname: string;
+  isAdmin: boolean;
 }
 
 /**
@@ -19,16 +20,30 @@ export async function loginUser(
   password: string,
   fallbackUserId = 0,
 ): Promise<LoginResponse> {
-  const response = await fetch(`${JAVA_BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: email, password }),
-  });
+  const controller = new AbortController();
+  const timeoutId  = setTimeout(() => controller.abort(), 10_000); // 10s max
+
+  let response: Response;
+  try {
+    response = await fetch(`${JAVA_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: email, password }),
+      signal: controller.signal,
+    });
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err?.name === 'AbortError') {
+      throw new Error('Serveur inaccessible (timeout 10s) — vérifiez votre connexion');
+    }
+    throw new Error('Impossible de joindre le serveur — vérifiez votre connexion');
+  }
+  clearTimeout(timeoutId);
 
   const text = await response.text();
 
   if (!response.ok) {
-    throw new Error(text || `HTTP ${response.status}`);
+    throw new Error(text || `Erreur serveur HTTP ${response.status}`);
   }
 
   // Nouveau format : JSON avec userId
@@ -44,6 +59,7 @@ export async function loginUser(
     email,
     firstname: '',
     lastname: '',
+    isAdmin: false,
   };
 }
 

@@ -13,7 +13,15 @@
       "Bash(cmd /c \"for /f \"\"tokens=5\"\" %a in \\(''netstat -ano ^| findstr :9091 ^| findstr LISTENING''\\) do taskkill /PID %a /F\")",
       "Bash(cmd /c \"taskkill /PID 47328 /F 2>nul & echo done\")",
       "Bash(cmd /c \"taskkill /F /IM node.exe 2>nul & echo killed\")",
-      "Bash(cmd /c \"wmic process where ProcessId=47328 get Name,CommandLine,ProcessId 2>nul\")"
+      "Bash(cmd /c \"wmic process where ProcessId=47328 get Name,CommandLine,ProcessId 2>nul\")",
+      "Bash(curl -s --max-time 3 http://localhost:9090/api/users)",
+      "Bash(curl -s --max-time 5 -X POST http://localhost:9090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"Azerty12!\"}')",
+      "Bash(curl -s --max-time 3 http://localhost:9090/actuator/health)",
+      "Bash(curl -s --max-time 15 -X POST http://localhost:9090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"Azerty12!\"}')",
+      "Bash(cmd /c \"netstat -ano 2>nul\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 9090 -State Listen | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -Command \"Get-Process -Id 38312 | Select-Object Id, ProcessName, StartTime, CPU\")",
+      "Bash(curl -s --max-time 5 -X POST http://localhost:9090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"test123\"}')"
     ]
   }
 }

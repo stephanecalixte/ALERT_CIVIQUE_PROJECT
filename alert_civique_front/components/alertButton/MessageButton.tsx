@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View, Modal, Animated } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, TouchableOpacity, View, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MessagesScreen from '@/app/(tabs)/Messages';
+import { useRouter } from 'expo-router';
 import { useAlert } from '@/contexts/AlertContext';
 
 export default function MessageButton() {
-  const [showMessages, setShowMessages] = useState(false);
+  const router = useRouter();
   const { alertType } = useAlert();
   const blinkAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -51,7 +51,7 @@ export default function MessageButton() {
       <Animated.View style={[styles.animWrapper, { transform: [{ scale: pulseAnim }] }]}>
         <TouchableOpacity
           style={[styles.button, alertType && { borderColor: alertColor, borderWidth: 2 }]}
-          onPress={() => setShowMessages(true)}
+          onPress={() => router.push('/(tabs)/Messages')}
           activeOpacity={0.85}
         >
           <Animated.View style={{ opacity: blinkAnim }}>
@@ -62,15 +62,6 @@ export default function MessageButton() {
           {alertType && <View style={[styles.badge, { backgroundColor: alertColor }]} />}
         </TouchableOpacity>
       </Animated.View>
-
-      <Modal
-        visible={showMessages}
-        animationType="slide"
-        onRequestClose={() => setShowMessages(false)}
-        presentationStyle="pageSheet"
-      >
-        <MessagesScreen />
-      </Modal>
     </View>
   );
 }

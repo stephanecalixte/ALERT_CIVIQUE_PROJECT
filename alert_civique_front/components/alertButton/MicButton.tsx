@@ -1,29 +1,26 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AudioRecordScreen from '@/components/AudioRecordScreen';
 import AlertTypeModal from '@/components/AlertTypeModal';
 import { AlertType } from '@/contexts/AlertContext';
 
 interface Props {
   onAlertSelected?: (type: AlertType) => void;
+  onOpenAudio?: (alertType: AlertType) => void;
 }
 
-export default function MicButton({ onAlertSelected }: Props) {
+export default function MicButton({ onAlertSelected, onOpenAudio }: Props) {
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [showAudio, setShowAudio]           = useState(false);
-
-  const handlePress = () => setShowAlertModal(true);
 
   const handleAlertSelect = (type: AlertType) => {
     setShowAlertModal(false);
     onAlertSelected?.(type);
-    setShowAudio(true);
+    onOpenAudio?.(type);
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={handlePress} activeOpacity={0.85}>
+      <TouchableOpacity style={styles.button} onPress={() => setShowAlertModal(true)} activeOpacity={0.85}>
         <Ionicons name="mic" size={26} color="#007AFF" />
       </TouchableOpacity>
 
@@ -32,15 +29,6 @@ export default function MicButton({ onAlertSelected }: Props) {
         onSelect={handleAlertSelect}
         onClose={() => setShowAlertModal(false)}
       />
-
-      <Modal
-        visible={showAudio}
-        animationType="slide"
-        onRequestClose={() => setShowAudio(false)}
-        presentationStyle="pageSheet"
-      >
-        <AudioRecordScreen onClose={() => setShowAudio(false)} />
-      </Modal>
     </View>
   );
 }

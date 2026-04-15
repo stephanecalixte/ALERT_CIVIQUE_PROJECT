@@ -4,15 +4,13 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { GeolocalisationProvider } from '@/components/GeolocalisationContext';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { MessagesProvider } from '@/contexts/MessagesContext';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
 import LoadingPage from './views/loadingPage/LoadingPage';
-import RegisterScreen from './views/register-screen/RegisterScreen';
-import LoginScreen from './views/login-screen/LoginScreen';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -20,22 +18,13 @@ export const unstable_settings = {
 
 function AppContent() {
   const colorScheme = useColorScheme();
-  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 4000);
   }, []);
 
   if (loading) return <LoadingPage />;
-
-  if (!isAuthenticated) {
-    if (showLogin) {
-      return <LoginScreen onGoToRegister={() => setShowLogin(false)} />;
-    }
-    return <RegisterScreen onGoToLogin={() => setShowLogin(true)} />;
-  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

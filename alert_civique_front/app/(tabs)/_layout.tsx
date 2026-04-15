@@ -9,6 +9,7 @@ import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useAlert, ALERT_CONFIGS } from '@/contexts/AlertContext';
 import { useMessagesContext } from '@/contexts/MessagesContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 90 : 80;
 
@@ -164,10 +165,17 @@ function TopLayout() {
 }
 
 export default function TabLayout() {
+  const { isAuthenticated, isAdmin } = useAuth();
+
+  // "key" force le re-mount complet des tabs quand isAdmin change
+  // (Expo Router ne met pas à jour href dynamiquement sans ça)
+  const tabsKey = isAdmin ? 'admin' : isAuthenticated ? 'user' : 'guest';
+
   return (
     <View style={styles.root}>
       <TopLayout />
       <Tabs
+        key={tabsKey}
         screenOptions={{
           tabBarActiveTintColor: '#FFFFFF',
           tabBarInactiveTintColor: 'rgba(255,255,255,0.55)',
@@ -204,15 +212,23 @@ export default function TabLayout() {
         <Tabs.Screen
           name="Option"
           options={{
-            title: 'Options',
-            tabBarIcon: ({ color }) => <IconSymbol size={26} name="gearshape.fill" color={color} />,
+            title: isAuthenticated ? 'Options' : 'Connexion',
+            tabBarIcon: ({ color }) => (
+              <IconSymbol
+                size={26}
+                name={isAuthenticated ? 'gearshape.fill' : 'person.circle.fill'}
+                color={color}
+              />
+            ),
           }}
         />
+        {/* Onglet Admin : visible uniquement pour les admins connectés */}
         <Tabs.Screen
           name="Admin"
           options={{
             title: 'Admin',
             tabBarIcon: ({ color }) => <IconSymbol size={26} name="shield.fill" color={color} />,
+            href: isAdmin ? undefined : null,
           }}
         />
         <Tabs.Screen name="Register" options={{ href: null }} />

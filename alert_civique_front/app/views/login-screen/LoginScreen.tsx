@@ -26,11 +26,11 @@ export default function LoginScreen({ onGoToRegister }: Props) {
     setIsLoading(true);
     try {
       const res = await loginUser(email.trim().toLowerCase(), password);
-      await login(res.token, {
-        userId: res.userId,
-        name: `${res.firstname} ${res.lastname}`,
-        email: res.email,
-      });
+      await login(
+        res.token,
+        { userId: res.userId, name: `${res.firstname} ${res.lastname}`, email: res.email, isAdmin: res.isAdmin },
+        { email: email.trim().toLowerCase(), password },
+      );
     } catch (e) {
       Alert.alert('Connexion échouée', e instanceof Error ? e.message : 'Vérifiez vos identifiants');
     } finally {

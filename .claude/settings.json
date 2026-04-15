@@ -1,7 +1,32 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:9090/api/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"username\":\"test\",\"password\":\"test\"}')",
+      "Bash(curl -s http://localhost:9090/api/users)",
+      "Bash(curl -s -X POST http://localhost:9090/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"test\"}')",
+      "Bash(curl -v -X POST http://localhost:9090/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"Test1234!\"}')",
+      "Bash(curl -s -X POST http://localhost:9090/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"Azerty12!\"}')",
+      "Bash(tasklist)",
+      "Bash(taskkill /PID 57440 /F)",
+      "Bash(cmd /c \"taskkill /PID 57440 /F\")",
+      "Bash(cmd /c \"cd c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\\\\alert_civique_back && mvn spring-boot:run -q\")",
+      "Bash(curl -s --max-time 8 -X POST http://localhost:9090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"Azerty12!\"}')",
+      "Bash(cmd /c \"netstat -ano | findstr :9090 | findstr LISTEN\")",
+      "Bash(mysql -u root -P 3307 alertdb -e \"SHOW TABLES; DESCRIBE users;\")",
+      "Bash(mysql -u root -P 3307 alertdb -e \"SELECT * FROM user_roles; SELECT * FROM roles;\")",
+      "Bash(powershell -Command \"Stop-Process -Id 38312 -Force\")",
+      "Bash(curl -s --max-time 10 -X POST http://localhost:9090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"Azerty12!\"}')",
+      "Bash(cmd /c \"cd c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\\\\alert_civique_back && mvn spring-boot:run\")",
+      "Bash(cmd /c \"taskkill /PID 31408 /F && echo OK\")",
+      "Bash(grep -v \"^$\")",
+      "Bash(grep -v \"^.*//.*$\")",
+      "Bash(cmd /c \"curl -s http://localhost:9090/api/reportMessages/chat\")",
+      "Bash(curl -s \"http://localhost:9090/api/reportMessages/chat\")",
+      "Bash(curl -s \"http://localhost:9090/api/report\")",
+      "Bash(curl -s \"http://localhost:9090/api/reportMessages\")",
+      "Bash(curl -s -X POST http://localhost:9090/api/reportMessages -H 'Content-Type: application/json' -d '{\"alertType\":\"incendie\",\"senderName\":\"Test\",\"reason\":\"Test incendie\",\"createdAt\":\"2026-04-15\"}')"
     ]
   }
 }

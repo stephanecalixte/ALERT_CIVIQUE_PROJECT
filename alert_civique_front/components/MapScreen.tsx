@@ -60,9 +60,10 @@ function buildMapHtml(latitude: number, longitude: number): string {
     var lon = ${longitude};
 
     var map = L.map('map').setView([lat, lon], 16);
-    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap France contributors',
-      maxZoom: 20
+    // Tuiles OpenStreetMap internationales (monde entier)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19
     }).addTo(map);
 
     // ── Marqueur position de l'utilisateur ──────────────────────────────────
@@ -71,8 +72,8 @@ function buildMapHtml(latitude: number, longitude: number): string {
 
     var currentAddress = '';
 
-    fetch('https://nominatim.openstreetmap.org/reverse?format=json&accept-language=fr&lat=' + lat + '&lon=' + lon, {
-      headers: { 'User-Agent': 'AlertCivique/1.0' }
+    fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon, {
+      headers: { 'User-Agent': 'AlertCivique/1.0', 'Accept-Language': navigator.language || 'fr' }
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -136,30 +137,30 @@ function buildMapHtml(latitude: number, longitude: number): string {
       incidentMarkers.forEach(function(m) { map.removeLayer(m); });
       incidentMarkers = [];
 
+      var allPoints = [[lat, lon]];
+
       incidents.forEach(function(inc, i) {
-        var off = OFFSETS[i % OFFSETS.length];
-        var iLat = lat + off[0];
-        var iLon = lon + off[1];
+        // Utilise les coordonnées GPS réelles si disponibles, sinon décalage autour de l'utilisateur
+        var iLat = (inc.lat != null) ? inc.lat : lat + OFFSETS[i % OFFSETS.length][0];
+        var iLon = (inc.lon != null) ? inc.lon : lon + OFFSETS[i % OFFSETS.length][1];
         var icon = buildIncidentIcon(inc.emoji, inc.color, inc.label, inc.count);
         var m = L.marker([iLat, iLon], { icon: icon }).addTo(map);
+        var locationStr = (inc.lat != null)
+          ? iLat.toFixed(5) + ', ' + iLon.toFixed(5)
+          : (currentAddress || (lat.toFixed(5) + ', ' + lon.toFixed(5)));
         m.bindPopup(
           '<div style="color:' + inc.color + ';font-weight:800;font-size:15px">' +
             inc.emoji + ' ' + inc.label + '</div>' +
           '<div style="margin-top:4px">Signalement en cours</div>' +
           (inc.count > 1 ? '<div style="color:#546e7a;font-size:12px">' + inc.count + ' signalement(s)</div>' : '') +
-          '<div class="addr-coords">' + (currentAddress || (lat.toFixed(5) + ', ' + lon.toFixed(5))) + '</div>'
+          '<div class="addr-coords">' + locationStr + '</div>'
         );
         incidentMarkers.push(m);
+        allPoints.push([iLat, iLon]);
       });
 
       // Centrer la carte pour inclure tous les marqueurs
       if (incidents.length > 0) {
-        var allPoints = [[lat, lon]].concat(
-          incidents.map(function(_, i) {
-            var off = OFFSETS[i % OFFSETS.length];
-            return [lat + off[0], lon + off[1]];
-          })
-        );
         map.fitBounds(allPoints, { padding: [40, 40], maxZoom: 16 });
       }
     }
@@ -273,6 +274,9 @@ export default function MapScreen({ onMapReady }: MapScreenProps) {
       color: ALERT_CONFIGS[inc.alertType].markerBg,
       label: ALERT_CONFIGS[inc.alertType].label,
       count: inc.count,
+      // Coordonnées GPS réelles si disponibles (Reports avec geolocalisation)
+      lat:   inc.lat ?? null,
+      lon:   inc.lon ?? null,
     }));
     const payload = JSON.stringify(mapped);
     webViewRef.current.injectJavaScript(

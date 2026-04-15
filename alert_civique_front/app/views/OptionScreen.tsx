@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   ScrollView,
   View,
@@ -8,23 +8,54 @@ import {
   ActivityIndicator,
   Linking,
   Alert,
+  TextInput,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOptions } from '@/hooks/useOptions';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { loginUser } from '@/app/lib/services/LoginService';
 
 const APP_VERSION = '1.0.0';
 
 export default function OptionScreen() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, login, logout, isAuthenticated } = useAuth();
   const { options, updateOption, loading: optionsLoading } = useOptions();
   const colorScheme = useColorScheme();
   const themeColor = useThemeColor({}, 'tint');
-  const router = useRouter();
+
+  const [loginEmail, setLoginEmail]       = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showPwd, setShowPwd]             = useState(false);
+  const [loginLoading, setLoginLoading]   = useState(false);
+  const [loginStatus, setLoginStatus]     = useState('');
+  const [loginError, setLoginError]       = useState('');
+
+  const handleLoginFromOption = async () => {
+    if (!loginEmail.trim() || !loginPassword) {
+      setLoginError('Email et mot de passe requis');
+      return;
+    }
+    setLoginLoading(true);
+    setLoginStatus('Connexion en cours...');
+    setLoginError('');
+    try {
+      const res = await loginUser(loginEmail.trim().toLowerCase(), loginPassword);
+      setLoginStatus('Connexion réussie !');
+      await login(
+        res.token,
+        { userId: res.userId, name: `${res.firstname} ${res.lastname}`, email: res.email, isAdmin: res.isAdmin },
+        { email: loginEmail.trim().toLowerCase(), password: loginPassword },
+      );
+    } catch (e) {
+      setLoginError(e instanceof Error ? e.message : 'Vérifiez vos identifiants');
+      setLoginStatus('');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
 
   // useEffect(() => {
   //   if (!isAuthenticated) {
@@ -82,8 +113,68 @@ export default function OptionScreen() {
     Linking.openURL('mailto:support@alertcivique.com');
   };
 
+  // ── Formulaire de connexion (utilisateur non authentifié) ────────────────
   if (!isAuthenticated) {
-    return null;
+    return (
+      <ThemedView style={[styles.container, { justifyContent: 'center', padding: 28 }]}>
+        <ThemedText type="subtitle" style={{ textAlign: 'center', marginBottom: 8 }}>
+          Connexion
+        </ThemedText>
+        <ThemedText style={{ textAlign: 'center', color: '#90a4ae', marginBottom: 32, fontSize: 13 }}>
+          Identifiez-vous pour accéder à toutes les fonctionnalités
+        </ThemedText>
+
+        <TextInput
+          style={styles.loginInput}
+          placeholder="Email"
+          placeholderTextColor="#90a4ae"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          spellCheck={false}
+          importantForAutofill="no"
+          value={loginEmail}
+          onChangeText={setLoginEmail}
+        />
+        <View style={{ position: 'relative', justifyContent: 'center', marginBottom: 14 }}>
+          <TextInput
+            style={[styles.loginInput, { marginBottom: 0, paddingRight: 52 }]}
+            placeholder="Mot de passe"
+            placeholderTextColor="#90a4ae"
+            secureTextEntry={!showPwd}
+            autoCapitalize="none"
+            autoCorrect={false}
+            spellCheck={false}
+            importantForAutofill="no"
+            value={loginPassword}
+            onChangeText={setLoginPassword}
+          />
+          <TouchableOpacity
+            style={{ position: 'absolute', right: 14 }}
+            onPress={() => setShowPwd(v => !v)}
+          >
+            <ThemedText style={{ fontSize: 18 }}>{showPwd ? '🙈' : '👁️'}</ThemedText>
+          </TouchableOpacity>
+        </View>
+
+        {loginError ? (
+          <View style={styles.errorBox}>
+            <ThemedText style={styles.errorText}>{loginError}</ThemedText>
+          </View>
+        ) : null}
+
+        {loginLoading ? (
+          <View style={{ alignItems: 'center', marginTop: 16, gap: 10 }}>
+            <ActivityIndicator size="large" color="#1a6fd4" />
+            <ThemedText style={{ color: '#546e7a', fontSize: 13 }}>{loginStatus}</ThemedText>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.loginBtn} onPress={handleLoginFromOption}>
+            <ThemedText style={styles.loginBtnText}>Se connecter</ThemedText>
+          </TouchableOpacity>
+        )}
+      </ThemedView>
+    );
   }
 
   return (
@@ -92,17 +183,17 @@ export default function OptionScreen() {
         {/* Section Compte */}
         <View style={styles.section}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>Compte</ThemedText>
-          
+
           <View style={styles.settingRow}>
             <ThemedText>Nom utilisateur</ThemedText>
             <ThemedText>{user?.name || user?.email || 'N/A'}</ThemedText>
           </View>
-          
+
           <View style={styles.settingRow}>
             <ThemedText>ID</ThemedText>
             <ThemedText>{user?.userId}</ThemedText>
           </View>
-          
+
           <TouchableOpacity style={[styles.button, { backgroundColor: '#ff4444' }]} onPress={handleLogout}>
             <ThemedText style={styles.buttonText}>Déconnexion</ThemedText>
           </TouchableOpacity>
@@ -255,6 +346,47 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 16,
+  },
+  loginInput: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: '#1a237e',
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#cfd8e3',
+  },
+  loginBtn: {
+    backgroundColor: '#1a6fd4',
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginTop: 8,
+    shadowColor: '#0a3a8a',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  loginBtnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  errorBox: {
+    backgroundColor: '#ffebee',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ef9a9a',
+  },
+  errorText: {
+    color: '#c62828',
+    fontSize: 13,
+    textAlign: 'center',
   },
 });
 

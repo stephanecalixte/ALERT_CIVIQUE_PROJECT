@@ -185,12 +185,12 @@ const REGEX = {
           )
       );
 
-      // 4. Stocke la session → déclenche la navigation vers l'app
-      await login(token, {
-        userId,
-        name: `${userResponse.firstname} ${userResponse.lastname}`,
-        email: userResponse.email,
-      });
+      // 4. Stocke la session + credentials → démarrage automatique pour toujours
+      await login(
+        token,
+        { userId, name: `${userResponse.firstname} ${userResponse.lastname}`, email: userResponse.email, isAdmin: loginResponse.isAdmin },
+        { email: form.email, password: form.password },
+      );
 
       setIsSuccess(true);
       Alert.alert('Succès', 'Compte créé avec succès !');

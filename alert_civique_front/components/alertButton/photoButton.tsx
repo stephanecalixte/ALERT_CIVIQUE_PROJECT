@@ -1,29 +1,26 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import CameraScreen from '@/components/CameraScreen';
 import AlertTypeModal from '@/components/AlertTypeModal';
 import { AlertType } from '@/contexts/AlertContext';
 
 interface Props {
   onAlertSelected?: (type: AlertType) => void;
+  onOpenPhoto?: (alertType: AlertType) => void;
 }
 
-export default function PhotoButton({ onAlertSelected }: Props) {
+export default function PhotoButton({ onAlertSelected, onOpenPhoto }: Props) {
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [showPhoto, setShowPhoto]           = useState(false);
-
-  const handlePress = () => setShowAlertModal(true);
 
   const handleAlertSelect = (type: AlertType) => {
     setShowAlertModal(false);
     onAlertSelected?.(type);
-    setShowPhoto(true);
+    onOpenPhoto?.(type);
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={handlePress} activeOpacity={0.85}>
+      <TouchableOpacity style={styles.button} onPress={() => setShowAlertModal(true)} activeOpacity={0.85}>
         <Ionicons name="camera" size={26} color="#007AFF" />
       </TouchableOpacity>
 
@@ -32,15 +29,6 @@ export default function PhotoButton({ onAlertSelected }: Props) {
         onSelect={handleAlertSelect}
         onClose={() => setShowAlertModal(false)}
       />
-
-      <Modal
-        visible={showPhoto}
-        animationType="slide"
-        onRequestClose={() => setShowPhoto(false)}
-        presentationStyle="pageSheet"
-      >
-        <CameraScreen onClose={() => setShowPhoto(false)} />
-      </Modal>
     </View>
   );
 }

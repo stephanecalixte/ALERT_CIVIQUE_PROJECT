@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Modal,
   ActivityIndicator,
   ScrollView,
   Alert,
 } from 'react-native';
-import LiveStreamScreen from '@/app/views/LiveStreamSreen';
 import { useReportFlow, ReportFlowResult } from '@/hooks/useReportFlow';
 import { useMessagesContext } from '@/contexts/MessagesContext';
 import { useAlert } from '@/contexts/AlertContext';
 
-function ConfirmationScreen({
+export function ConfirmationScreen({
   result,
   onContinue,
   onClose,
@@ -117,10 +115,12 @@ function ConfirmationScreen({
   );
 }
 
-export default function SosButton() {
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [showStream, setShowStream] = useState(false);
-  const { state, result, triggerSos, reset } = useReportFlow();
+interface SosButtonProps {
+  onSosComplete?: (result: ReportFlowResult) => void;
+}
+
+export default function SosButton({ onSosComplete }: SosButtonProps) {
+  const { state, triggerSos } = useReportFlow();
   const { sendAlertReport } = useMessagesContext();
   const { setAlertType } = useAlert();
 
@@ -134,21 +134,9 @@ export default function SosButton() {
       );
       return;
     }
-    // Envoie la carte SOS dans le chat + met à jour la bannière incident
     setAlertType('sos');
     sendAlertReport('sos');
-    setShowConfirmation(true);
-  };
-
-  const handleContinueToStream = () => {
-    setShowConfirmation(false);
-    setShowStream(true);
-  };
-
-  const handleClose = () => {
-    setShowConfirmation(false);
-    setShowStream(false);
-    reset();
+    onSosComplete?.(flowResult);
   };
 
   const isBusy = state === 'locating' || state === 'sending' || state === 'notifying';
@@ -181,36 +169,6 @@ export default function SosButton() {
           )}
         </View>
       </TouchableOpacity>
-
-      {/* Écran de confirmation */}
-      <Modal
-        visible={showConfirmation}
-        animationType="slide"
-        onRequestClose={handleClose}
-        presentationStyle="pageSheet"
-      >
-        {result && (
-          <ConfirmationScreen
-            result={result}
-            onContinue={handleContinueToStream}
-            onClose={handleClose}
-          />
-        )}
-      </Modal>
-
-      {/* Stream */}
-      <Modal
-        visible={showStream}
-        animationType="slide"
-        onRequestClose={handleClose}
-        presentationStyle="pageSheet"
-      >
-        <LiveStreamScreen
-          onClose={handleClose}
-          autoStart
-          reportId={result?.reportId ?? undefined}
-        />
-      </Modal>
     </View>
   );
 }

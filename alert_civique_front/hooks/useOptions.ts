@@ -21,13 +21,6 @@ export function useOptions() {
     loadLocalOptions();
   }, []);
 
-  // Sync with server when auth changes
-  useEffect(() => {
-    if (token) {
-      loadServerOptions();
-    }
-  }, [token]);
-
   const loadLocalOptions = async () => {
     try {
       const localData = await SecureStore.getItemAsync('user_options');
@@ -36,25 +29,14 @@ export function useOptions() {
         setOptions(localOptions);
       }
     } catch (error) {
-      console.error('Local options load error:', error);
+      // ignore
     } finally {
       setLoading(false);
     }
   };
 
   const loadServerOptions = async () => {
-    if (!token) return;
-    
-    try {
-      setLoading(true);
-      const serverOptions = await OptionService.getUserOptions(token);
-      setOptions(prev => ({ ...prev, ...serverOptions }));
-      await saveLocalOptions(serverOptions);
-    } catch (error) {
-      console.error('Server options load error:', error);
-    } finally {
-      setLoading(false);
-    }
+    // Options stockées localement uniquement (pas de route serveur)
   };
 
   const saveLocalOptions = async (newOptions: UserOptions) => {
