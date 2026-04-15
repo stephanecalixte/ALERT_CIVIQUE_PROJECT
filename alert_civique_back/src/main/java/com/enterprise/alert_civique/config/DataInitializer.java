@@ -83,7 +83,7 @@ public class DataInitializer implements ApplicationRunner {
 
         // ── 3. Récupérer les rôles ────────────────────────────────────────────
         Roles roleAdmin  = roleRepository.findFirstByName("ROLE_ADMIN")
-                .orElseThrow(() -> new RuntinitialAdminPasswordption("ROLE_ADMIN introuvable"));
+                .orElseThrow(() -> new RuntimeException("ROLE_ADMIN introuvable"));
         Roles roleClient = roleRepository.findFirstByName("ROLE_CLIENT")
                 .orElseThrow(() -> new RuntimeException("ROLE_CLIENT introuvable"));
 

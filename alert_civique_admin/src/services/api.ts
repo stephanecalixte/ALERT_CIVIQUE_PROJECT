@@ -1,3 +1,4 @@
+// src/services/api.ts
 import type {
   AdminReport, AdminAlert, AdminStream, AdminEmergency,
   AdminUser, LoginResponse,
@@ -80,7 +81,8 @@ export const api = {
   },
 }
 
-export function fmtDate(v: string | number[] | undefined): string {
+// ✅ Correction : accepte null et undefined
+export function fmtDate(v: string | number[] | null | undefined): string {
   if (!v) return '—'
   if (Array.isArray(v)) {
     const [y, m, d, h = 0, mn = 0] = v

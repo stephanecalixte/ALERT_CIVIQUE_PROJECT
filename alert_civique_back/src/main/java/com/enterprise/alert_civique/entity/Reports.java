@@ -73,4 +73,6 @@ public class Reports {
     /** Nom de l'émetteur (citoyen anonyme ou pseudo socket) */
     @Column(name = "sender_name")
     private String senderName;
+
+
 }

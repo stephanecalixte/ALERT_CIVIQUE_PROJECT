@@ -1,12 +1,10 @@
 export interface AdminUser {
-  userId: number
+  id: number
   firstname: string
   lastname: string
-  name: string
   email: string
-  phone?: string
   active: boolean
-  registrationDate: string | number[]
+  createdAt: string | number[]
   roles: Array<{ name: string } | string>
 }
 
@@ -36,24 +34,22 @@ export interface AdminAlert {
 }
 
 export interface AdminStream {
-  liveStreamId?: number
-  id?: number
-  filePath?: string
+  livestreamId?: number
+  userId?: string
+  startedAt?: string | number[]
+  endedAt?: string | number[]
   streamUrl?: string
-  userId?: number
-  user?: { userId: number }
-  createdAt?: string | number[]
   status?: string
+  videoUrl?: string
+  mediaId?: number
+  duration?: number
 }
 
 export interface AdminEmergency {
-  emergenciesAlertId?: number
-  id?: number
-  recipientEmail?: string
-  message?: string
-  description?: string
-  createdAt?: string | number[]
+  emergencyAlertId?: number
+  email?: string
   sentAt?: string | number[]
+  messages?: Array<{ content?: string; text?: string; body?: string }>
 }
 
 export interface LoginResponse {

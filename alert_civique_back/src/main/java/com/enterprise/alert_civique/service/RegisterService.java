@@ -62,7 +62,7 @@ public class RegisterService {
      * 
      */
     public UserResponseDto register(UserRegisterRequestDto request) throws Exception {
-        log.info("Tentative d'inscription pour l'email : {}", request.getEmail());
+        log.info("Registration attempt for email: {}", request.getEmail());
 
         if (request == null ||
                 request.getFirstname() == null || request.getFirstname().isBlank() ||
@@ -71,6 +71,7 @@ public class RegisterService {
                 request.getPassword() == null || request.getPassword().isBlank() ||
                 request.getPhone() == null || request.getPhone().isBlank() ||
                 request.getBirthdate() == null) {
+            log.warn("Registration failed for email: {} - Invalid or incomplete data", request.getEmail());
             throw new IllegalArgumentException("Données d'inscription invalides ou incomplètes");
         }
 
@@ -81,10 +82,16 @@ public class RegisterService {
         request.setPhone(sanitizer.sanitize(request.getPhone()));
 
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("Registration failed - Email already in use: {}", request.getEmail());
             throw new IllegalArgumentException("Email déjà utilisé");
         }
 
-        passwordValidator.validate(request.getPassword());
+        try {
+            passwordValidator.validate(request.getPassword());
+        } catch (Exception e) {
+            log.warn("Registration failed for email: {} - Password validation failed: {}", request.getEmail(), e.getMessage());
+            throw e;
+        }
 
         String hashedPassword = passwordService.hash(request.getPassword());
 
@@ -106,6 +113,7 @@ public class RegisterService {
                 .build();
 
         userRepository.save(user);
+        log.info("User registered successfully - ID: {}, Email: {}", user.getUserId(), user.getEmail());
 
         String tokenHash = UUID.randomUUID().toString();
         ActivationToken token = ActivationToken.builder()
@@ -116,7 +124,7 @@ public class RegisterService {
                 .build();
         activationRepository.save(token);
 
-        log.info("Activation token '{}' généré pour user {}", tokenHash, user.getEmail());
+        log.info("Activation token generated for user: {}", user.getEmail());
         log.info("TODO Email: send activation to {} at http://localhost:8080/api/auth/activate?token={}", user.getEmail(), tokenHash);
 
         return DtoConverter.toUserResponseDto(user);

@@ -37,6 +37,8 @@ build/
 application-local.properties
 application-dev.properties
 application-prod.properties
+.env.ci
+.env.ci.local
 
 # Environment variable files
 .env
@@ -48,6 +50,7 @@ application-prod.properties
 *.pem
 *.secret
 secrets.properties
+docker-compose.override.yml
 
 # Docker compose overrides with secrets
 docker-compose.override.yml
