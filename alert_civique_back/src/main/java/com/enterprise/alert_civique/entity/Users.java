@@ -75,7 +75,9 @@ public class Users {
     )
     private Set<Roles> roles;
 
-    // ✅ Ajout de la relation vers Reports
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Reports> reports;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ActivationToken> activationTokens;
 }

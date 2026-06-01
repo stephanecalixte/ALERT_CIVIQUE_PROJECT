@@ -1,9 +1,9 @@
 package com.enterprise.alert_civique.repository;
 
 
+import com.enterprise.alert_civique.entity.ActivationToken;
 import com.enterprise.alert_civique.entity.Roles;
 import com.enterprise.alert_civique.entity.Users;
-import com.enterprise.alert_civique.service.AccountActivationService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,23 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests unitaires pour AccountActivationRepository
- * @param <AccountActivationRepository>
+ * Tests unitaires pour IActivationRepository
  */
 @SpringBootTest
 @ActiveProfiles("test")
 @DisplayName("AccountActivationRepository Unit Tests")
-public class AccountActivationRepositoryTest<AccountActivationRepository> {
+public class AccountActivationRepositoryTest {
 
     @Autowired
-    private AccountActivationRepository accountActivationRepository;
+    private IActivationRepository activationRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -37,20 +36,19 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
     private RoleRepository roleRepository;
 
     private Users testUser;
-    private AccountActivationService testActivation;
-    private UUID activationToken;
+    private ActivationToken testActivation;
+    private String tokenHash;
 
     @BeforeEach
     public void setUp() {
         // Nettoyer
-        accountActivationRepository.deleteAll();
+        activationRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
 
         // Créer un rôle
         Roles role = new Roles();
         role.setName("ROLE_TEST");
-        // role.setDescription("Test Role");
         role = roleRepository.save(role);
 
         // Créer un utilisateur test
@@ -60,75 +58,60 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
         testUser.setFirstname("John");
         testUser.setLastname("Doe");
         testUser.setPhone("1234567890");
-        // testUser.setEnabled(false);
         testUser = userRepository.save(testUser);
 
-        // Créer un token d'activation
-        activationToken = UUID.randomUUID();
+        // Créer un hash de token d'activation
+        tokenHash = UUID.randomUUID().toString();
 
         // Créer l'activation
-        testActivation = new AccountActivation();
-        testActivation.setActivationToken(activationToken);
+        testActivation = new ActivationToken();
+        testActivation.setTokenHash(tokenHash);
         testActivation.setUser(testUser);
-        testActivation.setExpirationDate(Instant.now().plusSeconds(86400)); // 24h
+        testActivation.setExpiryDate(LocalDateTime.now().plusHours(24));
         testActivation.setUsed(false);
-        testActivation = accountActivationRepository.save(testActivation);
+        testActivation = activationRepository.save(testActivation);
     }
 
     @Test
     @DisplayName("Devrait sauvegarder une activation de compte")
     public void testSaveActivation_Success() {
         // Arrange
-        UUID newToken = UUID.randomUUID();
-        AccountActivation newActivation = new AccountActivation();
-        newActivation.setActivationToken(newToken);
+        String newTokenHash = UUID.randomUUID().toString();
+        ActivationToken newActivation = new ActivationToken();
+        newActivation.setTokenHash(newTokenHash);
         newActivation.setUser(testUser);
-        newActivation.setExpirationDate(Instant.now().plusSeconds(86400));
+        newActivation.setExpiryDate(LocalDateTime.now().plusHours(24));
         newActivation.setUsed(false);
 
         // Act
-        AccountActivation saved = accountActivationRepository.save(newActivation);
+        ActivationToken saved = activationRepository.save(newActivation);
 
         // Assert
-        assertNotNull(saved.getActivationId(), "L'ID d'activation doit être généré");
-        assertEquals(newToken, saved.getActivationToken());
+        assertNotNull(saved.getId(), "L'ID d'activation doit être généré");
+        assertEquals(newTokenHash, saved.getTokenHash());
         assertFalse(saved.isUsed(), "Le token ne doit pas être utilisé");
     }
 
     @Test
-    @DisplayName("Devrait trouver une activation par token")
-    public void testFindByActivationToken_Success() {
+    @DisplayName("Devrait trouver une activation par token hash")
+    public void testFindByTokenHash_Success() {
         // Act
-        Optional<AccountActivation> found = accountActivationRepository
-                .findByActivationToken(activationToken);
+        ActivationToken found = activationRepository.findByTokenHash(tokenHash);
 
         // Assert
-        assertTrue(found.isPresent(), "L'activation doit être trouvée");
-        assertEquals(testUser.getEmail(), found.get().getUser().getEmail());
-        assertFalse(found.get().isUsed(), "Le token ne doit pas être utilisé");
+        assertNotNull(found, "L'activation doit être trouvée");
+        assertEquals(testUser.getEmail(), found.getUser().getEmail());
+        assertFalse(found.isUsed(), "Le token ne doit pas être utilisé");
     }
 
     @Test
-    @DisplayName("Devrait retourner vide pour token inexistant")
-    public void testFindByActivationToken_NotFound() {
+    @DisplayName("Devrait retourner null pour token hash inexistant")
+    public void testFindByTokenHash_NotFound() {
         // Act
-        Optional<AccountActivation> found = accountActivationRepository
-                .findByActivationToken(UUID.randomUUID());
+        ActivationToken found = activationRepository.findByTokenHash(UUID.randomUUID().toString());
 
         // Assert
-        assertFalse(found.isPresent(), "Aucune activation ne doit être trouvée");
-    }
-
-    @Test
-    @DisplayName("Devrait trouver une activation par utilisateur")
-    public void testFindByUser_Success() {
-        // Act
-        Optional<AccountActivation> found = accountActivationRepository
-                .findByUser(testUser);
-
-        // Assert
-        assertTrue(found.isPresent(), "L'activation doit être trouvée");
-        assertEquals(activationToken, found.get().getActivationToken());
+        assertNull(found, "Aucune activation ne doit être trouvée");
     }
 
     @Test
@@ -138,7 +121,7 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
         testActivation.setUsed(true);
 
         // Act
-        AccountActivation updated = accountActivationRepository.save(testActivation);
+        ActivationToken updated = activationRepository.save(testActivation);
 
         // Assert
         assertTrue(updated.isUsed(), "Le token doit être marqué comme utilisé");
@@ -146,29 +129,29 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
 
     @Test
     @DisplayName("Devrait mettre à jour la date d'expiration")
-    public void testUpdateExpirationDate_Success() {
+    public void testUpdateExpiryDate_Success() {
         // Arrange
-        Instant newExpiration = Instant.now().plusSeconds(172800); // 48h
+        LocalDateTime newExpiry = LocalDateTime.now().plusHours(48);
 
         // Act
-        testActivation.setExpirationDate(newExpiration);
-        AccountActivation updated = accountActivationRepository.save(testActivation);
+        testActivation.setExpiryDate(newExpiry);
+        ActivationToken updated = activationRepository.save(testActivation);
 
         // Assert
-        assertEquals(newExpiration, updated.getExpirationDate());
+        assertEquals(newExpiry, updated.getExpiryDate());
     }
 
     @Test
     @DisplayName("Devrait supprimer une activation")
     public void testDelete_Success() {
         // Arrange
-        Long activationId = testActivation.getActivationId();
+        Long activationId = testActivation.getId();
 
         // Act
-        accountActivationRepository.deleteById(activationId);
+        activationRepository.deleteById(activationId);
 
         // Assert
-        assertFalse(accountActivationRepository.findById(activationId).isPresent(),
+        assertFalse(activationRepository.findById(activationId).isPresent(),
                 "L'activation doit être supprimée");
     }
 
@@ -176,7 +159,7 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
     @DisplayName("Devrait compter les activations")
     public void testCount_Success() {
         // Act
-        long count = accountActivationRepository.count();
+        long count = activationRepository.count();
 
         // Assert
         assertTrue(count >= 1, "Au moins une activation doit exister");
@@ -187,16 +170,16 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
     public void testMultipleActivations_Success() {
         // Arrange - créer plusieurs tokens pour le même utilisateur
         for (int i = 0; i < 3; i++) {
-            AccountActivation activation = new AccountActivation();
-            activation.setActivationToken(UUID.randomUUID());
+            ActivationToken activation = new ActivationToken();
+            activation.setTokenHash(UUID.randomUUID().toString());
             activation.setUser(testUser);
-            activation.setExpirationDate(Instant.now().plusSeconds(86400));
+            activation.setExpiryDate(LocalDateTime.now().plusHours(24));
             activation.setUsed(false);
-            accountActivationRepository.save(activation);
+            activationRepository.save(activation);
         }
 
         // Act
-        long count = accountActivationRepository.count();
+        long count = activationRepository.count();
 
         // Assert
         assertTrue(count >= 4, "Au moins 4 activations doivent exister");
@@ -206,17 +189,17 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
     @DisplayName("Devrait gérer les activations avec date d'expiration passée")
     public void testExpiredActivation_Success() {
         // Arrange
-        AccountActivation expiredActivation = new AccountActivation();
-        expiredActivation.setActivationToken(UUID.randomUUID());
+        ActivationToken expiredActivation = new ActivationToken();
+        expiredActivation.setTokenHash(UUID.randomUUID().toString());
         expiredActivation.setUser(testUser);
-        expiredActivation.setExpirationDate(Instant.now().minusSeconds(3600)); // -1h
+        expiredActivation.setExpiryDate(LocalDateTime.now().minusHours(1));
         expiredActivation.setUsed(false);
 
         // Act
-        AccountActivation saved = accountActivationRepository.save(expiredActivation);
+        ActivationToken saved = activationRepository.save(expiredActivation);
 
         // Assert
-        assertTrue(saved.getExpirationDate().isBefore(Instant.now()),
+        assertTrue(saved.getExpiryDate().isBefore(LocalDateTime.now()),
                 "La date d'expiration doit être dans le passé");
     }
 
@@ -224,14 +207,14 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
     @DisplayName("Devrait gérer les activations déjà utilisées")
     public void testUsedActivation_Success() {
         // Arrange
-        AccountActivation usedActivation = new AccountActivation();
-        usedActivation.setActivationToken(UUID.randomUUID());
+        ActivationToken usedActivation = new ActivationToken();
+        usedActivation.setTokenHash(UUID.randomUUID().toString());
         usedActivation.setUser(testUser);
-        usedActivation.setExpirationDate(Instant.now().plusSeconds(86400));
+        usedActivation.setExpiryDate(LocalDateTime.now().plusHours(24));
         usedActivation.setUsed(true);
 
         // Act
-        AccountActivation saved = accountActivationRepository.save(usedActivation);
+        ActivationToken saved = activationRepository.save(usedActivation);
 
         // Assert
         assertTrue(saved.isUsed(), "L'activation doit être marquée comme utilisée");
@@ -241,11 +224,10 @@ public class AccountActivationRepositoryTest<AccountActivationRepository> {
     @DisplayName("Devrait récupérer une activation par ID")
     public void testFindById_Success() {
         // Act
-        Optional<AccountActivation> found = accountActivationRepository
-                .findById(testActivation.getActivationId());
+        Optional<ActivationToken> found = activationRepository.findById(testActivation.getId());
 
         // Assert
         assertTrue(found.isPresent(), "L'activation doit être trouvée par ID");
-        assertEquals(activationToken, found.get().getActivationToken());
+        assertEquals(tokenHash, found.get().getTokenHash());
     }
 }

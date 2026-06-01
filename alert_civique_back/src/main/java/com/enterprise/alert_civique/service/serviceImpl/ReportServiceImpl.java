@@ -47,6 +47,9 @@ public class ReportServiceImpl implements ReportService {
 
         Reports report = reportMapper.toEntity(dto);
         report.setCreatedAt(dto.createdAt() != null ? dto.createdAt() : LocalDateTime.now());
+        if (report.getStatus() == null) {
+            report.setStatus(ReportsStatus.PENDING);
+        }
 
         // Description auto-générée depuis alertType si absente
         if (report.getDescription() == null || report.getDescription().trim().isEmpty()) {

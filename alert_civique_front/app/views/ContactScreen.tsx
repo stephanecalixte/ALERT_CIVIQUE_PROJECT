@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
@@ -47,6 +47,10 @@ export default function ContactScreen() {
     contacts, form, isLoading, isSaving, error,
     showForm, handleChange, add, remove, openForm, closeForm,
   } = useTrustedContacts();
+
+  useEffect(() => {
+    if (error) Alert.alert('Erreur', error);
+  }, [error]);
 
   return (
     <KeyboardAvoidingView

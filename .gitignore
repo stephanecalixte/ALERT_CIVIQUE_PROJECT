@@ -1,0 +1,117 @@
+# ════════════════════════════════════════════════════════
+#  ALERT-CIVIQUE — .gitignore racine (monorepo)
+# ════════════════════════════════════════════════════════
+
+# ── OS ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ── IDE ─────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.suo
+*.user
+*.sln.docstates
+.vs/
+*.swp
+*.swo
+*~
+
+# ── Variables d'environnement / Secrets ─────────────────
+.env
+.env.local
+.env.*.local
+!.env.example
+secrets.properties
+application-local.properties
+application-dev.properties
+application-prod.properties
+application-staging.properties
+
+# ── Clés & certificats ──────────────────────────────────
+*.key
+*.pem
+*.p12
+*.p8
+*.jks
+*.mobileprovision
+*.keystore
+*.pfx
+*.cer
+*.der
+
+# ── Docker overrides ────────────────────────────────────
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ── Logs ────────────────────────────────────────────────
+*.log
+*.log.*
+*.log.gz
+*.gz
+logs/
+log/
+
+# ═══════════════════════════════════════════════════════
+#  JAVA / MAVEN / SPRING BOOT  (alert_civique_back)
+# ═══════════════════════════════════════════════════════
+target/
+*.class
+*.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+!.mvn/wrapper/MavenWrapperDownloader.java
+spring-shell.log
+
+# Uploads vidéo générés au runtime
+alert_civique_back/src/main/resources/static/uploads/
+
+# Rapports de tests Surefire / JaCoCo
+alert_civique_back/target/surefire-reports/
+alert_civique_back/target/site/
+
+# ═══════════════════════════════════════════════════════
+#  NODE.JS  (alert_civique_admin + alert_civique_front/server)
+# ═══════════════════════════════════════════════════════
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.pnp
+.pnp.js
+package-lock.json.bak
+
+# ── Vite / React (alert_civique_admin) ──────────────────
+alert_civique_admin/dist/
+alert_civique_admin/.vite/
+*.tsbuildinfo
+
+# ═══════════════════════════════════════════════════════
+#  EXPO / REACT NATIVE  (alert_civique_front)
+# ═══════════════════════════════════════════════════════
+.expo/
+web-build/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+/ios/
+/android/
+*.hprof
+
+# ═══════════════════════════════════════════════════════
+#  DIVERS
+# ═══════════════════════════════════════════════════════
+*.tmp
+*.bak
+*.cache
+.nyc_output/
+coverage/
+.turbo/
+*md

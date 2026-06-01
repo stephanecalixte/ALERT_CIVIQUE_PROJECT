@@ -20,6 +20,10 @@ public class LiveStream {
     @Column(name = "livestream_id")
     private Long livestreamId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Users user;
+
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
@@ -30,13 +34,10 @@ public class LiveStream {
     private String streamUrl;
 
     @Column(name = "status")
-    private String status; // "LIVE", "ENDED", "SCHEDULED"
+    private String status;
 
     @Column(name = "video_url")
     private String videoUrl;
-
-    @Column(name = "media_id")
-    private Long mediaId;
 
     @Column(name = "duration")
     private Integer duration;
@@ -47,4 +48,3 @@ public class LiveStream {
         status = "LIVE";
     }
 }
-

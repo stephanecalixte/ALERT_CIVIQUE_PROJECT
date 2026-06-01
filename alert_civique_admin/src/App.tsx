@@ -8,6 +8,7 @@ import { AlertsList } from './components/AlertsList'
 import { StreamsList } from './components/StreamsList'
 import { EmergenciesList } from './components/EmergenciesList'
 import { UsersList } from './components/UsersList'
+import { ChatRoom } from './components/ChatRoom'
 import Starfield from './components/Starfield'
 
 function AppContent() {
@@ -31,6 +32,21 @@ function AppContent() {
       case 'streams':     return <StreamsList />
       case 'emergencies': return <EmergenciesList />
       case 'users':       return <UsersList />
+      case 'chat':        return (
+        <div>
+          <div className="page-hdr">
+            <div>
+              <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                Chat temps réel
+              </h1>
+              <p className="page-sub">Messagerie en direct — salle globale</p>
+            </div>
+          </div>
+          <div style={{ height: 'calc(100vh - 220px)', minHeight: 500 }}>
+            <ChatRoom />
+          </div>
+        </div>
+      )
       default:            return <Dashboard />
     }
   }

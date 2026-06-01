@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge Graph — Overview</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+#sidebar { width: 320px; min-width: 320px; background: #1a1a2e; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; border-right: 1px solid #2a2a4a; }
+#sidebar h2 { font-size: 18px; color: #76B7B2; margin-bottom: 4px; }
+#sidebar h3 { font-size: 14px; color: #9ca3af; margin-bottom: 8px; }
+.nav-link { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 8px; border-radius: 4px; color: #e0e0e0; text-decoration: none; }
+.nav-link:hover { background: #2a2a4a; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+#graph-container { flex: 1; position: relative; }
+#info { background: #0f0f1a; border-radius: 8px; padding: 12px; font-size: 13px; color: #9ca3af; }
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div>
+        <h2>🧠 Overview</h2>
+        <p style="font-size:12px;color:#666;">Each node is a community. Click to view details.</p>
+    </div>
+    <div id="info">239 nodes, 224 edges, 21 communities</div>
+    <div>
+        <h3>Communities</h3>
+        <a href="community_0.html" class="nav-link"><span class="legend-dot" style="background:#4E79A7"></span>togglePlay() (19)</a><a href="community_1.html" class="nav-link"><span class="legend-dot" style="background:#F28E2B"></span>../services/api/api (17)</a><a href="community_2.html" class="nav-link"><span class="legend-dot" style="background:#E15759"></span>sendMessage() (17)</a><a href="community_3.html" class="nav-link"><span class="legend-dot" style="background:#76B7B2"></span>StaticNoise() (17)</a><a href="community_4.html" class="nav-link"><span class="legend-dot" style="background:#59A14F"></span>load() (16)</a><a href="community_5.html" class="nav-link"><span class="legend-dot" style="background:#EDC948"></span>roleBadgeClass() (16)</a><a href="community_6.html" class="nav-link"><span class="legend-dot" style="background:#B07AA1"></span>updateStatus() (15)</a><a href="community_7.html" class="nav-link"><span class="legend-dot" style="background:#FF9DA7"></span>useApp() (14)</a><a href="community_8.html" class="nav-link"><span class="legend-dot" style="background:#9C755F"></span>submit() (14)</a><a href="community_9.html" class="nav-link"><span class="legend-dot" style="background:#BAB0AC"></span>load() (9) (13)</a><a href="community_10.html" class="nav-link"><span class="legend-dot" style="background:#4E79A7"></span>react/ReactNode (13)</a><a href="community_11.html" class="nav-link"><span class="legend-dot" style="background:#F28E2B"></span>./contexts/AppContext/useApp (13)</a><a href="community_12.html" class="nav-link"><span class="legend-dot" style="background:#E15759"></span>req() (11)</a><a href="community_13.html" class="nav-link"><span class="legend-dot" style="background:#76B7B2"></span>useStreamsData() (9)</a><a href="community_14.html" class="nav-link"><span class="legend-dot" style="background:#59A14F"></span>PlayerControls() (9)</a><a href="community_15.html" class="nav-link"><span class="legend-dot" style="background:#EDC948"></span>useHlsPlayer() (7)</a><a href="community_16.html" class="nav-link"><span class="legend-dot" style="background:#B07AA1"></span>lucide-react/RefreshCw (6)</a><a href="community_17.html" class="nav-link"><span class="legend-dot" style="background:#FF9DA7"></span>./styles/global.css (5)</a><a href="community_18.html" class="nav-link"><span class="legend-dot" style="background:#9C755F"></span>Starfield() (4)</a><a href="community_19.html" class="nav-link"><span class="legend-dot" style="background:#BAB0AC"></span>@vitejs/plugin-react/react (3)</a><a href="community_20.html" class="nav-link"><span class="legend-dot" style="background:#4E79A7"></span>index (1)</a>
+    </div>
+</div>
+<div id="graph-container"></div>
+<script>
+(function() {
+    var nodesData = [{id:1,label:"../services/api/api (17)",title:"../services/api/api (17 nodes)\\nClick to view details",color:"#F28E2B",size:40.6,url:"community_1.html"},{id:4,label:"load() (16)",title:"load() (16 nodes)\\nClick to view details",color:"#59A14F",size:40.0,url:"community_4.html"},{id:19,label:"@vitejs/plugin-react/react (3)",title:"@vitejs/plugin-react/react (3 nodes)\\nClick to view details",color:"#BAB0AC",size:28.7,url:"community_19.html"},{id:8,label:"submit() (14)",title:"submit() (14 nodes)\\nClick to view details",color:"#9C755F",size:38.7,url:"community_8.html"},{id:15,label:"useHlsPlayer() (7)",title:"useHlsPlayer() (7 nodes)\\nClick to view details",color:"#EDC948",size:33.2,url:"community_15.html"},{id:17,label:"./styles/global.css (5)",title:"./styles/global.css (5 nodes)\\nClick to view details",color:"#FF9DA7",size:31.2,url:"community_17.html"},{id:7,label:"useApp() (14)",title:"useApp() (14 nodes)\\nClick to view details",color:"#FF9DA7",size:38.7,url:"community_7.html"},{id:5,label:"roleBadgeClass() (16)",title:"roleBadgeClass() (16 nodes)\\nClick to view details",color:"#EDC948",size:40.0,url:"community_5.html"},{id:2,label:"sendMessage() (17)",title:"sendMessage() (17 nodes)\\nClick to view details",color:"#E15759",size:40.6,url:"community_2.html"},{id:0,label:"togglePlay() (19)",title:"togglePlay() (19 nodes)\\nClick to view details",color:"#4E79A7",size:41.8,url:"community_0.html"},{id:9,label:"load() (9) (13)",title:"load() (9) (13 nodes)\\nClick to view details",color:"#BAB0AC",size:38.0,url:"community_9.html"},{id:6,label:"updateStatus() (15)",title:"updateStatus() (15 nodes)\\nClick to view details",color:"#B07AA1",size:39.4,url:"community_6.html"},{id:11,label:"./contexts/AppContext/useApp (13)",title:"./contexts/AppContext/useApp (13 nodes)\\nClick to view details",color:"#F28E2B",size:38.0,url:"community_11.html"},{id:12,label:"req() (11)",title:"req() (11 nodes)\\nClick to view details",color:"#E15759",size:36.6,url:"community_12.html"},{id:13,label:"useStreamsData() (9)",title:"useStreamsData() (9 nodes)\\nClick to view details",color:"#76B7B2",size:35.0,url:"community_13.html"},{id:16,label:"lucide-react/RefreshCw (6)",title:"lucide-react/RefreshCw (6 nodes)\\nClick to view details",color:"#B07AA1",size:32.2,url:"community_16.html"},{id:18,label:"Starfield() (4)",title:"Starfield() (4 nodes)\\nClick to view details",color:"#9C755F",size:30.0,url:"community_18.html"},{id:10,label:"react/ReactNode (13)",title:"react/ReactNode (13 nodes)\\nClick to view details",color:"#4E79A7",size:38.0,url:"community_10.html"},{id:20,label:"index (1)",title:"index (1 nodes)\\nClick to view details",color:"#4E79A7",size:25.0,url:"community_20.html"},{id:14,label:"PlayerControls() (9)",title:"PlayerControls() (9 nodes)\\nClick to view details",color:"#59A14F",size:35.0,url:"community_14.html"},{id:3,label:"StaticNoise() (17)",title:"StaticNoise() (17 nodes)\\nClick to view details",color:"#76B7B2",size:40.6,url:"community_3.html"}];
+    var edgesData = [];
+    var container = document.getElementById('graph-container');
+    var nodes = new vis.DataSet(nodesData);
+    var edges = new vis.DataSet(edgesData);
+    var options = {
+        physics: {
+            solver: 'forceAtlas2Based',
+            forceAtlas2Based: { gravitationalConstant: -100, centralGravity: 0.01, springLength: 200, springConstant: 0.05, damping: 0.4 },
+            stabilization: { iterations: 100 }
+        },
+        nodes: { shape: 'dot', font: { color: '#e0e0e0', size: 14, multi: true }, borderWidth: 2 },
+        edges: { color: { color: '#4a4a6a' }, font: { color: '#888', size: 12 }, smooth: { type: 'continuous' } },
+        interaction: { hover: true, zoomView: true, dragView: true }
+    };
+    var network = new vis.Network(container, { nodes: nodes, edges: edges }, options);
+    network.on('stabilizationIterationsDone', function() { network.setOptions({ physics: { enabled: false } }); });
+    network.on('doubleClick', function(params) {
+        if (params.nodes.length > 0) {
+            var node = nodes.get(params.nodes[0]);
+            if (node && node.url) { window.location.href = node.url; }
+        }
+    });
+})();
+</script>
+</body>
+</html>

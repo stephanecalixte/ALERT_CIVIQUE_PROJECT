@@ -1,0 +1,157 @@
+{
+  "version": "1.0.0",
+  "producer": "Java AppCAT CLI",
+  "metadata": {
+    "analysisStartTime": "2026-04-15T12:14:26.936Z",
+    "analysisEndTime": "2026-04-15T12:17:11.338Z",
+    "privacyMode": "Protected",
+    "privacyModeHelpUrl": "https://aka.ms/appmod-privacy-mode",
+    "targetIds": [],
+    "targetDisplayNames": [],
+    "capabilities": [
+      "openjdk21"
+    ],
+    "os": [],
+    "id": "20260415141426",
+    "name": "Report_20260415141426",
+    "status": "completed",
+    "domains": [
+      "security"
+    ],
+    "mode": "issue-only"
+  },
+  "summary": {
+    "totalProjects": 1,
+    "totalIssues": 0,
+    "totalIncidents": 0,
+    "totalEffort": 0,
+    "charts": {
+      "severity": {
+        "mandatory": 0,
+        "optional": 0,
+        "potential": 0,
+        "information": 0
+      },
+      "category": {}
+    }
+  },
+  "projects": [
+    {
+      "path": ".",
+      "issues": 0,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "ALERT-CIVIQUE-PROJECT",
+        "jdkVersion": "17",
+        "frameworks": [
+          "Spring Boot",
+          "Spring",
+          "React",
+          "Express"
+        ],
+        "languages": [
+          "Java",
+          "TypeScript",
+          "JavaScript",
+          "Shell"
+        ],
+        "tools": [
+          "Maven",
+          "NodeJs"
+        ]
+      },
+      "incidents": []
+    }
+  ],
+  "rules": {},
+  "security": [
+    {
+      "id": "CWE-259",
+      "title": "Use of Hard-coded Password",
+      "category": "Credentials & Secrets",
+      "severity": "optional",
+      "description": "The product contains a hard-coded password, which it uses for its own inbound authentication or for outbound communication to external components.",
+      "evidence": {
+        "files": [
+          ".claude/settings.json",
+          ".claude/settings.local.json"
+        ],
+        "explanation": "Test credentials embedded in curl command strings. Settings files contain hard-coded passwords such as 'password':'test' and 'password':'Azerty12!' in authentication test commands (lines 6, 8-10, 15, 20, 24 in settings.json)"
+      },
+      "storyPoint": 5
+    },
+    {
+      "id": "CWE-321",
+      "title": "Use of Hard-coded Cryptographic Key",
+      "category": "Credentials & Secrets",
+      "severity": "potential",
+      "description": "The product uses a hard-coded, unchangeable cryptographic key.",
+      "evidence": {
+        "files": [
+          "alert_civique_back/src/main/resources/application.properties",
+          "alert_civique_back/src/main/resources/application-test.properties"
+        ],
+        "explanation": "JWT secret keys hard-coded in configuration files. application.properties line 64-65 contains 'jws.secret=MiCléTrèsSecrèteMinimum32CaractèresPourHS256' and 'jwt.secret=MiCléTrèsSecrèteMinimum32CaractèresPourHS256'; application-test.properties line 3 contains 'app.jwt.secret=TestSecretKey2024'. JwtService.java line 19 uses @Value to load SECRET_KEY from these properties."
+      },
+      "storyPoint": 5
+    },
+    {
+      "id": "CWE-732",
+      "title": "Incorrect Permission Assignment for Critical Resource",
+      "category": "Credentials & Secrets",
+      "severity": "optional",
+      "description": "The product specifies permissions for a security-critical resource in a way that allows that resource to be read or modified by unintended actors.",
+      "evidence": {
+        "files": [
+          "docker-compose.ci.yml"
+        ],
+        "explanation": "Jenkins container configured with 'privileged: true' (line 16) granting unrestricted container access and potential privilege escalation capabilities. This allows the container to access all host devices and bypasses security restrictions, representing critical permission assignment issue."
+      },
+      "storyPoint": 5
+    },
+    {
+      "id": "CWE-778",
+      "title": "Insufficient Logging",
+      "category": "Credentials & Secrets",
+      "severity": "potential",
+      "description": "When a security-critical event occurs, the product either does not record the event or omits important details about the event when logging it.",
+      "evidence": {
+        "files": [
+          "alert_civique_back/src/main/java/com/enterprise/alert_civique/controller/AuthController.java"
+        ],
+        "explanation": "AuthController.login() method (line 40) lacks security event logging. Exception handlers for BadCredentialsException (line 69), DisabledException (line 71), LockedException (line 73), and AuthenticationException (line 75) return error messages without logging authentication failures. No audit trail for failed login attempts, username attempted, or timestamp recorded in logs."
+      },
+      "storyPoint": 3
+    },
+    {
+      "id": "CWE-798",
+      "title": "Use of Hard-coded Credentials",
+      "category": "Credentials & Secrets",
+      "severity": "optional",
+      "description": "The product contains hard-coded credentials, such as a password or cryptographic key.",
+      "evidence": {
+        "files": [
+          "docker-compose.ci.yml",
+          "alert_civique_back/src/main/resources/application.properties",
+          "alert_civique_front/server/config/database.js"
+        ],
+        "explanation": "Multiple hard-coded database credentials found: (1) docker-compose.ci.yml lines 26,36 contain SONAR_JDBC_PASSWORD=sonar and POSTGRES_PASSWORD=sonar with plain text credentials; (2) application.properties lines 8-10 have spring.datasource credentials with root user; (3) database.js line 4 contains fallback MongoDB connection string 'mongodb://localhost:27017/alert-civique' when MONGODB_URI environment variable not set."
+      },
+      "storyPoint": 5
+    },
+    {
+      "id": "CWE-434",
+      "title": "Unrestricted Upload of File with Dangerous Type",
+      "category": "File & Path Security",
+      "severity": "mandatory",
+      "description": "The product allows the upload or transfer of dangerous file types that are automatically processed within its environment.",
+      "evidence": {
+        "files": [
+          "alert_civique_front/server/config/multer.js"
+        ],
+        "explanation": "File upload MIME type validation is bypassed by accepting 'application/octet-stream' as a fallback at line 45, which allows attackers to upload files with arbitrary dangerous types (executables, scripts, archives, etc.) by setting the Content-Type to 'application/octet-stream'. No secondary validation of file extension or magic bytes is performed. The fileFilter includes legitimate video types but the 'application/octet-stream' bypass undermines all restrictions, enabling CWE-434 vulnerability."
+      },
+      "storyPoint": 8
+    }
+  ]
+}

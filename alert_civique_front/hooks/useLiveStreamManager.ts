@@ -11,7 +11,6 @@ export function useLiveStreamManager(autoStart = false, onComplete?: () => void,
   const userId = user?.userId?.toString();
   const [isUploading, setIsUploading] = useState(false);
 
-  // Ref pour éviter les closures périmées sur onComplete
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
@@ -21,7 +20,6 @@ export function useLiveStreamManager(autoStart = false, onComplete?: () => void,
   const senderName = user?.name ?? undefined;
   const videoUpload = useVideoUpload(token ?? undefined, userId ?? undefined, alertType, senderName);
 
-  // Ref stable vers toggleCamera pour l'effet autoStart
   const toggleCameraRef = useRef<() => Promise<void>>(async () => {});
 
   const toggleCamera = useCallback(async () => {
@@ -29,69 +27,59 @@ export function useLiveStreamManager(autoStart = false, onComplete?: () => void,
       videoRecording.resetVideoUri();
       cameraManager.activateCamera();
     } else {
-      if (videoRecording.recording) {
-        const videoUri = await videoRecording.stopRecording(cameraManager.cameraRef);
-        await liveStreamAPI.sendStopStream();
-
-        if (videoUri && liveStreamAPI.currentLivestreamId) {
-          setIsUploading(true);
-          try {
-            const mediaResponse = await videoUpload.uploadVideo(videoUri, liveStreamAPI.currentLivestreamId);
-            if (mediaResponse?.url) {
-              await liveStreamAPI.updateStreamWithVideo(mediaResponse.url, mediaResponse?.videoId);
-            }
-          } finally {
-            setIsUploading(false);
-            onCompleteRef.current?.();
-          }
-        } else {
-          onCompleteRef.current?.();
-        }
-      } else {
-        await liveStreamAPI.sendStopStream();
-        onCompleteRef.current?.();
-      }
-
+      // Annulation manuelle avant que l'enregistrement démarre
       cameraManager.deactivateCamera();
+      onCompleteRef.current?.();
     }
-  }, [cameraManager, videoRecording, liveStreamAPI, videoUpload]);
+  }, [cameraManager, videoRecording]);
 
-  // Maintenir la ref à jour
   toggleCameraRef.current = toggleCamera;
 
-  // Initialisation de la caméra
+  // Démarre le stream et ouvre la caméra native dès que isCameraActive devient true
   useEffect(() => {
-    cameraManager.initializeCamera();
-  }, [cameraManager.isCameraActive, cameraManager.cameraInitialized, cameraManager.initializeCamera]);
+    if (!cameraManager.isCameraActive) return;
 
-  // Démarrer le stream et l'enregistrement quand la caméra est prête
-  useEffect(() => {
-    if (
-      cameraManager.isCameraActive &&
-      cameraManager.cameraInitialized &&
-      !videoRecording.recording &&
-      !videoRecording.videoUri &&
-      cameraManager.cameraRef.current
-    ) {
-      const startStreamAndRecord = async () => {
-        await liveStreamAPI.sendStartStream(cameraManager.facing);
-        const success = await videoRecording.startRecording(cameraManager.cameraRef);
-        if (!success) {
+    const startStreamAndRecord = async () => {
+      await liveStreamAPI.sendStartStream(cameraManager.facing);
+
+      const videoUri = await videoRecording.startRecording(
+        cameraManager.cameraRef,
+        async () => {
+          // Échec ou annulation
+          await liveStreamAPI.sendStopStream();
           cameraManager.deactivateCamera();
+          onCompleteRef.current?.();
         }
-      };
-      startStreamAndRecord();
-    }
-  }, [cameraManager.isCameraActive, cameraManager.cameraInitialized]);
+      );
 
-  // Auto-démarrage via ref stable (évite la closure périmée)
+      if (!videoUri) return; // handled by onFailed callback above
+
+      // Enregistrement réussi — upload automatique
+      setIsUploading(true);
+      await liveStreamAPI.sendStopStream();
+      try {
+        const mediaResponse = await videoUpload.uploadVideo(videoUri, liveStreamAPI.currentLivestreamId!);
+        if (mediaResponse?.url) {
+          await liveStreamAPI.updateStreamWithVideo(mediaResponse.url, mediaResponse?.videoId);
+        }
+      } finally {
+        setIsUploading(false);
+        cameraManager.deactivateCamera();
+        onCompleteRef.current?.();
+      }
+    };
+
+    startStreamAndRecord();
+  }, [cameraManager.isCameraActive]);
+
+  // Auto-démarrage
   useEffect(() => {
     if (autoStart && cameraManager.hasPermission === true && !cameraManager.isCameraActive) {
       toggleCameraRef.current();
     }
   }, [autoStart, cameraManager.hasPermission]);
 
-  // Vérifier les permissions au montage
+  // Vérifier permissions au montage
   useEffect(() => {
     cameraManager.checkCameraPermission();
     liveStreamAPI.loadStreams();

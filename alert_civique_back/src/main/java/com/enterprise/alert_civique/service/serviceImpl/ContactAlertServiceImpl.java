@@ -31,7 +31,7 @@ public class ContactAlertServiceImpl implements ContactAlertService {
 
     @Override
     public List<AlertContactNotificationResult> notifyContacts(AlertContactNotificationRequest request) {
-        List<TrustedContact> contacts = trustedContactRepository.findByUserId(request.userId());
+        List<TrustedContact> contacts = trustedContactRepository.findByUserUserId(request.userId());
         List<AlertContactNotificationResult> results = new ArrayList<>();
 
         String alertLabel = resolveAlertLabel(request.alertType());

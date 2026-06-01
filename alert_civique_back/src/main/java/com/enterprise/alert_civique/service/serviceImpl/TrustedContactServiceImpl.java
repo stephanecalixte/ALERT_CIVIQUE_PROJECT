@@ -83,7 +83,7 @@ public class TrustedContactServiceImpl implements TrustedContactService {
     @Override
     @Transactional(readOnly = true)
     public List<TrustedContactDTO> getByUserId(Long userId) {
-        return trustedContactRepository.findByUserId(userId)
+        return trustedContactRepository.findByUserUserId(userId)
                 .stream()
                 .map(mapperService::toDTO)
                 .toList();

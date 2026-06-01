@@ -6,15 +6,18 @@ import com.enterprise.alert_civique.entity.Users;
 import com.enterprise.alert_civique.repository.RoleRepository;
 import com.enterprise.alert_civique.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,13 +32,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests d'intégration pour UserController
  */
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("UserController Integration Tests")
 public class UserControllerIntegrationTest {
 
-    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired
     private UserRepository userRepository;
@@ -43,8 +47,9 @@ public class UserControllerIntegrationTest {
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     private static final String USERS_BASE_URI = "/api/users";
     private Roles clientRole;
@@ -52,6 +57,8 @@ public class UserControllerIntegrationTest {
 
     @BeforeEach
     public void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
         // Nettoyer la base
         userRepository.deleteAll();
 
@@ -101,7 +108,7 @@ public class UserControllerIntegrationTest {
         mockMvc.perform(get(USERS_BASE_URI + "/" + testUser.getUserId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId", equalTo(testUser.getUserId().intValue())))
+                .andExpect(jsonPath("$.id", equalTo(testUser.getUserId().intValue())))
                 .andExpect(jsonPath("$.email", equalTo(testUser.getEmail())))
                 .andExpect(jsonPath("$.firstname", equalTo(testUser.getFirstname())));
     }
@@ -120,12 +127,11 @@ public class UserControllerIntegrationTest {
     public void testCreateUser_Success() throws Exception {
         // Arrange
         UserCreateDTO createDTO = new UserCreateDTO(
-                "Jane",
-                "Smith",
+                "Jane Smith",
+                clientRole.getRoleId(),
                 "jane.smith@example.com",
-                "+33687654321",
-                LocalDate.of(1995, 5, 5),
-                clientRole.getRoleId()
+                "Password123!",
+                LocalDate.of(1995, 5, 5)
         );
 
         // Act & Assert
@@ -133,9 +139,8 @@ public class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userId", notNullValue()))
-                .andExpect(jsonPath("$.email", equalTo("jane.smith@example.com")))
-                .andExpect(jsonPath("$.firstname", equalTo("Jane")));
+                .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$.email", equalTo("jane.smith@example.com")));
     }
 
     @Test
@@ -143,12 +148,11 @@ public class UserControllerIntegrationTest {
     public void testUpdateUser_Success() throws Exception {
         // Arrange
         UserCreateDTO updateDTO = new UserCreateDTO(
-                "John",
-                "Updated",
+                "John Updated",
+                clientRole.getRoleId(),
                 testUser.getEmail(),
-                "+33611111111",
-                LocalDate.of(1990, 1, 1),
-                clientRole.getRoleId()
+                "Password123!",
+                LocalDate.of(1990, 1, 1)
         );
 
         // Act & Assert
@@ -156,8 +160,7 @@ public class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lastname", equalTo("Updated")))
-                .andExpect(jsonPath("$.phone", equalTo("+33611111111")));
+                .andExpect(jsonPath("$.email", equalTo(testUser.getEmail())));
     }
 
     @Test
@@ -165,12 +168,11 @@ public class UserControllerIntegrationTest {
     public void testUpdateUser_NotFound() throws Exception {
         // Arrange
         UserCreateDTO updateDTO = new UserCreateDTO(
-                "John",
-                "Updated",
+                "John Updated",
+                clientRole.getRoleId(),
                 "test@example.com",
-                "+33611111111",
-                LocalDate.of(1990, 1, 1),
-                clientRole.getRoleId()
+                "Password123!",
+                LocalDate.of(1990, 1, 1)
         );
 
         // Act & Assert
@@ -223,12 +225,11 @@ public class UserControllerIntegrationTest {
     public void testCreateUser_InvalidRole() throws Exception {
         // Arrange
         UserCreateDTO createDTO = new UserCreateDTO(
-                "Test",
-                "User",
+                "Test User",
+                9999L, // Rôle inexistant
                 "test.user@example.com",
-                "+33612345678",
-                LocalDate.of(1990, 1, 1),
-                9999L // Rôle inexistant
+                "Password123!",
+                LocalDate.of(1990, 1, 1)
         );
 
         // Act & Assert

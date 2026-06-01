@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Looping>
+ <MCD>
+
+  <!-- ═══════════ ENTITÉS ═══════════ -->
+
+  <Entite Nom="Roles" x="200" y="60" largeur="190" hauteur="70" couleur="16777165">
+   <Prop Nom="role_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="name" TypeDonnee="Texte" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Users" x="560" y="130" largeur="200" hauteur="130" couleur="16777165">
+   <Prop Nom="user_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="name" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="email" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="password" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="registration_date" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Trusted_contact" x="1020" y="60" largeur="210" hauteur="110" couleur="16777165">
+   <Prop Nom="trusted_contact_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="name" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="email" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="phone" TypeDonnee="Texte" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Lives_stream" x="50" y="260" largeur="200" hauteur="110" couleur="16777165">
+   <Prop Nom="live_stream_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="url" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="started_at" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+   <Prop Nom="ended_at" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Emergencies_alert" x="1100" y="260" largeur="210" hauteur="110" couleur="16777165">
+   <Prop Nom="emmergency_alert_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="status" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="message" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="sent_at" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Reports" x="540" y="380" largeur="200" hauteur="130" couleur="16777165">
+   <Prop Nom="report_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="description" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="created_at" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+   <Prop Nom="priority" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="anonymous" TypeDonnee="Booléen" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Geolocalisations" x="1000" y="370" largeur="210" hauteur="130" couleur="16777165">
+   <Prop Nom="geolocalisation_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="latitude" TypeDonnee="Réel" Identifiant="Faux"/>
+   <Prop Nom="longitude" TypeDonnee="Réel" Identifiant="Faux"/>
+   <Prop Nom="accuracy" TypeDonnee="Réel" Identifiant="Faux"/>
+   <Prop Nom="timestamp" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Reports_message" x="1080" y="510" largeur="210" hauteur="90" couleur="16777165">
+   <Prop Nom="report_message_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="message" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="created_at" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Ai_validation" x="190" y="550" largeur="210" hauteur="170" couleur="16777165">
+   <Prop Nom="ai_validation_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="reason" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="ai_score" TypeDonnee="Réel" Identifiant="Faux"/>
+   <Prop Nom="decision" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="confidence_level" TypeDonnee="Réel" Identifiant="Faux"/>
+   <Prop Nom="created_at" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+   <Prop Nom="model_version" TypeDonnee="Texte" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Reports_status" x="420" y="580" largeur="210" hauteur="130" couleur="16777165">
+   <Prop Nom="report_status_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="value" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="changed_by" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="status" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="comment" TypeDonnee="Texte" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Push_notifications" x="50" y="670" largeur="210" hauteur="90" couleur="16777165">
+   <Prop Nom="push_notification_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="message" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="sent_at" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Medias" x="530" y="640" largeur="210" hauteur="170" couleur="16777165">
+   <Prop Nom="media_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="url" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="type_media" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="date_upload" TypeDonnee="Date/Heure" Identifiant="Faux"/>
+   <Prop Nom="file_size" TypeDonnee="Entier" Identifiant="Faux"/>
+   <Prop Nom="duration_seconds" TypeDonnee="Entier" Identifiant="Faux"/>
+   <Prop Nom="thumbnail_path" TypeDonnee="Texte" Identifiant="Faux"/>
+  </Entite>
+
+  <Entite Nom="Categories" x="800" y="580" largeur="200" hauteur="90" couleur="16777165">
+   <Prop Nom="category_id" TypeDonnee="Entier" Identifiant="Vrai"/>
+   <Prop Nom="name" TypeDonnee="Texte" Identifiant="Faux"/>
+   <Prop Nom="description" TypeDonnee="Texte" Identifiant="Faux"/>
+  </Entite>
+
+  <!-- ═══════════ ASSOCIATIONS ═══════════ -->
+
+  <Association Nom="dispose" x="375" y="105" largeur="130" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Roles" cardMin="1" cardMax="n"/>
+   <Patte nomEntite="Users" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="peut_avoir" x="795" y="95" largeur="130" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Users" cardMin="1" cardMax="n"/>
+   <Patte nomEntite="Trusted_contact" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="peut activer" x="270" y="215" largeur="130" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Users" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Lives_stream" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="reçoit" x="895" y="230" largeur="120" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Users" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Emergencies_alert" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="administre" x="975" y="165" largeur="120" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Users" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Emergencies_alert" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="soumettre" x="565" y="270" largeur="120" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Users" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Reports" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="avoir" x="680" y="270" largeur="100" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Users" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Push_notifications" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="écrit" x="890" y="385" largeur="100" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Users" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Reports_message" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="peut appartenir" x="215" y="335" largeur="140" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Lives_stream" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Users" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="réceptionne" x="340" y="415" largeur="130" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Lives_stream" cardMin="1" cardMax="1"/>
+   <Patte nomEntite="Reports" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="peut soumettre" x="270" y="475" largeur="140" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Lives_stream" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Reports" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="autorise" x="800" y="415" largeur="120" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Reports" cardMin="1" cardMax="1"/>
+   <Patte nomEntite="Geolocalisations" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="est analysé par" x="350" y="515" largeur="145" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Reports" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Ai_validation" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="est associer" x="715" y="555" largeur="130" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Reports" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Categories" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="peut etre dans" x="490" y="560" largeur="140" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Reports" cardMin="0" cardMax="n"/>
+   <Patte nomEntite="Reports_status" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="peut contenir" x="595" y="600" largeur="130" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Reports" cardMin="0" cardMax="1"/>
+   <Patte nomEntite="Medias" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="peut comporter" x="920" y="600" largeur="135" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Reports_message" cardMin="1" cardMax="1"/>
+   <Patte nomEntite="Medias" cardMin="0" cardMax="n"/>
+  </Association>
+
+  <Association Nom="contient" x="305" y="690" largeur="120" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Push_notifications" cardMin="1" cardMax="n"/>
+   <Patte nomEntite="Medias" cardMin="1" cardMax="1"/>
+  </Association>
+
+  <Association Nom="peut transmettre" x="1120" y="605" largeur="145" hauteur="45" couleur="10092543">
+   <Patte nomEntite="Emergencies_alert" cardMin="1" cardMax="1"/>
+   <Patte nomEntite="Reports_message" cardMin="1" cardMax="1"/>
+  </Association>
+
+ </MCD>
+</Looping>

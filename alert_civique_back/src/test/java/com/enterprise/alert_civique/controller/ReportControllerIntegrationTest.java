@@ -11,15 +11,18 @@ import com.enterprise.alert_civique.repository.ReportRepository;
 import com.enterprise.alert_civique.repository.RoleRepository;
 import com.enterprise.alert_civique.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,13 +37,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests d'intégration pour ReportController
  */
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("ReportController Integration Tests")
 public class ReportControllerIntegrationTest {
 
-    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired
     private ReportRepository reportRepository;
@@ -51,8 +55,9 @@ public class ReportControllerIntegrationTest {
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     private static final String REPORT_BASE_URI = "/api/report";
     private Users testUser;
@@ -61,6 +66,8 @@ public class ReportControllerIntegrationTest {
 
     @BeforeEach
     public void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
         // Nettoyer
         reportRepository.deleteAll();
         userRepository.deleteAll();
@@ -95,9 +102,7 @@ public class ReportControllerIntegrationTest {
         testReport.setDescription("Test incident");
         testReport.setStatus(ReportsStatus.PENDING);
         testReport.setPriority(DecisionLevel.HIGH);
-        testReport.setLatitude(48.8566);
-        testReport.setLatitude(2.3522);
-        testReport.setLocationText("Paris, France");
+        testReport.setAlertType("INCIDENT");
         testReport.setUser(testUser);
         testReport.setCreatedAt(LocalDateTime.now());
         testReport.setAnonymous(false);
@@ -239,9 +244,7 @@ public class ReportControllerIntegrationTest {
         reportToDelete.setDescription("Report to delete");
         reportToDelete.setStatus(ReportsStatus.PENDING);
         reportToDelete.setPriority(DecisionLevel.MEDIUM);
-        reportToDelete.setLatitude(48.8566);
-        reportToDelete.setLongitude(2.3522);
-        reportToDelete.setLocationText("Paris, France");
+        reportToDelete.setAlertType("INCIDENT");
         reportToDelete.setUser(testUser);
         reportToDelete.setCreatedAt(LocalDateTime.now());
         reportToDelete.setAnonymous(true);

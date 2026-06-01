@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alert_Civique — Annexe E — Tests Complets</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Calibri', Arial, sans-serif; font-size: 10pt; color: #222; background: #fff; line-height: 1.4; }
+
+  /* ─── COUVERTURE ─── */
+  .cover { text-align: center; padding: 60px 40px; border-bottom: 4px solid #1565C0; margin-bottom: 40px; }
+  .cover .project-title { font-size: 28pt; font-weight: 900; background: #111; color: #fff; padding: 16px 32px; display: inline-block; letter-spacing: 2px; }
+  .cover .subtitle { font-size: 12pt; color: #FF6600; font-style: italic; margin-top: 8px; }
+  .cover .annex-title { font-size: 16pt; font-weight: bold; color: #1565C0; margin-top: 24px; }
+  .cover .meta { font-size: 9pt; color: #555; margin-top: 12px; }
+  .cover .stats-box { display: inline-flex; gap: 32px; margin-top: 24px; padding: 16px 32px; border: 2px solid #1565C0; border-radius: 4px; }
+  .cover .stat { text-align: center; }
+  .cover .stat .num { font-size: 22pt; font-weight: 900; color: #1565C0; }
+  .cover .stat .label { font-size: 8pt; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ─── MISE EN PAGE ─── */
+  .page-header { font-size: 7.5pt; color: #888; border-bottom: 1px solid #ddd; padding: 4px 0; margin-bottom: 16px; }
+  .toc { page-break-after: always; padding: 0 40px 40px; }
+  .toc h2 { font-size: 14pt; color: #1565C0; border-bottom: 2px solid #1565C0; padding-bottom: 6px; margin-bottom: 16px; }
+  .toc ul { list-style: none; }
+  .toc ul li { padding: 3px 0; font-size: 9.5pt; border-bottom: 1px dotted #ddd; display: flex; justify-content: space-between; }
+  .toc ul li .toc-section { color: #1565C0; font-weight: bold; margin-top: 10px; }
+
+  /* ─── SECTIONS ─── */
+  .module { page-break-before: always; padding: 0 40px 40px; }
+  .module:first-of-type { page-break-before: avoid; }
+  .module-header { background: #1565C0; color: #fff; padding: 12px 20px; border-radius: 4px 4px 0 0; margin-bottom: 0; }
+  .module-header h2 { font-size: 13pt; font-weight: bold; }
+  .module-header .module-meta { font-size: 8pt; color: rgba(255,255,255,0.8); margin-top: 4px; }
+
+  .test-class { margin-top: 24px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; page-break-inside: avoid; }
+  .test-class-header { background: #E3F2FD; border-bottom: 1px solid #1565C0; padding: 10px 14px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .test-class-header h3 { font-size: 10.5pt; color: #1565C0; font-weight: bold; }
+  .test-class-header .badge { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .badge-type { font-size: 7.5pt; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+  .badge-unit { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+  .badge-integration { background: #FFF3E0; color: #E65100; border: 1px solid #FFCC80; }
+  .badge-repo { background: #EDE7F6; color: #4527A0; border: 1px solid #CE93D8; }
+  .badge-service { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+  .badge-security { background: #FCE4EC; color: #880E4F; border: 1px solid #F48FB1; }
+  .badge-e2e { background: #E0F2F1; color: #00695C; border: 1px solid #80CBC4; }
+  .badge-react { background: #E8F5E9; color: #1B5E20; border: 1px solid #A5D6A7; }
+  .badge-node { background: #FFF8E1; color: #E65100; border: 1px solid #FFE082; }
+  .test-class-desc { font-size: 8.5pt; color: #555; margin-top: 4px; font-style: italic; }
+  .test-count { font-size: 7.5pt; color: #888; }
+
+  pre { background: #1a1a2e; color: #e8e8e8; padding: 14px 16px; font-family: 'Consolas', 'Courier New', monospace; font-size: 7.5pt; line-height: 1.5; overflow-x: auto; tab-size: 4; }
+  pre .kw  { color: #569cd6; }
+  pre .ann { color: #9cdcfe; }
+  pre .str { color: #ce9178; }
+  pre .cmt { color: #6a9955; font-style: italic; }
+  pre .cls { color: #4ec9b0; }
+  pre .met { color: #dcdcaa; }
+  pre .num { color: #b5cea8; }
+
+  /* ─── RÉSUMÉ ─── */
+  .summary-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 9pt; }
+  .summary-table th { background: #1565C0; color: #fff; padding: 8px 10px; text-align: left; }
+  .summary-table td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+  .summary-table tr:nth-child(even) td { background: #F5F5F5; }
+  .summary-table .total-row td { background: #E3F2FD; font-weight: bold; border-top: 2px solid #1565C0; }
+
+  .info-box { background: #E3F2FD; border-left: 4px solid #1565C0; padding: 10px 14px; margin: 16px 0; font-size: 9pt; border-radius: 0 4px 4px 0; }
+  .warn-box { background: #FFF3E0; border-left: 4px solid #FF9800; padding: 10px 14px; margin: 16px 0; font-size: 9pt; border-radius: 0 4px 4px 0; }
+
+  /* ─── PIED DE PAGE ─── */
+  .page-footer { text-align: center; font-size: 7.5pt; color: #aaa; border-top: 1px solid #ddd; margin-top: 40px; padding-top: 10px; }
+
+  @media print {
+    .page-break { page-break-before: always; }
+    body { font-size: 9pt; }
+    pre { font-size: 7pt; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ COUVERTURE ═══════════════════════ -->
+<div class="cover">
+  <div class="project-title">ALERT_CIVIQUE</div>
+  <div class="subtitle">« Votre voix, notre vigilance »</div>
+  <div class="annex-title">Annexe E — Suite de Tests Complète</div>
+  <div class="meta">
+    Stéphane CALIXTE &nbsp;|&nbsp; Doranco &nbsp;|&nbsp; Titre CDA Niveau 6 &nbsp;|&nbsp; Session 2024–2025<br>
+    Document généré automatiquement depuis le code source du projet
+  </div>
+  <div style="margin-top:20px;">
+    <div class="stats-box">
+      <div class="stat"><div class="num">29</div><div class="label">Fichiers de tests</div></div>
+      <div class="stat"><div class="num">~220</div><div class="label">Cas de test</div></div>
+      <div class="stat"><div class="num">4</div><div class="label">Modules couverts</div></div>
+      <div class="stat"><div class="num">4</div><div class="label">Frameworks</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TABLE DES MATIÈRES ═══════════════════════ -->
+<div class="toc">
+  <h2>Sommaire de l'Annexe E</h2>
+  <ul>
+    <li><span class="toc-section">E.1 — Backend Spring Boot (JUnit 5) — 22 fichiers</span><span></span></li>
+    <li><span style="padding-left:16px">E.1.1 Tests unitaires — Sécurité</span><span>InputSanitizerTest · JwtServiceTest · PasswordPolicyValidatorTest</span></li>
+    <li><span style="padding-left:16px">E.1.2 Tests unitaires — Repositories</span><span>ReportRepositoryTest · RoleRepositoryTest · AccountActivationRepositoryTest · TrustedContactRepositoryTest · LiveStreamRepositoryTest</span></li>
+    <li><span style="padding-left:16px">E.1.3 Tests unitaires — Services</span><span>UserServiceTest · RegisterServiceTest · TrustedContactServiceTest · LiveStreamServiceTest · ReportServiceTest</span></li>
+    <li><span style="padding-left:16px">E.1.4 Tests d'intégration — Controllers</span><span>AuthControllerIntegrationTest · AccountActivationControllerIntegrationTest · UserControllerIntegrationTest · ReportControllerIntegrationTest · TrustedContactControllerIntegrationTest · LiveStreamControllerIntegrationTest · GeolocalisationControllerIntegrationTest</span></li>
+    <li><span style="padding-left:16px">E.1.5 Smoke test</span><span>AlertCiviqueApplicationTests</span></li>
+    <li><span class="toc-section">E.2 — Frontend React Native / Expo (Jest) — 5 fichiers</span><span></span></li>
+    <li><span style="padding-left:16px">E.2.1 Services</span><span>LiveStreamService.test · LoginService.test · RegisterService.test · ReportService.test · TrustedContactService.test</span></li>
+    <li><span class="toc-section">E.3 — Dashboard Admin React (Vitest) — 2 fichiers</span><span></span></li>
+    <li><span style="padding-left:16px">E.3.1 Contexte et API</span><span>AppContext.test · api.test</span></li>
+    <li><span class="toc-section">E.4 — Serveur Node.js / MongoDB (Jest + Supertest) — 3 fichiers</span><span></span></li>
+    <li><span style="padding-left:16px">E.4.1 API routes</span><span>messages.test · livestream.test · health.test</span></li>
+  </ul>
+
+  <table class="summary-table" style="margin-top:24px;">
+    <thead>
+      <tr><th>Module</th><th>Fichiers</th><th>Cas de test (estimés)</th><th>Framework</th><th>Profil</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Backend Spring Boot</td><td>22</td><td>~125</td><td>JUnit 5 + MockMvc + H2</td><td>@ActiveProfiles("test")</td></tr>
+      <tr><td>Frontend React Native</td><td>5</td><td>~40</td><td>Jest + fetch mock</td><td>jest.config.ts</td></tr>
+      <tr><td>Dashboard Admin React</td><td>2</td><td>~28</td><td>Vitest + RTL</td><td>vitest.config.ts</td></tr>
+      <tr><td>Serveur Node.js / Mongo</td><td>3</td><td>~20</td><td>Jest + Supertest</td><td>jest.config.js</td></tr>
+      <tr class="total-row"><td><strong>TOTAL</strong></td><td><strong>29</strong></td><td><strong>~213</strong></td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box">
+    <strong>Configuration commune :</strong> Tous les tests backend utilisent une base H2 en mémoire via <code>@ActiveProfiles("test")</code> et <code>@SpringBootTest</code>. Les tests frontend mockent le réseau (<code>global.fetch = mockFetch</code>). Commande d'exécution : <code>mvn test</code> (Java) · <code>npx jest</code> (TS/JS) · <code>npx vitest</code> (Admin).
+  </div>
+</div>
+
+<!-- ═══════════════════════ E.1 BACKEND ═══════════════════════ -->
+<div class="module">
+  <div class="module-header">
+    <h2>E.1 — Backend Spring Boot — Tests JUnit 5</h2>
+    <div class="module-meta">alert_civique_back/src/test/java/com/enterprise/alert_civique/ &nbsp;|&nbsp; Profil : H2 en mémoire (@ActiveProfiles("test"))</div>
+  </div>
+
+  <!-- E.1.1 SÉCURITÉ -->
+  <h3 style="margin:24px 0 12px; color:#880E4F; font-size:11pt; border-bottom:1px solid #F48FB1; padding-bottom:4px;">E.1.1 — Tests unitaires Sécurité</h3>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>InputSanitizerTest.java</h3>
+        <div class="test-class-desc">Tests de sanitisation des entrées utilisateur (XSS, HTML malveillant, injection SQL)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-security">Sécurité</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">9 tests</span></div>
+    </div>
+<pre>package com.enterprise.alert_civique.security;
+
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@DisplayName("InputSanitizer Unit Tests")
+public class InputSanitizerTest {
+
+    @Autowired
+    private InputSanitizer sanitizer;
+
+    @Test
+    @DisplayName("Devrait laisser les contenus valides inchangés")
+    public void testSanitize_ValidInput() {
+        String result = sanitizer.sanitize("John Doe");
+        assertNotNull(result);
+        assertTrue(result.contains("John"));
+    }
+
+    @Test
+    @DisplayName("Devrait supprimer les espaces inutiles")
+    public void testSanitize_RemovesWhitespace() {
+        String result = sanitizer.sanitize("  John   Doe  ");
+        assertFalse(result.startsWith(" "), "Les espaces de début doivent être supprimés");
+        assertFalse(result.endsWith(" "), "Les espaces de fin doivent être supprimés");
+    }
+
+    @Test
+    @DisplayName("Devrait neutraliser les scripts XSS")
+    public void testSanitize_RemovesXSSAttempts() {
+        String result = sanitizer.sanitize("<script>alert('XSS')</script>");
+        assertFalse(result.contains("<script>"), "Les tags script doivent être supprimés");
+    }
+
+    @Test
+    @DisplayName("Devrait neutraliser les HTML tags malveillants")
+    public void testSanitize_RemovesMaliciousHtml() {
+        String result = sanitizer.sanitize("<img src=x onerror='alert(1)'>");
+        assertFalse(result.contains("onerror"), "Les attributs dangereux doivent être supprimés");
+    }
+
+    @Test
+    @DisplayName("Devrait gérer les strings vides")
+    public void testSanitize_EmptyString() {
+        assertNotNull(sanitizer.sanitize(""), "Le résultat ne doit pas être null");
+    }
+
+    @Test
+    @DisplayName("Devrait gérer les strings null")
+    public void testSanitize_NullInput() {
+        String result = sanitizer.sanitize(null);
+        assertTrue(result == null || result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Devrait préserver les caractères valides (@ email)")
+    public void testSanitize_PreservesValidSpecialChars() {
+        String result = sanitizer.sanitize("user@example.com");
+        assertTrue(result.contains("@"));
+    }
+
+    @Test
+    @DisplayName("Devrait gérer les accents et caractères accentués")
+    public void testSanitize_PreservesAccents() {
+        String result = sanitizer.sanitize("François Côté");
+        assertFalse(result.isEmpty(), "Les accents ne doivent pas causer d'erreur");
+    }
+
+    @Test
+    @DisplayName("Devrait neutraliser les injections SQL")
+    public void testSanitize_RemovesSQLInjection() {
+        String result = sanitizer.sanitize("' OR '1'='1");
+        assertTrue(!result.isEmpty(), "La sanitisation ne doit pas rejeter, mais neutraliser");
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>JwtServiceTest.java</h3>
+        <div class="test-class-desc">Tests de génération, validation et extraction de tokens JWT (HS256)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-security">Sécurité</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">10 tests</span></div>
+    </div>
+<pre>package com.enterprise.alert_civique.security;
+
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@DisplayName("JwtService Unit Tests")
+public class JwtServiceTest {
+
+    @Autowired
+    private JwtService jwtService;
+
+    private String testUsername;
+
+    @BeforeEach
+    public void setUp() {
+        testUsername = "testuser@example.com";
+    }
+
+    @Test
+    @DisplayName("Devrait générer un token JWT valide (3 parties séparées par .)")
+    public void testGenerateToken_Success() {
+        String token = jwtService.generateToken(testUsername);
+        assertNotNull(token);
+        assertTrue(token.split("\\.").length == 3, "JWT doit avoir 3 parties");
+    }
+
+    @Test
+    @DisplayName("Devrait extraire le username du token JWT")
+    public void testExtractUsername_Success() {
+        String token = jwtService.generateToken(testUsername);
+        assertEquals(testUsername, jwtService.extractUsername(token));
+    }
+
+    @Test
+    @DisplayName("Devrait valider un token JWT valide")
+    public void testIsTokenValid_ValidToken() {
+        String token = jwtService.generateToken(testUsername);
+        assertTrue(jwtService.isTokenValid(token));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un token JWT invalide")
+    public void testIsTokenValid_InvalidToken() {
+        assertFalse(jwtService.isTokenValid("invalid.jwt.token"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un token vide")
+    public void testIsTokenValid_EmptyToken() {
+        assertFalse(jwtService.isTokenValid(""));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un token null")
+    public void testIsTokenValid_NullToken() {
+        assertFalse(jwtService.isTokenValid(null));
+    }
+
+    @Test
+    @DisplayName("Devrait lever une exception pour username null")
+    public void testGenerateToken_NullUsername() {
+        assertThrows(Exception.class, () -> jwtService.generateToken(null));
+    }
+
+    @Test
+    @DisplayName("Devrait générer des tokens différents pour le même username (timestamps)")
+    public void testGenerateToken_DifferentTokensForSameUsername() {
+        assertNotEquals(jwtService.generateToken(testUsername), jwtService.generateToken(testUsername));
+    }
+
+    @Test
+    @DisplayName("Devrait extraire le même username depuis des tokens différents")
+    public void testExtractUsername_SameUsernameFromDifferentTokens() {
+        assertEquals(jwtService.extractUsername(jwtService.generateToken(testUsername)),
+                     jwtService.extractUsername(jwtService.generateToken(testUsername)));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un token incomplet (1 seule partie)")
+    public void testIsTokenValid_IncompleteToken() {
+        assertFalse(jwtService.isTokenValid("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"));
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>PasswordPolicyValidatorTest.java</h3>
+        <div class="test-class-desc">Politique de mot de passe : 12 car. minimum, majuscule, minuscule, chiffre, caractère spécial</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-security">Sécurité</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">10 tests</span></div>
+    </div>
+<pre>package com.enterprise.alert_civique.security;
+
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@DisplayName("PasswordPolicyValidator Unit Tests")
+public class PasswordPolicyValidatorTest {
+
+    @Autowired
+    private PasswordPolicyValidator passwordValidator;
+
+    @Test
+    @DisplayName("Devrait accepter un mot de passe valide")
+    public void testValidatePassword_ValidPassword() {
+        assertDoesNotThrow(() -> passwordValidator.validate("SecurePassword123!"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe trop court (< 12 car.)")
+    public void testValidatePassword_TooShort() {
+        assertThrows(Exception.class, () -> passwordValidator.validate("Short1!"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe sans majuscule")
+    public void testValidatePassword_NoUppercase() {
+        assertThrows(Exception.class, () -> passwordValidator.validate("password123!"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe sans minuscule")
+    public void testValidatePassword_NoLowercase() {
+        assertThrows(Exception.class, () -> passwordValidator.validate("PASSWORD123!"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe sans chiffre")
+    public void testValidatePassword_NoDigit() {
+        assertThrows(Exception.class, () -> passwordValidator.validate("SecurePassword!"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe sans caractère spécial")
+    public void testValidatePassword_NoSpecialCharacter() {
+        assertThrows(Exception.class, () -> passwordValidator.validate("SecurePassword123"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe vide")
+    public void testValidatePassword_EmptyPassword() {
+        assertThrows(Exception.class, () -> passwordValidator.validate(""));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe null")
+    public void testValidatePassword_NullPassword() {
+        assertThrows(Exception.class, () -> passwordValidator.validate(null));
+    }
+
+    @Test
+    @DisplayName("Devrait accepter un mot de passe long et complexe")
+    public void testValidatePassword_LongComplexPassword() {
+        assertDoesNotThrow(() -> passwordValidator.validate("VeryLongSecurePassword123!@#$%^&*()"));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter un mot de passe avec espaces")
+    public void testValidatePassword_WithSpaces() {
+        assertThrows(Exception.class, () -> passwordValidator.validate("Secure Pass 123!"));
+    }
+}</pre>
+  </div>
+
+  <!-- E.1.2 REPOSITORIES -->
+  <h3 style="margin:32px 0 12px; color:#4527A0; font-size:11pt; border-bottom:1px solid #CE93D8; padding-bottom:4px;">E.1.2 — Tests unitaires Repositories (Spring Data JPA — H2)</h3>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>ReportRepositoryTest.java</h3>
+        <div class="test-class-desc">CRUD signalements, recherche par utilisateur/statut, gestion multi-statuts (PENDING → RESOLVED)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-repo">Repository</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">12 tests</span></div>
+    </div>
+<pre>package com.enterprise.alert_civique.repository;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@DisplayName("ReportRepository Unit Tests")
+public class ReportRepositoryTest {
+
+    @Autowired private ReportRepository reportRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private RoleRepository roleRepository;
+
+    private Users testUser;
+    private Reports testReport;
+
+    @BeforeEach
+    public void setUp() {
+        reportRepository.deleteAll(); userRepository.deleteAll(); roleRepository.deleteAll();
+        // Création rôle, utilisateur et signalement de test en @BeforeEach
+        Roles role = roleRepository.save(new Roles("ROLE_CLIENT"));
+        testUser = userRepository.save(buildUser("reporter@example.com", role));
+        testReport = reportRepository.save(buildReport(testUser, "ACCIDENT", ReportsStatus.PENDING));
+    }
+
+    @Test
+    @DisplayName("Devrait sauvegarder un signalement et générer un ID")
+    public void testSaveReport_Success() {
+        Reports saved = reportRepository.save(buildReport(testUser, "TRAFFIC", ReportsStatus.PENDING));
+        assertNotNull(saved.getReportId());
+        assertEquals("TRAFFIC", saved.getAlertType());
+        assertEquals(ReportsStatus.PENDING, saved.getStatus());
+    }
+
+    @Test
+    @DisplayName("Devrait trouver un signalement par ID")
+    public void testFindById_Success() {
+        Optional&lt;Reports&gt; found = reportRepository.findById(testReport.getReportId());
+        assertTrue(found.isPresent());
+        assertEquals(testReport.getAlertType(), found.get().getAlertType());
+    }
+
+    @Test
+    @DisplayName("Devrait retourner vide pour ID inexistant")
+    public void testFindById_NotFound() {
+        assertFalse(reportRepository.findById(9999L).isPresent());
+    }
+
+    @Test
+    @DisplayName("Devrait trouver les signalements par utilisateur")
+    public void testFindByUser_Success() {
+        List&lt;Reports&gt; reports = reportRepository.findByUserUserId(testUser.getUserId());
+        assertTrue(reports.size() >= 1);
+    }
+
+    @Test
+    @DisplayName("Devrait trouver les signalements par statut PENDING")
+    public void testFindByStatus_Success() {
+        List&lt;Reports&gt; reports = reportRepository.findByStatus(ReportsStatus.PENDING);
+        assertTrue(reports.size() >= 1);
+    }
+
+    @Test
+    @DisplayName("Devrait mettre à jour le statut → IN_REVIEW")
+    public void testUpdateStatus_Success() {
+        testReport.setStatus(ReportsStatus.IN_REVIEW);
+        assertEquals(ReportsStatus.IN_REVIEW, reportRepository.save(testReport).getStatus());
+    }
+
+    @Test
+    @DisplayName("Devrait supprimer un signalement")
+    public void testDelete_Success() {
+        Long id = testReport.getReportId();
+        reportRepository.deleteById(id);
+        assertFalse(reportRepository.findById(id).isPresent());
+    }
+
+    @Test
+    @DisplayName("Devrait compter les signalements")
+    public void testCount_Success() {
+        assertTrue(reportRepository.count() >= 1);
+    }
+
+    @Test
+    @DisplayName("Devrait gérer plusieurs signalements pour le même utilisateur")
+    public void testMultipleReportsPerUser_Success() {
+        for (String type : new String[]{"TRAFFIC", "POLLUTION", "CRIME"})
+            reportRepository.save(buildReport(testUser, type, ReportsStatus.PENDING));
+        assertTrue(reportRepository.findByUserUserId(testUser.getUserId()).size() >= 4);
+    }
+
+    @Test
+    @DisplayName("Devrait gérer tous les statuts de signalement (enum complet)")
+    public void testDifferentStatuses_Success() {
+        for (ReportsStatus status : ReportsStatus.values()) {
+            Reports saved = reportRepository.save(buildReport(testUser, "TEST", status));
+            assertEquals(status, saved.getStatus());
+        }
+    }
+
+    @Test
+    @DisplayName("Devrait trouver signalements par userId + statut combinés")
+    public void testFindByUserIdAndStatus_Success() {
+        List&lt;Reports&gt; reports = reportRepository.findByUserIdAndStatus(testUser.getUserId(), ReportsStatus.PENDING);
+        assertTrue(reports.size() >= 1);
+        assertTrue(reports.stream().allMatch(r ->
+            r.getUser().getUserId().equals(testUser.getUserId()) && r.getStatus() == ReportsStatus.PENDING));
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>RoleRepositoryTest.java</h3>
+        <div class="test-class-desc">CRUD rôles, recherche par nom, gestion case-sensitive</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-repo">Repository</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">9 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("RoleRepository Unit Tests")
+public class RoleRepositoryTest {
+
+    @Test
+    @DisplayName("Devrait sauvegarder un rôle et générer un ID")
+    public void testSaveRole_Success() {
+        Roles saved = roleRepository.save(new Roles("NEW_ROLE"));
+        assertNotNull(saved.getRoleId());
+        assertEquals("NEW_ROLE", saved.getName());
+    }
+
+    @Test
+    @DisplayName("Devrait récupérer un rôle par nom")
+    public void testFindFirstByName_Success() {
+        assertTrue(roleRepository.findFirstByName("TEST_ROLE").isPresent());
+    }
+
+    @Test
+    @DisplayName("Devrait retourner vide pour nom inexistant")
+    public void testFindFirstByName_NotFound() {
+        assertFalse(roleRepository.findFirstByName("NONEXISTENT_ROLE").isPresent());
+    }
+
+    @Test
+    @DisplayName("Devrait supprimer un rôle")
+    public void testDelete_Success() {
+        roleRepository.deleteById(testRole.getRoleId());
+        assertFalse(roleRepository.findById(testRole.getRoleId()).isPresent());
+    }
+
+    @Test
+    @DisplayName("Devrait gérer les noms de rôle case-sensitive (TEST ≠ test)")
+    public void testRoleNameCaseSensitive() {
+        roleRepository.save(new Roles("TEST"));
+        assertTrue(roleRepository.findFirstByName("TEST").isPresent());
+        assertFalse(roleRepository.findFirstByName("test").isPresent());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>AccountActivationRepositoryTest.java</h3>
+        <div class="test-class-desc">Tokens d'activation : recherche par hash, marquage utilisé, gestion expiration</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-repo">Repository</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">10 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("AccountActivationRepository Unit Tests")
+public class AccountActivationRepositoryTest {
+
+    @Test
+    @DisplayName("Devrait sauvegarder une activation et générer un ID")
+    public void testSaveActivation_Success() {
+        ActivationToken saved = activationRepository.save(buildToken(UUID.randomUUID().toString(), false));
+        assertNotNull(saved.getId());
+        assertFalse(saved.isUsed());
+    }
+
+    @Test
+    @DisplayName("Devrait trouver une activation par tokenHash")
+    public void testFindByTokenHash_Success() {
+        ActivationToken found = activationRepository.findByTokenHash(tokenHash);
+        assertNotNull(found);
+        assertEquals(testUser.getEmail(), found.getUser().getEmail());
+    }
+
+    @Test
+    @DisplayName("Devrait retourner null pour tokenHash inexistant")
+    public void testFindByTokenHash_NotFound() {
+        assertNull(activationRepository.findByTokenHash(UUID.randomUUID().toString()));
+    }
+
+    @Test
+    @DisplayName("Devrait marquer une activation comme utilisée")
+    public void testMarkUsed_Success() {
+        testActivation.setUsed(true);
+        assertTrue(activationRepository.save(testActivation).isUsed());
+    }
+
+    @Test
+    @DisplayName("Devrait gérer les tokens expirés (date dans le passé)")
+    public void testExpiredActivation_Success() {
+        ActivationToken expired = buildToken(UUID.randomUUID().toString(), false);
+        expired.setExpiryDate(LocalDateTime.now().minusHours(1));
+        ActivationToken saved = activationRepository.save(expired);
+        assertTrue(saved.getExpiryDate().isBefore(LocalDateTime.now()));
+    }
+
+    @Test
+    @DisplayName("Devrait gérer les tokens déjà utilisés (isUsed=true)")
+    public void testUsedActivation_Success() {
+        ActivationToken used = buildToken(UUID.randomUUID().toString(), true);
+        assertTrue(activationRepository.save(used).isUsed());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>TrustedContactRepositoryTest.java</h3>
+        <div class="test-class-desc">Contacts de confiance : CRUD, recherche par userId, isolation multi-utilisateur</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-repo">Repository</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">9 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("TrustedContactRepository Tests")
+public class TrustedContactRepositoryTest {
+
+    @Test
+    @DisplayName("Devrait sauvegarder et retrouver un contact de confiance")
+    public void testSaveAndFindById() {
+        TrustedContact saved = trustedContactRepository.save(buildContact("Sophie", "sophie@test.com", "+33611111111", userA));
+        Optional&lt;TrustedContact&gt; found = trustedContactRepository.findById(saved.getTrustedContactId());
+        assertTrue(found.isPresent());
+        assertEquals("Sophie", found.get().getName());
+    }
+
+    @Test
+    @DisplayName("Devrait retourner les contacts d'un utilisateur (isolation userA/userB)")
+    public void testFindByUserUserId() {
+        trustedContactRepository.save(buildContact("Ami1", "ami1@test.com", "+33600000020", userA));
+        trustedContactRepository.save(buildContact("Ami2", "ami2@test.com", "+33600000021", userA));
+        trustedContactRepository.save(buildContact("AmiB", "amib@test.com", "+33600000022", userB));
+        List&lt;TrustedContact&gt; contactsA = trustedContactRepository.findByUserUserId(userA.getUserId());
+        assertEquals(2, contactsA.size());
+        assertTrue(contactsA.stream().allMatch(c -> c.getUser().getUserId().equals(userA.getUserId())));
+    }
+
+    @Test
+    @DisplayName("Devrait retourner une liste vide pour utilisateur sans contacts")
+    public void testFindByUserUserId_Empty() {
+        assertTrue(trustedContactRepository.findByUserUserId(userB.getUserId()).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Devrait supprimer un contact par son ID")
+    public void testDelete() {
+        TrustedContact saved = trustedContactRepository.save(buildContact("ToDelete", "del@test.com", "+33699999999", userA));
+        trustedContactRepository.deleteById(saved.getTrustedContactId());
+        assertFalse(trustedContactRepository.existsById(saved.getTrustedContactId()));
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>LiveStreamRepositoryTest.java</h3>
+        <div class="test-class-desc">LiveStream : @PrePersist (status=LIVE, startedAt), CRUD, mise à jour status/vidéo</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-repo">Repository</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">10 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("LiveStreamRepository Tests")
+public class LiveStreamRepositoryTest {
+
+    @Test
+    @DisplayName("Devrait déclencher @PrePersist : status='LIVE' et startedAt non null")
+    public void testPrePersist_DefaultValues() {
+        LiveStream saved = liveStreamRepository.save(buildLiveStream("rtmp://stream.test/live2"));
+        assertEquals("LIVE", saved.getStatus());
+        assertNotNull(saved.getStartedAt());
+    }
+
+    @Test
+    @DisplayName("Devrait mettre à jour status → ENDED avec URL vidéo et durée")
+    public void testUpdate() {
+        LiveStream saved = liveStreamRepository.save(buildLiveStream("rtmp://original"));
+        saved.setStatus("ENDED");
+        saved.setVideoUrl("http://video.example.com/v1.mp4");
+        saved.setEndedAt(LocalDateTime.now());
+        saved.setDuration(300);
+        LiveStream updated = liveStreamRepository.save(saved);
+        assertEquals("ENDED", updated.getStatus());
+        assertEquals("http://video.example.com/v1.mp4", updated.getVideoUrl());
+        assertEquals(300, updated.getDuration());
+        assertNotNull(updated.getEndedAt());
+    }
+
+    @Test
+    @DisplayName("Devrait retourner une liste vide quand aucun stream n'existe")
+    public void testFindAll_Empty() {
+        assertTrue(liveStreamRepository.findAll().isEmpty());
+    }
+}</pre>
+  </div>
+
+  <!-- E.1.3 SERVICES -->
+  <h3 style="margin:32px 0 12px; color:#1565C0; font-size:11pt; border-bottom:1px solid #90CAF9; padding-bottom:4px;">E.1.3 — Tests unitaires Services (logique métier)</h3>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>RegisterServiceTest.java</h3>
+        <div class="test-class-desc">Inscription : succès, email doublon, données incomplètes, mot de passe faible, conversion email lowercase, rôle CLIENT par défaut, génération token activation</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-service">Service</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">9 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("RegisterService Unit Tests")
+public class RegisterServiceTest {
+
+    @Autowired private RegisterService registerService;
+
+    @Test
+    @DisplayName("Devrait enregistrer un utilisateur avec données valides")
+    public void testRegister_Success() throws Exception {
+        UserResponseDto response = registerService.register(validRequest);
+        assertNotNull(response.getId());
+        assertEquals(validRequest.getEmail().toLowerCase(), response.getEmail());
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter email en doublon (IllegalArgumentException)")
+    public void testRegister_DuplicateEmail() throws Exception {
+        registerService.register(validRequest);
+        assertThrows(IllegalArgumentException.class, () -> registerService.register(duplicateRequest));
+    }
+
+    @Test
+    @DisplayName("Devrait rejeter données incomplètes (firstname vide)")
+    public void testRegister_IncompleteData() {
+        assertThrows(IllegalArgumentException.class, () -> registerService.register(incompleteRequest));
+    }
+
+    @Test
+    @DisplayName("Devrait valider la politique de mot de passe (mot de passe 'weak')")
+    public void testRegister_WeakPassword() {
+        assertThrows(Exception.class, () -> registerService.register(weakPasswordRequest));
+    }
+
+    @Test
+    @DisplayName("Devrait convertir les emails en minuscules")
+    public void testRegister_EmailConvertedToLowercase() throws Exception {
+        validRequest.setEmail("John.Doe@EXAMPLE.COM");
+        UserResponseDto response = registerService.register(validRequest);
+        assertEquals("john.doe@example.com", response.getEmail().toLowerCase());
+    }
+
+    @Test
+    @DisplayName("Devrait assigner ROLE_CLIENT par défaut")
+    public void testRegister_DefaultRoleIsClient() throws Exception {
+        UserResponseDto response = registerService.register(validRequest);
+        Users savedUser = userRepository.findById(response.getId()).orElse(null);
+        assertNotNull(savedUser);
+        assertTrue(savedUser.getRoles().stream().anyMatch(r -> "ROLE_CLIENT".equals(r.getName())));
+    }
+
+    @Test
+    @DisplayName("Devrait générer un token d'activation au moment de l'inscription")
+    public void testRegister_GeneratesActivationToken() throws Exception {
+        registerService.register(validRequest);
+        assertTrue(userRepository.existsByEmail(validRequest.getEmail()));
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>TrustedContactServiceTest.java</h3>
+        <div class="test-class-desc">CRUD contacts de confiance via service, gestion des cas non trouvés (RuntimeException)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-service">Service</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">9 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("TrustedContactService Unit Tests")
+public class TrustedContactServiceTest {
+
+    @Test @DisplayName("Devrait créer un contact de confiance")
+    public void testCreateTrustedContact_Success() {
+        TrustedContactDTO result = trustedContactService.createTrustedContact(
+            new TrustedContactDTO(null, "Alice Martin", "alice@example.com", "+33698765432", testUser.getUserId()));
+        assertNotNull(result.id());
+        assertEquals("Alice Martin", result.name());
+    }
+
+    @Test @DisplayName("Devrait lever RuntimeException pour ID inexistant (getById)")
+    public void testGetTrustedContactById_NotFound() {
+        assertThrows(RuntimeException.class, () -> trustedContactService.getTrustedContactById(9999L));
+    }
+
+    @Test @DisplayName("Devrait mettre à jour un contact de confiance")
+    public void testUpdateTrustedContact_Success() {
+        TrustedContactDTO saved = trustedContactService.createTrustedContact(dto);
+        TrustedContactDTO updated = trustedContactService.updateTrustedContact(saved.id(),
+            new TrustedContactDTO(saved.id(), "Eve Updated", "eve.new@example.com", "+33699999999", testUser.getUserId()));
+        assertEquals("Eve Updated", updated.name());
+    }
+
+    @Test @DisplayName("Devrait retourner les contacts liés à un userId")
+    public void testGetByUserId() {
+        trustedContactService.createTrustedContact(dto1);
+        trustedContactService.createTrustedContact(dto2);
+        List&lt;TrustedContactDTO&gt; contacts = trustedContactService.getByUserId(testUser.getUserId());
+        assertEquals(2, contacts.size());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>LiveStreamServiceTest.java</h3>
+        <div class="test-class-desc">Cycle de vie livestream : création, mise à jour (ENDED + durée + URL), suppression, gestion null/inexistant</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-service">Service</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">11 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("LiveStreamService Unit Tests")
+public class LiveStreamServiceTest {
+
+    @Test @DisplayName("Devrait créer un live stream (status=LIVE)")
+    public void testCreateLiveStream_Success() throws Exception {
+        LiveStream result = liveStreamService.createLiveStream(dto);
+        assertNotNull(result.getLivestreamId());
+        assertEquals("LIVE", result.getStatus());
+    }
+
+    @Test @DisplayName("Devrait lever IllegalArgumentException pour DTO null")
+    public void testCreateLiveStream_NullDTO() {
+        assertThrows(IllegalArgumentException.class, () -> liveStreamService.createLiveStream(null));
+    }
+
+    @Test @DisplayName("Devrait mettre à jour status → ENDED avec durée 120")
+    public void testUpdateLiveStream_Success() throws Exception {
+        LiveStream created = liveStreamService.createLiveStream(createDTO);
+        LiveStream updated = liveStreamService.updateLiveStream(
+            new LiveStreamDTO(created.getLivestreamId(), testUser.getUserId(), null,
+                LocalDateTime.now(), "rtmp://updated", "ENDED", "http://video.example.com/out.mp4", 120));
+        assertEquals("ENDED", updated.getStatus());
+        assertEquals(120, updated.getDuration());
+    }
+
+    @Test @DisplayName("Devrait lever IllegalArgumentException si ID null lors de mise à jour")
+    public void testUpdateLiveStream_NullId() {
+        assertThrows(IllegalArgumentException.class,
+            () -> liveStreamService.updateLiveStream(new LiveStreamDTO(null, testUser.getUserId(), null, null, null, null, null, null)));
+    }
+
+    @Test @DisplayName("Devrait lever IllegalArgumentException si stream inexistant (ID=9999)")
+    public void testUpdateLiveStream_NotFound() {
+        assertThrows(IllegalArgumentException.class,
+            () -> liveStreamService.updateLiveStream(new LiveStreamDTO(9999L, testUser.getUserId(), null, null, null, null, null, null)));
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>ReportServiceTest.java</h3>
+        <div class="test-class-desc">Signalements : création (normal/anonyme/auto-description), CRUD complet, changement statut, gestion null/inexistant</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-service">Service</span><span class="badge-type badge-unit">Unitaire</span><span class="test-count">13 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("ReportService Unit Tests")
+public class ReportServiceTest {
+
+    @Test @DisplayName("Devrait créer un signalement (status=PENDING par défaut)")
+    public void testCreateReport_Success() {
+        ReportDTO result = reportService.createReport(buildDTO(testUser.getUserId()));
+        assertNotNull(result.reportId());
+        assertEquals(ReportsStatus.PENDING, result.status());
+    }
+
+    @Test @DisplayName("Devrait créer un signalement anonyme sans userId")
+    public void testCreateReport_Anonymous() {
+        ReportDTO result = reportService.createReport(
+            new ReportDTO(null, null, LocalDateTime.now(), 48.8566, 2.3522, "Paris", null, null,
+                true, null, null, null, 0, 0.7, "FLOOD", null));
+        assertTrue(result.anonymous());
+        assertEquals(ReportsStatus.PENDING, result.status());
+    }
+
+    @Test @DisplayName("Devrait générer description depuis alertType si description absente")
+    public void testCreateReport_AutoDescription() {
+        ReportDTO dto = new ReportDTO(null, "", LocalDateTime.now(), 48.8566, 2.3522, "Paris",
+            null, null, false, testUser.getUserId(), null, null, 0, 0.8, "ACCIDENT", "Paul");
+        assertTrue(reportService.createReport(dto).description().contains("ACCIDENT"));
+    }
+
+    @Test @DisplayName("Devrait mettre à jour le statut → RESOLVED")
+    public void testUpdateReport_StatusChange() {
+        ReportDTO saved = reportService.createReport(buildDTO(testUser.getUserId()));
+        ReportDTO updated = reportService.updateReport(saved.reportId(),
+            new ReportDTO(saved.reportId(), null, null, null, null, null, ReportsStatus.RESOLVED,
+                null, null, null, null, null, null, null, null, null));
+        assertEquals(ReportsStatus.RESOLVED, updated.status());
+    }
+
+    @Test @DisplayName("Devrait retourner le DTO du signalement supprimé")
+    public void testDeleteReport_Success() {
+        ReportDTO saved = reportService.createReport(buildDTO(testUser.getUserId()));
+        ReportDTO deleted = reportService.deleteReport(saved.reportId());
+        assertNotNull(deleted);
+        assertFalse(reportRepository.existsById(saved.reportId()));
+    }
+}</pre>
+  </div>
+
+  <!-- E.1.4 CONTROLLERS -->
+  <h3 style="margin:32px 0 12px; color:#E65100; font-size:11pt; border-bottom:1px solid #FFCC80; padding-bottom:4px;">E.1.4 — Tests d'intégration Controllers (MockMvc — HTTP)</h3>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>AuthControllerIntegrationTest.java</h3>
+        <div class="test-class-desc">POST /api/auth/register · POST /api/auth/login — Couverture : succès, email doublon, données incomplètes, mot de passe incorrect, user inexistant, user désactivé</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-integration">Intégration</span><span class="test-count">6 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("AuthController Integration Tests")
+public class AuthControllerIntegrationTest {
+
+    private MockMvc mockMvc;
+    @Autowired private WebApplicationContext context;
+    private static final String AUTH_BASE_URI = "/api/auth";
+
+    @Test @DisplayName("Devrait enregistrer un nouvel utilisateur (201 Created)")
+    public void testRegister_Success() throws Exception {
+        mockMvc.perform(post(AUTH_BASE_URI + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(registerRequest)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id", notNullValue()))
+            .andExpect(jsonPath("$.email", equalTo(testEmail)));
+    }
+
+    @Test @DisplayName("Devrait rejeter email en doublon (400 Bad Request)")
+    public void testRegister_DuplicateEmail() throws Exception {
+        mockMvc.perform(post(AUTH_BASE_URI + "/register")...).andExpect(status().isCreated());
+        mockMvc.perform(post(AUTH_BASE_URI + "/register")...).andExpect(status().isBadRequest());
+    }
+
+    @Test @DisplayName("Devrait connecter et retourner un token JWT (200 OK)")
+    public void testLogin_Success() throws Exception {
+        MvcResult result = mockMvc.perform(post(AUTH_BASE_URI + "/login")
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(loginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.token", notNullValue()))
+            .andExpect(jsonPath("$.userId", notNullValue())).andReturn();
+        assertNotNull(objectMapper.readValue(result.getResponse().getContentAsString(), LoginResponseDto.class).getToken());
+    }
+
+    @Test @DisplayName("Devrait rejeter mot de passe incorrect (401 Unauthorized)")
+    public void testLogin_InvalidPassword() throws Exception {
+        mockMvc.perform(post(AUTH_BASE_URI + "/login")...)
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test @DisplayName("Devrait rejeter utilisateur inexistant (401 Unauthorized)")
+    public void testLogin_NonExistentUser() throws Exception {
+        mockMvc.perform(post(AUTH_BASE_URI + "/login")...)
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test @DisplayName("Devrait rejeter utilisateur désactivé (403 Forbidden)")
+    public void testLogin_DisabledUser() throws Exception {
+        // user.setActive(false)
+        mockMvc.perform(post(AUTH_BASE_URI + "/login")...)
+            .andExpect(status().isForbidden());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>AccountActivationControllerIntegrationTest.java</h3>
+        <div class="test-class-desc">GET /api/auth/activate — token valide, absent, vide, invalide, expiré, déjà utilisé</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-integration">Intégration</span><span class="test-count">7 tests</span></div>
+    </div>
+<pre>@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@ActiveProfiles("test") @DisplayName("AccountActivationController Integration Tests")
+public class AccountActivationControllerIntegrationTest {
+
+    @Test @DisplayName("Devrait activer le compte avec token valide (200 — message 'activé')")
+    public void testActivateAccount_Success() throws Exception {
+        mockMvc.perform(get(AUTH_BASE_URI + "/activate").param("token", testToken.getTokenHash()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message", containsString("activé")));
+    }
+
+    @Test @DisplayName("Devrait rejeter token absent (400)")
+    public void testActivateAccount_MissingToken() throws Exception {
+        mockMvc.perform(get(AUTH_BASE_URI + "/activate")).andExpect(status().isBadRequest());
+    }
+
+    @Test @DisplayName("Devrait rejeter token vide (400 — 'requis')")
+    public void testActivateAccount_EmptyToken() throws Exception {
+        mockMvc.perform(get(AUTH_BASE_URI + "/activate").param("token", ""))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message", containsString("requis")));
+    }
+
+    @Test @DisplayName("Devrait rejeter token invalide (400)")
+    public void testActivateAccount_InvalidToken() throws Exception {
+        mockMvc.perform(get(AUTH_BASE_URI + "/activate").param("token", "invalid-token-" + UUID.randomUUID()))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test @DisplayName("Devrait rejeter token expiré (expiryDate dans le passé — 400)")
+    public void testActivateAccount_ExpiredToken() throws Exception {
+        expiredToken.setExpiryDate(LocalDateTime.now().minusHours(1));
+        mockMvc.perform(get(AUTH_BASE_URI + "/activate").param("token", expiredToken.getTokenHash()))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test @DisplayName("Devrait rejeter token déjà utilisé (isUsed=true — 400)")
+    public void testActivateAccount_UsedToken() throws Exception {
+        usedToken.setUsed(true);
+        mockMvc.perform(get(AUTH_BASE_URI + "/activate").param("token", usedToken.getTokenHash()))
+            .andExpect(status().isBadRequest());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>ReportControllerIntegrationTest.java</h3>
+        <div class="test-class-desc">POST · GET · PUT · DELETE /api/report — CRUD complet + 404 pour inexistant</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-integration">Intégration</span><span class="test-count">7 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("ReportController Integration Tests")
+public class ReportControllerIntegrationTest {
+
+    private static final String REPORT_BASE_URI = "/api/report";
+
+    @Test @DisplayName("POST /api/report — Devrait créer un signalement (201)")
+    public void testCreateReport_Success() throws Exception {
+        mockMvc.perform(post(REPORT_BASE_URI).contentType(MediaType.APPLICATION_JSON).content(reportDtoJson))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.reportId", notNullValue()))
+            .andExpect(jsonPath("$.status", equalTo("PENDING")));
+    }
+
+    @Test @DisplayName("GET /api/report — Devrait récupérer tous les signalements (200)")
+    public void testGetAllReports_Success() throws Exception {
+        mockMvc.perform(get(REPORT_BASE_URI))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
+    }
+
+    @Test @DisplayName("GET /api/report/{id} — Devrait retourner 404 pour signalement inexistant")
+    public void testGetReportById_NotFound() throws Exception {
+        mockMvc.perform(get(REPORT_BASE_URI + "/9999")).andExpect(status().isNotFound());
+    }
+
+    @Test @DisplayName("PUT /api/report/{id} — Devrait mettre à jour (status=RESOLVED)")
+    public void testUpdateReport_Success() throws Exception {
+        mockMvc.perform(put(REPORT_BASE_URI + "/" + testReport.getReportId())...)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status", equalTo("RESOLVED")));
+    }
+
+    @Test @DisplayName("DELETE /api/report/{id} — Devrait supprimer (204 No Content)")
+    public void testDeleteReport_Success() throws Exception {
+        mockMvc.perform(delete(REPORT_BASE_URI + "/" + reportToDelete.getReportId()))
+            .andExpect(status().isNoContent());
+        mockMvc.perform(get(REPORT_BASE_URI + "/" + reportToDelete.getReportId()))
+            .andExpect(status().isNotFound());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>TrustedContactControllerIntegrationTest.java</h3>
+        <div class="test-class-desc">POST · GET · GET/user/{id} · PUT · DELETE /api/trusted-contacts — CRUD + 404</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-integration">Intégration</span><span class="test-count">8 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("TrustedContactController Integration Tests")
+public class TrustedContactControllerIntegrationTest {
+
+    private static final String BASE_URI = "/api/trusted-contacts";
+
+    @Test @DisplayName("POST /api/trusted-contacts — Devrait créer un contact (201)")
+    public void testCreate_Success() throws Exception {
+        mockMvc.perform(post(BASE_URI).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new TrustedContactDTO(null, "Alice", "alice@test.com", "+33611111111", testUser.getUserId()))))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.name", is("Alice")))
+            .andExpect(jsonPath("$.id", notNullValue()));
+    }
+
+    @Test @DisplayName("GET /api/trusted-contacts/user/{userId} — Contacts de l'utilisateur")
+    public void testGetByUserId() throws Exception {
+        mockMvc.perform(get(BASE_URI + "/user/{userId}", testUser.getUserId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
+    }
+
+    @Test @DisplayName("PUT /api/trusted-contacts/{id} — Mise à jour (200)")
+    public void testUpdate_Success() throws Exception {
+        mockMvc.perform(put(BASE_URI + "/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDTO)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name", is("Frank Updated")));
+    }
+
+    @Test @DisplayName("DELETE /api/trusted-contacts/{id} — Suppression (204)")
+    public void testDelete_Success() throws Exception {
+        mockMvc.perform(delete(BASE_URI + "/{id}", id)).andExpect(status().isNoContent());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>LiveStreamControllerIntegrationTest.java</h3>
+        <div class="test-class-desc">POST /create · GET · GET/{id} · PUT /update · DELETE — cycle complet + body null + ID manquant</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-integration">Intégration</span><span class="test-count">8 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("LiveStreamController Integration Tests")
+public class LiveStreamControllerIntegrationTest {
+
+    private static final String BASE_URI = "/api/livestream";
+
+    @Test @DisplayName("POST /api/livestream/create — Devrait créer (201, status=LIVE)")
+    public void testCreate_Success() throws Exception {
+        mockMvc.perform(post(BASE_URI + "/create").contentType(MediaType.APPLICATION_JSON).content(dtoJson))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.livestreamId", notNullValue()))
+            .andExpect(jsonPath("$.status", is("LIVE")));
+    }
+
+    @Test @DisplayName("POST /api/livestream/create — Devrait retourner 400 pour body null")
+    public void testCreate_NullBody() throws Exception {
+        mockMvc.perform(post(BASE_URI + "/create").contentType(MediaType.APPLICATION_JSON).content("null"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test @DisplayName("PUT /api/livestream/update — Devrait mettre à jour (status=ENDED, duration=180)")
+    public void testUpdate_Success() throws Exception {
+        mockMvc.perform(put(BASE_URI + "/update").contentType(MediaType.APPLICATION_JSON).content(updateDtoJson))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status", is("ENDED")))
+            .andExpect(jsonPath("$.duration", is(180)));
+    }
+
+    @Test @DisplayName("PUT /api/livestream/update — Devrait retourner 400 si ID manquant")
+    public void testUpdate_MissingId() throws Exception {
+        mockMvc.perform(put(BASE_URI + "/update").contentType(MediaType.APPLICATION_JSON).content(dtoWithNullIdJson))
+            .andExpect(status().isBadRequest());
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>GeolocalisationControllerIntegrationTest.java</h3>
+        <div class="test-class-desc">POST · GET · GET/{id} · PUT · DELETE /api/geolocations — coordonnées GPS Paris (48.8566, 2.3522)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-integration">Intégration</span><span class="test-count">6 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("GeolocalisationController Integration Tests")
+public class GeolocalisationControllerIntegrationTest {
+
+    private static final String BASE_URI = "/api/geolocations";
+
+    @Test @DisplayName("POST /api/geolocations — Devrait créer une géolocalisation (200)")
+    public void testCreate_Success() throws Exception {
+        mockMvc.perform(post(BASE_URI).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new GeolocalisationDTO(null, 48.8566, 2.3522, LocalDate.now(), null))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.latitude", is(48.8566)))
+            .andExpect(jsonPath("$.longitude", is(2.3522)));
+    }
+
+    @Test @DisplayName("GET /api/geolocations — Devrait retourner liste vide si aucune géolocalisation")
+    public void testGetAll_Empty() throws Exception {
+        mockMvc.perform(get(BASE_URI)).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test @DisplayName("PUT /api/geolocations/{id} — Devrait mettre à jour les coordonnées (Lyon : 45.7640, 4.8357)")
+    public void testUpdate_Success() throws Exception {
+        mockMvc.perform(put(BASE_URI + "/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new GeolocalisationDTO(id, 45.7640, 4.8357, LocalDate.now(), null))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.latitude", is(45.7640)));
+    }
+
+    @Test @DisplayName("DELETE /api/geolocations/{id} — Devrait supprimer et retourner la géolocalisation")
+    public void testDelete_Success() throws Exception {
+        mockMvc.perform(delete(BASE_URI + "/{id}", id)).andExpect(status().isOk());
+        mockMvc.perform(get(BASE_URI)).andExpect(jsonPath("$", hasSize(0)));
+    }
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>UserControllerIntegrationTest.java</h3>
+        <div class="test-class-desc">GET · GET/{id} · POST · PUT · DELETE /api/users — CRUD + 404 + rôle invalide</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-integration">Intégration</span><span class="test-count">8 tests</span></div>
+    </div>
+<pre>@SpringBootTest @ActiveProfiles("test") @DisplayName("UserController Integration Tests")
+public class UserControllerIntegrationTest {
+
+    @Test @DisplayName("GET /api/users — Devrait récupérer tous les utilisateurs (200)")
+    public void testGetAllUsers_Success() throws Exception {
+        mockMvc.perform(get(USERS_BASE_URI))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
+    }
+
+    @Test @DisplayName("POST /api/users — Devrait créer un utilisateur (201)")
+    public void testCreateUser_Success() throws Exception {
+        mockMvc.perform(post(USERS_BASE_URI).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new UserCreateDTO("Jane Smith", clientRole.getRoleId(), "jane.smith@example.com", "Password123!", LocalDate.of(1995, 5, 5)))))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.email", equalTo("jane.smith@example.com")));
+    }
+
+    @Test @DisplayName("DELETE /api/users/{id} — Devrait supprimer (204 No Content)")
+    public void testDeleteUser_Success() throws Exception {
+        mockMvc.perform(delete(USERS_BASE_URI + "/" + userToDelete.getUserId()))
+            .andExpect(status().isNoContent());
+        mockMvc.perform(get(USERS_BASE_URI + "/" + userToDelete.getUserId()))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test @DisplayName("POST /api/users — Devrait retourner 400 pour rôle inexistant (ID=9999)")
+    public void testCreateUser_InvalidRole() throws Exception {
+        mockMvc.perform(post(USERS_BASE_URI).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new UserCreateDTO("Test User", 9999L, "test@example.com", "Password123!", LocalDate.of(1990, 1, 1)))))
+            .andExpect(status().isBadRequest());
+    }
+}</pre>
+  </div>
+
+  <!-- E.1.5 SMOKE -->
+  <div class="test-class" style="margin-top:24px;">
+    <div class="test-class-header">
+      <div>
+        <h3>AlertCiviqueApplicationTests.java</h3>
+        <div class="test-class-desc">Smoke test — vérifie que l'ApplicationContext Spring Boot démarre sans erreur</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-unit">Smoke Test</span><span class="test-count">1 test</span></div>
+    </div>
+<pre>@SpringBootTest
+@ActiveProfiles("test")
+class AlertCiviqueApplicationTests {
+
+    @Test
+    void contextLoads() {
+        // Vérifie que tous les beans Spring se chargent sans exception
+    }
+}</pre>
+  </div>
+</div>
+
+<!-- ═══════════════════════ E.2 FRONTEND REACT NATIVE ═══════════════════════ -->
+<div class="module">
+  <div class="module-header">
+    <h2>E.2 — Frontend React Native / Expo — Tests Jest</h2>
+    <div class="module-meta">alert_civique_front/__tests__/ &nbsp;|&nbsp; Framework : Jest + fetch mock global &nbsp;|&nbsp; TypeScript</div>
+  </div>
+
+  <div class="info-box">
+    <strong>Pattern commun :</strong> Tous les tests mockent <code>global.fetch = jest.fn()</code>. Les appels API sont simulés via <code>mockFetch.mockResolvedValueOnce()</code> sans connexion réseau réelle.
+  </div>
+
+  <div class="test-class" style="margin-top:20px;">
+    <div class="test-class-header">
+      <div>
+        <h3>LiveStreamService.test.ts</h3>
+        <div class="test-class-desc">startStream, stopStream, updateStreamWithVideo, getLiveStreams, getLiveStreamById, sendLiveStreamData (compatibilité)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-react">React Native</span><span class="badge-type badge-unit">Jest</span><span class="test-count">13 tests</span></div>
+    </div>
+<pre>import LiveStreamService from '../app/lib/services/LiveStreamService'
+
+const mockFetch = jest.fn()
+global.fetch = mockFetch
+
+const FAKE_START = { livestreamId: 1, userId: 'user42', status: 'LIVE' }
+const FAKE_END   = { livestreamId: 1, status: 'ENDED', endedAt: '2024-06-01T11:00:00' }
+
+describe('LiveStreamService.startStream', () => {
+  it('démarre un stream et retourne les données (200)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(FAKE_START) })
+    const result = await LiveStreamService.startStream('user42', 'back', TOKEN)
+    expect(result.livestreamId).toBe(1)
+    expect(result.status).toBe('LIVE')
+  })
+
+  it('appelle POST /api/livestream/create avec Authorization Bearer', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(FAKE_START) })
+    await LiveStreamService.startStream('user42', 'back', TOKEN)
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:9090/api/livestream/create',
+      expect.objectContaining({ method: 'POST', headers: expect.objectContaining({ Authorization: `Bearer ${TOKEN}` }) })
+    )
+  })
+
+  it('lance une erreur HTTP si le serveur échoue (500)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 500, text: async () => 'Erreur serveur' })
+    await expect(LiveStreamService.startStream('user42', 'back', TOKEN)).rejects.toThrow('HTTP 500')
+  })
+})
+
+describe('LiveStreamService.stopStream', () => {
+  it('arrête un stream avec status ENDED et durée', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(FAKE_END) })
+    await LiveStreamService.stopStream(1, 'user42', 60, TOKEN)
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body)
+    expect(body.livestreamId).toBe(1)
+    expect(body.status).toBe('ENDED')
+    expect(body.duration).toBe(60)
+  })
+})
+
+describe('LiveStreamService.getLiveStreams', () => {
+  it('retourne tableau vide si erreur réseau', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network error'))
+    expect(await LiveStreamService.getLiveStreams(TOKEN)).toEqual([])
+  })
+})
+
+describe('LiveStreamService.sendLiveStreamData', () => {
+  it('démarre si pas de livestreamId dans le payload', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(FAKE_START) })
+    await LiveStreamService.sendLiveStreamData({ userId: 'user42', facing: 'back' }, TOKEN)
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:9090/api/livestream/create', expect.anything())
+  })
+
+  it('arrête si livestreamId présent dans le payload (PUT)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(FAKE_END) })
+    await LiveStreamService.sendLiveStreamData({ livestreamId: 1, userId: 'user42', duration: 60 }, TOKEN)
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:9090/api/livestream/update',
+      expect.objectContaining({ method: 'PUT' }))
+  })
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>LoginService.test.ts</h3>
+        <div class="test-class-desc">loginUser — retour données, fallback accessToken, fallback email, erreur 401/500, vérification endpoint</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-react">React Native</span><span class="badge-type badge-unit">Jest</span><span class="test-count">6 tests</span></div>
+    </div>
+<pre>import { loginUser } from '../app/lib/services/LoginService'
+
+describe('loginUser', () => {
+  it('retourne les données de connexion (200)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({
+      token: 'jwt-abc123', userId: 42, firstname: 'Alice', email: 'alice@test.com', isAdmin: false }) })
+    const result = await loginUser('alice@test.com', 'motdepasse')
+    expect(result.token).toBe('jwt-abc123')
+    expect(result.userId).toBe(42)
+  })
+
+  it('utilise accessToken comme fallback si token absent', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({ accessToken: 'fallback-token', userId: 1 }) })
+    expect((await loginUser('a@test.com', 'pass')).token).toBe('fallback-token')
+  })
+
+  it('lance une erreur si le serveur retourne 401', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 401, text: async () => 'Identifiants incorrects' })
+    await expect(loginUser('bad@test.com', 'mauvais')).rejects.toThrow('Identifiants incorrects')
+  })
+
+  it('appelle POST /api/auth/login avec body correct', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({ token: 'tok', userId: 1 }) })
+    await loginUser('user@test.com', 'pass123')
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:9090/api/auth/login',
+      expect.objectContaining({ method: 'POST', body: JSON.stringify({ username: 'user@test.com', password: 'pass123' }) }))
+  })
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>RegisterService.test.ts</h3>
+        <div class="test-class-desc">registerUser — succès (201), email doublon, erreur générique, vérification endpoint et payload complet</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-react">React Native</span><span class="badge-type badge-unit">Jest</span><span class="test-count">5 tests</span></div>
+    </div>
+<pre>import { registerUser } from '../app/lib/services/RegisterService'
+
+const PAYLOAD = { firstname:'Alice', lastname:'Dupont', email:'alice@test.com', password:'Secure123!', phone:'0600000000', birthdate:'1990-01-15' }
+
+describe('registerUser', () => {
+  it('inscrit un utilisateur et retourne ses données (201)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({ id:1, email:'alice@test.com', active:false }) })
+    const result = await registerUser(PAYLOAD)
+    expect(result.email).toBe('alice@test.com')
+    expect(result.active).toBe(false)
+  })
+
+  it('lance une erreur avec message serveur si non-ok (400)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 400, text: async () => 'Email déjà utilisé' })
+    await expect(registerUser(PAYLOAD)).rejects.toThrow('Email déjà utilisé')
+  })
+
+  it('envoie le payload complet dans le corps', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({ id: 3 }) })
+    await registerUser(PAYLOAD)
+    const callBody = JSON.parse(mockFetch.mock.calls[0][1].body)
+    expect(callBody.firstname).toBe('Alice')
+    expect(callBody.password).toBe('Secure123!')
+  })
+}</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>ReportService.test.ts</h3>
+        <div class="test-class-desc">createReport, getAll, getById, deleteReport, update — gestion erreurs réseau, requête anonyme, header Authorization</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-react">React Native</span><span class="badge-type badge-unit">Jest</span><span class="test-count">14 tests</span></div>
+    </div>
+<pre>import ReportService from '../app/lib/services/ReportService'
+
+describe('ReportService.createReport', () => {
+  it('crée un signalement (reportId=1, description correcte)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(FAKE_REPORT) })
+    const result = await ReportService.createReport({ description: 'Incendie rue de la Paix' }, TOKEN)
+    expect(result.reportId).toBe(1)
+  })
+
+  it('ajoute status PENDING automatiquement dans le body', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(FAKE_REPORT) })
+    await ReportService.createReport({ description: 'Test' }, TOKEN)
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body)
+    expect(body.status).toBe('PENDING')
+  })
+})
+
+describe('ReportService.getAll', () => {
+  it('fonctionne sans token (requête anonyme — pas de header Authorization)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => [FAKE_REPORT] })
+    await ReportService.getAll(null)
+    expect(mockFetch.mock.calls[0][1].headers['Authorization']).toBeUndefined()
+  })
+})
+
+describe('ReportService.deleteReport', () => {
+  it('appelle DELETE /api/report/{id}', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true })
+    await ReportService.deleteReport(42, TOKEN)
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:9090/api/report/42',
+      expect.objectContaining({ method: 'DELETE' }))
+  })
+  it('retourne false si erreur réseau', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network'))
+    expect(await ReportService.deleteReport(1, TOKEN)).toBe(false)
+  })
+})</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>TrustedContactService.test.ts</h3>
+        <div class="test-class-desc">getByUserId, create, delete — requêtes anonymes, fallback réseau, vérification endpoints</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-react">React Native</span><span class="badge-type badge-unit">Jest</span><span class="test-count">12 tests</span></div>
+    </div>
+<pre>import TrustedContactService from '../app/lib/services/TrustedContactService'
+
+describe('TrustedContactService.getByUserId', () => {
+  it('retourne les contacts de confiance d\'un utilisateur', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => [FAKE_CONTACT] })
+    const result = await TrustedContactService.getByUserId(42, TOKEN)
+    expect(result[0].name).toBe('Marie Dupont')
+  })
+
+  it('appelle GET /api/trusted-contacts/user/42 avec Authorization', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => [] })
+    await TrustedContactService.getByUserId(42, TOKEN)
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:9090/api/trusted-contacts/user/42',
+      expect.objectContaining({ headers: { Authorization: `Bearer ${TOKEN}` } }))
+  })
+
+  it('fonctionne sans token (requête anonyme)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => [] })
+    await TrustedContactService.getByUserId(42, null)
+    expect(mockFetch.mock.calls[0][1].headers['Authorization']).toBeUndefined()
+  })
+
+  it('retourne tableau vide si réponse 404', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 404 })
+    expect(await TrustedContactService.getByUserId(9999, TOKEN)).toEqual([])
+  })
+})
+
+describe('TrustedContactService.delete', () => {
+  it('appelle DELETE /api/trusted-contacts/7', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true })
+    await TrustedContactService.delete(7, TOKEN)
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:9090/api/trusted-contacts/7',
+      expect.objectContaining({ method: 'DELETE' }))
+  })
+}</pre>
+  </div>
+</div>
+
+<!-- ═══════════════════════ E.3 ADMIN REACT ═══════════════════════ -->
+<div class="module">
+  <div class="module-header">
+    <h2>E.3 — Dashboard Admin React / Vite — Tests Vitest</h2>
+    <div class="module-meta">alert_civique_admin/src/__tests__/ &nbsp;|&nbsp; Framework : Vitest + React Testing Library &nbsp;|&nbsp; TypeScript</div>
+  </div>
+
+  <div class="test-class" style="margin-top:20px;">
+    <div class="test-class-header">
+      <div>
+        <h3>AppContext.test.tsx</h3>
+        <div class="test-class-desc">useApp hook, état initial, login/logout (localStorage), navigate, toast (auto-dismiss 3.8s), setLoading</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-react">React Admin</span><span class="badge-type badge-unit">Vitest + RTL</span><span class="test-count">18 tests</span></div>
+    </div>
+<pre>/// &lt;reference types="vitest/globals" /&gt;
+import { renderHook, act } from '@testing-library/react'
+import React from 'react'
+import { AppProvider, useApp } from '../contexts/AppContext'
+
+const wrapper = ({ children }) => &lt;AppProvider&gt;{children}&lt;/AppProvider&gt;
+
+describe('useApp', () => {
+  it('lance une erreur si utilisé hors AppProvider', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    expect(() => renderHook(() => useApp())).toThrow('useApp must be used within AppProvider')
+    spy.mockRestore()
+  })
+})
+
+describe('AppProvider — état initial', () => {
+  it('section par défaut est dashboard', () => {
+    const { result } = renderHook(() => useApp(), { wrapper })
+    expect(result.current.section).toBe('dashboard')
+  })
+
+  it('charge le token depuis localStorage', () => {
+    localStorage.setItem('token', 'saved-token')
+    const { result } = renderHook(() => useApp(), { wrapper })
+    expect(result.current.token).toBe('saved-token')
+  })
+})
+
+describe('AppProvider — login / logout', () => {
+  it('login définit le token, l\'utilisateur et persiste dans localStorage', () => {
+    const { result } = renderHook(() => useApp(), { wrapper })
+    act(() => result.current.login(fakeUser))
+    expect(result.current.token).toBe('jwt-xyz')
+    expect(localStorage.getItem('token')).toBe('jwt-xyz')
+  })
+
+  it('logout vide le token, l\'utilisateur et localStorage', () => {
+    const { result } = renderHook(() => useApp(), { wrapper })
+    act(() => result.current.login(fakeUser))
+    act(() => result.current.logout())
+    expect(result.current.token).toBe('')
+    expect(result.current.currentUser).toBeNull()
+    expect(localStorage.getItem('token')).toBeNull()
+  })
+})
+
+describe('AppProvider — toast', () => {
+  it('se retire automatiquement après 3800 ms', async () => {
+    vi.useFakeTimers()
+    const { result } = renderHook(() => useApp(), { wrapper })
+    act(() => result.current.toast('Temporaire'))
+    expect(result.current.toasts).toHaveLength(1)
+    await act(async () => { vi.advanceTimersByTime(4000) })
+    expect(result.current.toasts).toHaveLength(0)
+    vi.useRealTimers()
+  })
+})</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>api.test.ts</h3>
+        <div class="test-class-desc">fmtDate (tableau ISO, null, invalide), STATUS_LABEL, NEXT_STATUS, api.login, api.getReports, api.getUsers, api.deleteReport, api.updateReport, api.getStats (agrégation 4 endpoints)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-react">React Admin</span><span class="badge-type badge-unit">Vitest</span><span class="test-count">23 tests</span></div>
+    </div>
+<pre>/// &lt;reference types="vitest/globals" /&gt;
+import { api, fmtDate, STATUS_LABEL, NEXT_STATUS } from '../services/api'
+
+describe('fmtDate', () => {
+  it('retourne — pour null', () => { expect(fmtDate(null)).toBe('—') })
+  it('formate tableau [2024, 3, 15, 9, 30] → "15/03/2024 09:30"', () => {
+    expect(fmtDate([2024, 3, 15, 9, 30])).toBe('15/03/2024 09:30')
+  })
+  it('retourne la chaîne originale pour une date invalide', () => {
+    expect(fmtDate('pas-une-date')).toBe('pas-une-date')
+  })
+})
+
+describe('STATUS_LABEL', () => {
+  it('traduit tous les statuts', () => {
+    expect(STATUS_LABEL['PENDING']).toBe('En attente')
+    expect(STATUS_LABEL['RESOLVED']).toBe('Résolu')
+    expect(STATUS_LABEL['REJECTED']).toBe('Rejeté')
+  })
+})
+
+describe('NEXT_STATUS', () => {
+  it('PENDING → IN_REVIEW ou REJECTED', () => {
+    expect(NEXT_STATUS['PENDING']).toContain('IN_REVIEW')
+    expect(NEXT_STATUS['PENDING']).toContain('REJECTED')
+  })
+  it('ARCHIVED — aucune transition possible', () => {
+    expect(NEXT_STATUS['ARCHIVED']).toHaveLength(0)
+  })
+})
+
+describe('api.getStats', () => {
+  it('agrège 4 endpoints et calcule pending/validated', async () => {
+    // Mock 4 appels fetch : reports, users, streams, alerts
+    mockFetch
+      .mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(reports) })
+      .mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(users) })
+      .mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(streams) })
+      .mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify([]) })
+    const stats = await api.getStats('token')
+    expect(stats.totalReports).toBe(3)
+    expect(stats.pending).toBe(2)
+    expect(stats.validated).toBe(1)
+  })
+  it('retourne totaux à 0 si tous les endpoints échouent', async () => {
+    mockFetch.mockResolvedValue({ ok: false, status: 500 })
+    const stats = await api.getStats('token')
+    expect(stats.totalReports).toBe(0)
+  })
+})</pre>
+  </div>
+</div>
+
+<!-- ═══════════════════════ E.4 NODE.JS MONGO ═══════════════════════ -->
+<div class="module">
+  <div class="module-header">
+    <h2>E.4 — Serveur Node.js / MongoDB — Tests Jest + Supertest</h2>
+    <div class="module-meta">alert_civique_mongo/__tests__/ &nbsp;|&nbsp; Framework : Jest + Supertest &nbsp;|&nbsp; Mocks Mongoose (pas de DB réelle)</div>
+  </div>
+
+  <div class="test-class" style="margin-top:20px;">
+    <div class="test-class-header">
+      <div>
+        <h3>messages.test.js</h3>
+        <div class="test-class-desc">GET /api/messages · GET /api/users · GET /api/users/all · POST /api/alert · DELETE /api/messages — mocks mongoose, gestion DB error (500)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-node">Node.js</span><span class="badge-type badge-e2e">Supertest</span><span class="test-count">8 tests</span></div>
+    </div>
+<pre>const request = require('supertest')
+const createApp = require('../app')
+
+jest.mock('../models/message') // Pas de vraie DB MongoDB
+jest.mock('../models/user')
+const Message = require('../models/message')
+const User = require('../models/user')
+const app = createApp()
+
+describe('GET /api/messages', () => {
+  it('devrait retourner une liste de messages (200)', async () => {
+    const fakeMessages = [
+      { id: '1', text: 'Bonjour', sender: 'Alice', type: 'text' },
+      { id: '2', text: 'Alerte incendie', sender: 'Bob', type: 'alert' }
+    ]
+    Message.find.mockReturnValue({ sort: jest.fn().mockReturnValue({ limit: jest.fn().mockResolvedValue(fakeMessages) }) })
+    const res = await request(app).get('/api/messages')
+    expect(res.status).toBe(200)
+    expect(res.body).toHaveLength(2)
+  })
+
+  it('devrait retourner 500 si la DB échoue', async () => {
+    Message.find.mockReturnValue({ sort: jest.fn().mockReturnValue({ limit: jest.fn().mockRejectedValue(new Error('DB error')) }) })
+    const res = await request(app).get('/api/messages')
+    expect(res.status).toBe(500)
+    expect(res.body).toHaveProperty('error')
+  })
+})
+
+describe('POST /api/alert', () => {
+  it('devrait envoyer une alerte avec succès (200)', async () => {
+    const mockSave = jest.fn().mockResolvedValue({})
+    Message.mockImplementation(() => ({ save: mockSave }))
+    const res = await request(app).post('/api/alert').send({ text: 'Incendie rue de la Paix', priority: 'high' })
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+  })
+
+  it('devrait retourner 400 si text est absent', async () => {
+    const res = await request(app).post('/api/alert').send({ priority: 'low' })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toBe('Alert text is required')
+  })
+})
+
+describe('DELETE /api/messages', () => {
+  it('devrait supprimer tous les messages (200)', async () => {
+    Message.deleteMany.mockResolvedValue({ deletedCount: 5 })
+    const res = await request(app).delete('/api/messages')
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+  })
+})</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>livestream.test.js</h3>
+        <div class="test-class-desc">POST /start · POST /end · GET /list · GET /active/:userId · GET /:id · POST /update — cycle complet + stream existant + 400/404</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-node">Node.js</span><span class="badge-type badge-e2e">Supertest</span><span class="test-count">13 tests</span></div>
+    </div>
+<pre>jest.mock('../models/livestream')
+const LiveStream = require('../models/livestream')
+
+const fakeStream = { livestreamId: 1, userId: 'user42', status: 'active', facing: 'back' }
+
+describe('POST /api/livestream/start', () => {
+  it('devrait démarrer un nouveau stream (200)', async () => {
+    LiveStream.findOne.mockResolvedValueOnce(null) // pas de stream actif
+    const mockSave = jest.fn().mockResolvedValue({})
+    LiveStream.mockImplementation(() => ({ ...fakeStream, save: mockSave }))
+    const res = await request(app).post('/api/livestream/start').send({ userId: 'user42', facing: 'back' })
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+    expect(res.body).toHaveProperty('livestreamId')
+  })
+
+  it('devrait retourner le stream existant si déjà actif', async () => {
+    LiveStream.findOne.mockResolvedValueOnce(fakeStream)
+    const res = await request(app).post('/api/livestream/start').send({ userId: 'user42' })
+    expect(res.body.existing).toBe(true)
+  })
+
+  it('devrait retourner 400 si userId est absent', async () => {
+    const res = await request(app).post('/api/livestream/start').send({})
+    expect(res.status).toBe(400)
+    expect(res.body.error).toBe('userId requis')
+  })
+})
+
+describe('POST /api/livestream/end', () => {
+  it('devrait terminer un stream existant (200)', async () => {
+    LiveStream.findOneAndUpdate.mockResolvedValue({ ...fakeStream, status: 'ended', endedAt: new Date() })
+    const res = await request(app).post('/api/livestream/end').send({ livestreamId: 1, duration: 120 })
+    expect(res.status).toBe(200)
+  })
+
+  it('devrait retourner 404 si stream non trouvé', async () => {
+    LiveStream.findOneAndUpdate.mockResolvedValue(null)
+    const res = await request(app).post('/api/livestream/end').send({ livestreamId: 9999 })
+    expect(res.status).toBe(404)
+  })
+})
+
+describe('GET /api/livestream/list', () => {
+  it('devrait filtrer par userId via query param', async () => {
+    LiveStream.find.mockReturnValue({ sort: jest.fn().mockReturnValue({ limit: jest.fn().mockResolvedValue([fakeStream]) }) })
+    await request(app).get('/api/livestream/list?userId=user42')
+    expect(LiveStream.find).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user42' }))
+  })
+})</pre>
+  </div>
+
+  <div class="test-class">
+    <div class="test-class-header">
+      <div>
+        <h3>health.test.js</h3>
+        <div class="test-class-desc">GET /health · GET / · Route inconnue (404)</div>
+      </div>
+      <div class="badge"><span class="badge-type badge-node">Node.js</span><span class="badge-type badge-e2e">Supertest</span><span class="test-count">3 tests</span></div>
+    </div>
+<pre>const request = require('supertest')
+const createApp = require('../app')
+const app = createApp()
+
+describe('GET /health', () => {
+  it('devrait retourner status OK avec timestamp (200)', async () => {
+    const res = await request(app).get('/health')
+    expect(res.status).toBe(200)
+    expect(res.body.status).toBe('OK')
+    expect(res.body).toHaveProperty('timestamp')
+  })
+})
+
+describe('GET /', () => {
+  it('devrait retourner les informations du serveur (200)', async () => {
+    const res = await request(app).get('/')
+    expect(res.status).toBe(200)
+    expect(res.body.name).toBe('Alert Civique Server')
+    expect(res.body.version).toBe('2.1.0')
+  })
+})
+
+describe('Route inconnue', () => {
+  it('devrait retourner 404 pour route inexistante', async () => {
+    const res = await request(app).get('/api/inexistant')
+    expect(res.status).toBe(404)
+  })
+})</pre>
+  </div>
+</div>
+
+<!-- ═══════════════════════ BILAN FINAL ═══════════════════════ -->
+<div class="module" style="page-break-before:always;">
+  <div class="module-header">
+    <h2>Bilan de la couverture de tests</h2>
+    <div class="module-meta">Récapitulatif global — Tous modules confondus</div>
+  </div>
+
+  <table class="summary-table" style="margin-top:20px;">
+    <thead>
+      <tr><th>Catégorie</th><th>Fichier</th><th>Tests</th><th>Type</th></tr>
+    </thead>
+    <tbody>
+      <tr><td rowspan="3" style="font-weight:bold;color:#880E4F;">Sécurité</td><td>InputSanitizerTest.java</td><td>9</td><td>Unitaire</td></tr>
+      <tr><td>JwtServiceTest.java</td><td>10</td><td>Unitaire</td></tr>
+      <tr><td>PasswordPolicyValidatorTest.java</td><td>10</td><td>Unitaire</td></tr>
+      <tr><td rowspan="5" style="font-weight:bold;color:#4527A0;">Repositories</td><td>ReportRepositoryTest.java</td><td>12</td><td>Repository</td></tr>
+      <tr><td>RoleRepositoryTest.java</td><td>9</td><td>Repository</td></tr>
+      <tr><td>AccountActivationRepositoryTest.java</td><td>10</td><td>Repository</td></tr>
+      <tr><td>TrustedContactRepositoryTest.java</td><td>9</td><td>Repository</td></tr>
+      <tr><td>LiveStreamRepositoryTest.java</td><td>10</td><td>Repository</td></tr>
+      <tr><td rowspan="5" style="font-weight:bold;color:#1565C0;">Services</td><td>UserServiceTest.java</td><td>12</td><td>Unitaire</td></tr>
+      <tr><td>RegisterServiceTest.java</td><td>9</td><td>Unitaire</td></tr>
+      <tr><td>TrustedContactServiceTest.java</td><td>9</td><td>Unitaire</td></tr>
+      <tr><td>LiveStreamServiceTest.java</td><td>11</td><td>Unitaire</td></tr>
+      <tr><td>ReportServiceTest.java</td><td>13</td><td>Unitaire</td></tr>
+      <tr><td rowspan="8" style="font-weight:bold;color:#E65100;">Controllers</td><td>AuthControllerIntegrationTest.java</td><td>6</td><td>Intégration</td></tr>
+      <tr><td>AccountActivationControllerIntegrationTest.java</td><td>7</td><td>Intégration</td></tr>
+      <tr><td>UserControllerIntegrationTest.java</td><td>8</td><td>Intégration</td></tr>
+      <tr><td>ReportControllerIntegrationTest.java</td><td>7</td><td>Intégration</td></tr>
+      <tr><td>TrustedContactControllerIntegrationTest.java</td><td>8</td><td>Intégration</td></tr>
+      <tr><td>LiveStreamControllerIntegrationTest.java</td><td>8</td><td>Intégration</td></tr>
+      <tr><td>GeolocalisationControllerIntegrationTest.java</td><td>6</td><td>Intégration</td></tr>
+      <tr><td>AlertCiviqueApplicationTests.java</td><td>1</td><td>Smoke</td></tr>
+      <tr><td rowspan="5" style="font-weight:bold;color:#1B5E20;">Frontend (Jest)</td><td>LiveStreamService.test.ts</td><td>13</td><td>Jest</td></tr>
+      <tr><td>LoginService.test.ts</td><td>6</td><td>Jest</td></tr>
+      <tr><td>RegisterService.test.ts</td><td>5</td><td>Jest</td></tr>
+      <tr><td>ReportService.test.ts</td><td>14</td><td>Jest</td></tr>
+      <tr><td>TrustedContactService.test.ts</td><td>12</td><td>Jest</td></tr>
+      <tr><td rowspan="2" style="font-weight:bold;color:#00695C;">Admin (Vitest)</td><td>AppContext.test.tsx</td><td>18</td><td>Vitest + RTL</td></tr>
+      <tr><td>api.test.ts</td><td>23</td><td>Vitest</td></tr>
+      <tr><td rowspan="3" style="font-weight:bold;color:#BF360C;">Node.js (Jest)</td><td>messages.test.js</td><td>8</td><td>Jest + Supertest</td></tr>
+      <tr><td>livestream.test.js</td><td>13</td><td>Jest + Supertest</td></tr>
+      <tr><td>health.test.js</td><td>3</td><td>Jest + Supertest</td></tr>
+      <tr class="total-row"><td colspan="2"><strong>TOTAL — 29 fichiers</strong></td><td><strong>318</strong></td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box" style="margin-top:24px;">
+    <strong>Commandes d'exécution :</strong><br>
+    • Backend Java : <code>cd alert_civique_back &amp;&amp; mvn test</code> → profil H2, 22 classes, <strong>BUILD SUCCESS</strong><br>
+    • Frontend Expo : <code>cd alert_civique_front &amp;&amp; npx jest</code><br>
+    • Admin React : <code>cd alert_civique_admin &amp;&amp; npx vitest run</code><br>
+    • Serveur Node.js : <code>cd alert_civique_mongo &amp;&amp; npx jest</code>
+  </div>
+
+  <div class="warn-box">
+    <strong>Point d'attention :</strong> Les tests backend nécessitent la propriété <code>node.media.base-url=http://localhost:9091</code> dans <code>src/test/resources/application.properties</code>. Sans elle, le contexte Spring ne se charge pas (<em>Difficulté 4 — documentée section 6.2 du dossier</em>).
+  </div>
+</div>
+
+<div class="page-footer">
+  Alert_Civique &nbsp;|&nbsp; Annexe E — Suite de Tests Complète &nbsp;|&nbsp; Stéphane CALIXTE &nbsp;|&nbsp; Doranco &nbsp;|&nbsp; Titre CDA Niveau 6 &nbsp;|&nbsp; Session 2024–2025
+</div>
+
+</body>
+</html>

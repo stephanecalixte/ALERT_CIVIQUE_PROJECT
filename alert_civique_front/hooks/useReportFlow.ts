@@ -28,7 +28,7 @@ export interface ReportFlowResult {
   pushNotificationSent: boolean;
   authorityAlertSent: boolean;
   trustedContactsNotified: TrustedContactNotification[];
-  error?: 'not_authenticated' | 'server_error';
+  error?: 'server_error';
 }
 
 export type ReportFlowState =
@@ -60,22 +60,18 @@ export function useReportFlow() {
   };
 
   const retryOfflineQueue = useCallback(async () => {
-    if (!token || !numericUserId) return;
+    if (!token) return;
     try {
       const raw = await AsyncStorage.getItem(OFFLINE_QUEUE_KEY);
       if (!raw) return;
       const queue: any[] = JSON.parse(raw);
       if (!queue.length) return;
 
-      
-      const validItems = queue.filter((item) => item.userId);
-      // Items sans userId : non renvoyables, on les conserve dans la queue
-      const unattemptedItems = queue.filter((item) => !item.userId);
-
-      const failed: any[] = [...unattemptedItems];
-      for (const item of validItems) {
+      const failed: any[] = [];
+      for (const item of queue) {
         try {
-          await ReportService.createReport(item, token);
+          const { savedAt, ...payload } = item;
+          await ReportService.createReport(payload, token);
           console.log('✅ Signalement offline renvoyé');
         } catch {
           failed.push(item);
@@ -85,7 +81,7 @@ export function useReportFlow() {
     } catch (e) {
       console.error('Erreur retry offline:', e);
     }
-  }, [token, numericUserId]);
+  }, [token]);
 
   /**
    * Flux principal SOS :
@@ -97,23 +93,6 @@ export function useReportFlow() {
    * 6. Mode offline si pas de réseau
    */
   const triggerSos = useCallback(async (): Promise<ReportFlowResult> => {
-    if (!numericUserId || !token) {
-      setState('error');
-      const noAuthResult: ReportFlowResult = {
-        reportId: null,
-        geolocalisationId: null,
-        latitude: null,
-        longitude: null,
-        offline: false,
-        pushNotificationSent: false,
-        authorityAlertSent: false,
-        trustedContactsNotified: [],
-        error: 'not_authenticated',
-      };
-      setResult(noAuthResult);
-      return noAuthResult;
-    }
-
     setState('locating');
 
     // ── 1. GPS ──────────────────────────────────────────────────────────────

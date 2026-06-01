@@ -45,7 +45,7 @@ public class Media {
     private String fileName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_id", nullable = false)
+    @JoinColumn(name = "report_id", nullable = true)
     private Reports report;
 
 

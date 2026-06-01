@@ -35,13 +35,12 @@ export interface AdminAlert {
 
 export interface AdminStream {
   livestreamId?: number
-  userId?: string
+  userId?: number
   startedAt?: string | number[]
   endedAt?: string | number[]
   streamUrl?: string
   status?: string
   videoUrl?: string
-  mediaId?: number
   duration?: number
 }
 
@@ -49,7 +48,7 @@ export interface AdminEmergency {
   emergencyAlertId?: number
   email?: string
   sentAt?: string | number[]
-  messages?: Array<{ content?: string; text?: string; body?: string }>
+  messages?: Array<{ message?: string; content?: string; text?: string; body?: string }>
 }
 
 export interface LoginResponse {
@@ -69,6 +68,7 @@ export type Section =
   | 'streams'
   | 'emergencies'
   | 'authorities'
+  | 'chat'
 
 export type ToastType = 'success' | 'error' | 'info'
 export interface Toast {

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-20T00:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="Activité - Report" id="activity-report">
+    <mxGraphModel grid="1" gridSize="10" pageWidth="1169" pageHeight="1900" shadow="1">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Diagramme d'Activité — Signalement (Report)&#xa;Alert Civique · React Native · Spring Boot · MariaDB · Admin React" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="300" y="10" width="580" height="55" as="geometry" /></mxCell>
+
+        <mxCell id="note" value="Contexte : Signalement d'incident par un citoyen — sans connexion requise (mode anonyme possible)." style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;whiteSpace=wrap;rounded=1;fontSize=11;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="300" y="73" width="580" height="35" as="geometry" /></mxCell>
+
+        <!-- NOEUD INITIAL -->
+        <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1"><mxGeometry x="560" y="135" width="40" height="40" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 1 -->
+        <mxCell id="act_open" value="Citoyen ouvre ReportScreen&#xa;Formulaire de signalement (React Native)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="205" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 2 -->
+        <mxCell id="act_form" value="Saisit description, catégorie, type d'alerte&#xa;(photo optionnelle — anonymous ou userId)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="298" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- DÉCISION formulaire -->
+        <mxCell id="dec_form" value="Formulaire&#xa;valide ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="390" width="200" height="70" as="geometry" /></mxCell>
+        <mxCell id="err_form" value="Afficher erreur&#xa;(champs manquants)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="398" width="190" height="54" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 3 Géolocalisation -->
+        <mxCell id="act_geo" value="POST /api/geolocalisation&#xa;GeolocalisationService.create()  —  { lat, lon, timestamp }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="500" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 4 Report -->
+        <mxCell id="act_rep" value="POST /api/report&#xa;ReportService.createReport()&#xa;{ description, status:PENDING, geolocalisationId, anonymous, userId? }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="595" width="380" height="70" as="geometry" /></mxCell>
+
+        <!-- DÉCISION réseau -->
+        <mxCell id="dec_net" value="Réseau&#xa;disponible ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="703" width="200" height="70" as="geometry" /></mxCell>
+        <mxCell id="act_offline" value="⚠ saveOffline()&#xa;AsyncStorage&#xa;retryOfflineQueue() à la reconnexion" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="703" width="190" height="70" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 5 Backend -->
+        <mxCell id="act_backend" value="Backend : Validation DTO  —  ReportMapperService.toEntity()&#xa;reportRepository.save(report)  —  reportId généré (MariaDB)&#xa;Status = PENDING" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="823" width="380" height="70" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 6 Confirmation -->
+        <mxCell id="act_confirm" value="Signalement envoyé ✓&#xa;Afficher ConfirmationScreen — state = 'done'" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="933" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- SÉPARATEUR ADMIN -->
+        <mxCell id="sep" value="GESTION ADMIN" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=center;fontStyle=1;fontSize=12;rounded=1;" vertex="1" parent="1"><mxGeometry x="390" y="1008" width="380" height="30" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 7 Admin reçoit -->
+        <mxCell id="act_recv" value="Admin consulte la liste des signalements&#xa;GET /api/report — ReportsList.tsx&#xa;Signalement visible : status PENDING 🔴" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1058" width="380" height="65" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 8 Admin examine -->
+        <mxCell id="act_review" value="Admin examine le signalement&#xa;Vérification : description, localisation, type d'alerte,&#xa;médias, priorité (DecisionLevel)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1163" width="380" height="70" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 9 Mise à jour statut -->
+        <mxCell id="act_update" value="PUT /api/report/{id}&#xa;Mise à jour du statut — updateReport(id, status, token)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1273" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE History -->
+        <mxCell id="act_hist" value="Enregistrement dans l'historique&#xa;HistoryService.save() — { action, details, reportId, userId, createdAt }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1340" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- DÉCISION statut -->
+        <mxCell id="dec_status" value="Décision&#xa;admin" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="1453" width="200" height="75" as="geometry" /></mxCell>
+
+        <mxCell id="act_inreview" value="IN_REVIEW&#xa;Complément requis" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="180" y="1461" width="175" height="54" as="geometry" /></mxCell>
+        <mxCell id="act_rejected" value="REJECTED ❌&#xa;Signalement invalidé" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="1461" width="175" height="54" as="geometry" /></mxCell>
+        <mxCell id="act_validated" value="VALIDATED ✅&#xa;Signalement confirmé" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="1588" width="200" height="54" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE finale -->
+        <mxCell id="act_resolved" value="Status = RESOLVED ou ARCHIVED&#xa;Dossier clôturé — History persisté (MariaDB)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1708" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- NOEUD FINAL -->
+        <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;double=1;" vertex="1" parent="1"><mxGeometry x="560" y="1803" width="40" height="40" as="geometry" /></mxCell>
+
+        <!-- ===== EDGES ===== -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="start" target="act_open" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_open" target="act_form" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_form" target="dec_form" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e4" value="Non" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_form" target="err_form" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="Corriger" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="err_form" target="act_form" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="325" /><mxPoint x="770" y="325" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e6" value="Oui" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_form" target="act_geo" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_geo" target="act_rep" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_rep" target="dec_net" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e9" value="Non" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_net" target="act_offline" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" value="Reconnexion" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="act_offline" target="act_backend" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="858" /><mxPoint x="770" y="858" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e11" value="Oui" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_net" target="act_backend" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_backend" target="act_confirm" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_confirm" target="sep" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="sep" target="act_recv" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_recv" target="act_review" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_review" target="act_update" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_update" target="act_hist" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_hist" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_hist" target="dec_status" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e18" value="IN_REVIEW" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_status" target="act_inreview" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e19" value="Retour analyse" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="act_inreview" target="act_review" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="180" y="1198" /><mxPoint x="390" y="1198" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e20" value="VALIDATED" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_status" target="act_validated" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e21" value="REJECTED" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_status" target="act_rejected" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_validated" target="act_resolved" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_rejected" target="act_resolved" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="837" y="1736" /><mxPoint x="770" y="1736" /></Array></mxGeometry></mxCell>
+        <mxCell id="e24" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_resolved" target="end" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

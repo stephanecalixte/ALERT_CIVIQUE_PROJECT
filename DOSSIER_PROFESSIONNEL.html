@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+  #export-bar {
+    position: fixed; top: 16px; right: 16px; z-index: 9999;
+    display: flex; gap: 8px;
+  }
+  #btn-download, #btn-export {
+    color: #fff; border: none; border-radius: 8px;
+    padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; gap: 7px;
+    text-decoration: none; font-family: Calibri, Arial, sans-serif;
+    transition: background 0.2s;
+  }
+  #btn-download {
+    background: #1565C0;
+    box-shadow: 0 4px 12px rgba(21,101,192,0.45);
+  }
+  #btn-download:hover { background: #0d47a1; }
+  #btn-export {
+    background: #FF6600;
+    box-shadow: 0 4px 12px rgba(255,102,0,0.4);
+  }
+  #btn-export:hover { background: #e65c00; }
+  #btn-export:disabled { background: #90a4ae; cursor: not-allowed; }
+  @media print { #export-bar { display: none !important; } }
+</style>
+  @page { size: A4; margin: 2.5cm 2cm; }
+  body { font-family: 'Calibri', Arial, sans-serif; font-size: 11pt; color: #1a1a1a; line-height: 1.5; }
+  h1 { font-size: 22pt; color: #1565C0; font-weight: 700; margin-top: 24pt; margin-bottom: 6pt; page-break-before: always; }
+  h1.no-break { page-break-before: avoid; }
+  h2 { font-size: 16pt; color: #1565C0; font-weight: 700; margin-top: 18pt; margin-bottom: 6pt; border-bottom: 2px solid #1565C0; padding-bottom: 4pt; }
+  h3 { font-size: 13pt; color: #0d47a1; font-weight: 600; margin-top: 14pt; margin-bottom: 4pt; }
+  h4 { font-size: 11pt; color: #1565C0; font-weight: 600; margin-top: 10pt; margin-bottom: 2pt; }
+  p { margin: 6pt 0; text-align: justify; }
+  ul, ol { margin: 6pt 0 6pt 20pt; }
+  li { margin-bottom: 3pt; }
+  table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 10pt; }
+  th { background-color: #1565C0; color: white; padding: 6pt 8pt; text-align: left; font-weight: 600; }
+  td { padding: 5pt 8pt; border: 1px solid #ccd6e0; vertical-align: top; }
+  tr:nth-child(even) td { background-color: #f0f4f8; }
+  pre, code { font-family: 'Courier New', monospace; font-size: 9pt; background: #f5f7fa; border: 1px solid #ccd6e0; border-radius: 4px; }
+  pre { padding: 10pt; margin: 8pt 0; white-space: pre-wrap; page-break-inside: avoid; }
+  code { padding: 1pt 4pt; }
+  .cover { text-align: center; padding: 80pt 40pt; page-break-after: always; }
+  .cover-title { font-size: 14pt; color: #546e7a; text-transform: uppercase; letter-spacing: 2pt; margin-bottom: 20pt; }
+  .cover-appname { font-size: 42pt; font-weight: 800; color: #1565C0; margin-bottom: 4pt; }
+  .cover-slogan { font-size: 13pt; color: #FF6600; font-style: italic; margin-bottom: 30pt; }
+  .cover-desc { font-size: 11pt; color: #546e7a; margin-bottom: 40pt; }
+  .cover-stack { font-size: 10pt; color: #1565C0; font-weight: 600; background: #e3f2fd; padding: 8pt 16pt; border-radius: 6pt; display: inline-block; margin-bottom: 50pt; }
+  .cover-candidate { font-size: 13pt; color: #1a1a1a; margin-bottom: 6pt; }
+  .cover-info { font-size: 10pt; color: #546e7a; }
+  .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2pt 8pt; border-radius: 10pt; font-size: 9pt; font-weight: 600; }
+  .badge-warning { background: #fff8e1; color: #f57f17; }
+  .badge-error { background: #fce4ec; color: #c62828; }
+  .toc-item { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccd6e0; padding: 3pt 0; }
+  .toc-part { font-weight: 700; color: #1565C0; margin-top: 10pt; }
+  .highlight-box { background: #e3f2fd; border-left: 4pt solid #1565C0; padding: 10pt 14pt; margin: 10pt 0; border-radius: 0 6pt 6pt 0; }
+  .warning-box { background: #fff8e1; border-left: 4pt solid #FF6600; padding: 10pt 14pt; margin: 10pt 0; border-radius: 0 6pt 6pt 0; }
+  .success-box { background: #e8f5e9; border-left: 4pt solid #43a047; padding: 10pt 14pt; margin: 10pt 0; border-radius: 0 6pt 6pt 0; }
+  .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin: 10pt 0; }
+  .swot-cell { padding: 10pt; border-radius: 6pt; }
+  .swot-s { background: #e8f5e9; border: 1px solid #a5d6a7; }
+  .swot-w { background: #fff8e1; border: 1px solid #ffe082; }
+  .swot-o { background: #e3f2fd; border: 1px solid #90caf9; }
+  .swot-t { background: #fce4ec; border: 1px solid #f48fb1; }
+  .swot-title { font-weight: 700; font-size: 10pt; margin-bottom: 6pt; }
+  .page-break { page-break-before: always; }
+  .section-number { color: #FF6600; }
+</style>
+</head>
+<body>
+
+<div id="export-bar">
+  <!-- Bouton téléchargement direct (fonctionne après avoir lancé generate-docx.js) -->
+  <a id="btn-download" href="DOSSIER_PROFESSIONNEL.docx" download="Dossier_Professionnel_Alert_Civique.docx">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    Télécharger .docx
+  </a>
+  <!-- Bouton export dynamique (fallback navigateur) -->
+  <button id="btn-export" onclick="exportDocx()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="12" y1="18" x2="12" y2="12"/>
+      <polyline points="9 15 12 18 15 15"/>
+    </svg>
+    Export depuis navigateur
+  </button>
+</div>
+
+<script>
+function exportDocx() {
+  const btn = document.getElementById('btn-export');
+  if (typeof htmlDocx === 'undefined' || typeof saveAs === 'undefined') {
+    alert('Les librairies CDN ne sont pas encore chargées.\nVérifie ta connexion internet ou utilise generate-docx.js.');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = '⏳ Export…';
+  const bar = document.getElementById('export-bar');
+  bar.style.display = 'none';
+  const content = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    document.querySelector('style').outerHTML +
+    '</head><body>' + document.body.innerHTML + '</body></html>';
+  bar.style.display = '';
+  try {
+    const blob = htmlDocx.asBlob(content, { orientation: 'portrait', margins: { top: 900, right: 900, bottom: 900, left: 900 } });
+    saveAs(blob, 'Dossier_Professionnel_Alert_Civique.docx');
+  } catch (e) {
+    alert('Erreur export : ' + e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Export depuis navigateur';
+}
+</script>
+
+<!-- ============================================================ COUVERTURE -->
+<div class="cover">
+  <div class="cover-title">TITRE PROFESSIONNEL<br>Concepteur Développeur d'Applications — Niveau 6</div>
+  <div class="cover-appname">ALERT_CIVIQUE</div>
+  <div class="cover-slogan">« Votre voix, notre vigilance »</div>
+  <div class="cover-desc">Application mobile de signalement d'incidents civiques<br>Alertes d'urgence en temps réel — SOS · Agression · Accident · Incendie</div>
+  <div class="cover-stack">Spring Boot 3 &nbsp;·&nbsp; React Native / Expo &nbsp;·&nbsp; Node.js &nbsp;·&nbsp; MySQL &nbsp;·&nbsp; React / Vite</div>
+  <br><br>
+  <div class="cover-candidate"><strong>Candidat(e) :</strong> Stéphane CALIXTE</div>
+  <div class="cover-info">Session 2024–2025 &nbsp;|&nbsp; Centre de formation : <strong>Doranco</strong></div>
+  <div class="cover-info" style="margin-top:30pt; font-size:9pt; color:#90a4ae;">
+    Dossier professionnel — Épreuve de mise en situation professionnelle
+  </div>
+</div>
+
+<!-- ============================================================ SOMMAIRE -->
+<div>
+  <h2 class="no-break" style="page-break-before:avoid;">Sommaire</h2>
+  <div class="toc-part">PARTIE 1 — CONTEXTE ET ANALYSE STRATÉGIQUE</div>
+  <div class="toc-item"><span>&nbsp;&nbsp;1.1 Présentation du projet Alert_Civique</span><span>3</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;1.2 Analyse de la problématique (QQOQCP)</span><span>3</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;1.3 Analyse PESTEL</span><span>4</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;1.4 Analyse SWOT</span><span>4</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;1.5 Objectifs SMART</span><span>5</span></div>
+  <div class="toc-part">PARTIE 2 — CAHIER DES CHARGES</div>
+  <div class="toc-item"><span>&nbsp;&nbsp;2.1 Expression des besoins</span><span>5</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;2.2 Personas utilisateurs</span><span>6</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;2.3 Benchmark concurrentiel</span><span>6</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;2.4 Charte graphique</span><span>7</span></div>
+  <div class="toc-part">PARTIE 3 — CONCEPTION TECHNIQUE</div>
+  <div class="toc-item"><span>&nbsp;&nbsp;3.1 Architecture applicative</span><span>7</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;3.2 Modèle de données (MCD / MLD)</span><span>8</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;3.3 Choix technologiques justifiés</span><span>9</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;3.4 Sécurité et conformité</span><span>9</span></div>
+  <div class="toc-part">PARTIE 4 — DÉVELOPPEMENT ET RÉALISATION</div>
+  <div class="toc-item"><span>&nbsp;&nbsp;4.1 Gestion de projet (méthode Agile / Scrum)</span><span>10</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;4.2 Réalisations back-end — Spring Boot</span><span>11</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;4.3 Réalisations front-end — React Native &amp; Admin</span><span>12</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;4.4 Tests et qualité</span><span>13</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;4.5 Déploiement et infrastructure</span><span>14</span></div>
+  <div class="toc-part">PARTIE 5 — BILAN ET PERSPECTIVES</div>
+  <div class="toc-item"><span>&nbsp;&nbsp;5.1 Compétences validées</span><span>14</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;5.2 Difficultés rencontrées et solutions apportées</span><span>15</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;5.3 Axes d'amélioration et évolutions</span><span>15</span></div>
+  <div class="toc-part">ANNEXES</div>
+  <div class="toc-item"><span>&nbsp;&nbsp;A — Extraits de code commentés</span><span>16</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;B — Schéma de base de données</span><span>17</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;C — Lexique technique</span><span>18</span></div>
+  <div class="toc-item"><span>&nbsp;&nbsp;D — Bibliographie et ressources</span><span>19</span></div>
+</div>
+
+<!-- ============================================================ INTRODUCTION -->
+<h1>Introduction</h1>
+<p>Ce dossier professionnel présente le projet <strong>Alert_Civique</strong>, développé dans le cadre de la validation du Titre Professionnel <em>Concepteur Développeur d'Applications</em> (CDA, niveau 6 du Cadre National des Certifications Professionnelles — RNCP 37873).</p>
+<p>Alert_Civique est une <strong>application mobile de signalement d'incidents civiques urgents</strong>, permettant à tout citoyen de déclencher en quelques secondes une alerte géolocalisée (SOS, agression, accident, incendie), d'enregistrer et partager une vidéo en direct (livestream), et de notifier automatiquement ses contacts de confiance. Une interface d'administration web permet aux équipes de traiter et résoudre les incidents en temps réel.</p>
+<p>La plateforme repose sur une architecture multi-couches : une application mobile React Native (Expo) communicant avec une API REST Spring Boot (Java), complétée d'un serveur Node.js dédié à la gestion des médias vidéo, le tout persisté dans une base de données MySQL. Un tableau de bord d'administration React/Vite complète le dispositif.</p>
+<p>Ce dossier couvre l'intégralité du cycle de vie du projet : analyse du besoin, conception technique, développement full-stack, sécurisation et tests, jusqu'à la livraison du prototype fonctionnel. Il est organisé en cinq parties auxquelles s'ajoutent des annexes techniques.</p>
+
+<!-- ============================================================ PARTIE 1 -->
+<h1><span class="section-number">Partie 1</span> — Contexte et analyse stratégique</h1>
+
+<h2>1.1 Présentation du projet Alert_Civique</h2>
+<p>En France, les dispositifs de signalement d'urgence citoyenne sont fragmentés entre les applications des services de secours (15, 17, 18), les applications municipales isolées et les réseaux sociaux. Aucune solution unifiée, mobile-first et accessible à tous ne permet à un citoyen de déclencher une alerte géolocalisée, de la documenter en vidéo et de prévenir instantanément ses proches — tout en un seul geste.</p>
+<p>Alert_Civique comble ce vide en proposant :</p>
+<ul>
+  <li>Une <strong>application mobile native</strong> (Android / iOS via Expo) accessible immédiatement après une unique inscription</li>
+  <li>Quatre types d'alertes couvrant les urgences civiques : <strong>SOS, Agression, Accident, Incendie</strong></li>
+  <li>Un <strong>signalement photo ou vidéo</strong> automatiquement géolocalisé, enregistré en galerie et transmis aux autorités</li>
+  <li>Un système de <strong>livestream vidéo</strong> associé à chaque incident, uploadé automatiquement</li>
+  <li>La gestion de <strong>contacts de confiance</strong> notifiés en cas d'alerte SOS</li>
+  <li>Un <strong>tableau de bord d'administration</strong> pour le suivi et la résolution des incidents</li>
+</ul>
+
+<h2>1.2 Analyse de la problématique — QQOQCP</h2>
+<table>
+  <tr><th>Axe</th><th>Contenu</th></tr>
+  <tr><td><strong>QUI ?</strong></td><td>Citoyens (tout âge), agents administratifs (modérateurs), administrateurs de la plateforme, contacts de confiance (proches)</td></tr>
+  <tr><td><strong>QUOI ?</strong></td><td>Application mobile de signalement d'urgences civiques en temps réel avec photo, vidéo, livestream et notification des contacts de confiance</td></tr>
+  <tr><td><strong>OÙ ?</strong></td><td>Partout sur le territoire, en espace public, zones résidentielles, axes routiers ; accessible depuis n'importe quel smartphone Android/iOS</td></tr>
+  <tr><td><strong>QUAND ?</strong></td><td>En continu, 24h/24 et 7j/7 — déclenchement immédiat en situation d'urgence, suivi jusqu'à résolution de l'incident</td></tr>
+  <tr><td><strong>COMMENT ?</strong></td><td>Inscription unique (avec 1 contact de confiance obligatoire) → accès permanent → alerte en 3 taps → géolocalisation auto → photo ou vidéo → upload → notification → suivi par l'admin</td></tr>
+  <tr><td><strong>POURQUOI ?</strong></td><td>Absence d'outil unifié, temps de réaction trop longs, pas de traçabilité des incidents, impossibilité de documenter visuellement une urgence en quelques secondes</td></tr>
+  <tr><td><strong>COMBIEN ?</strong></td><td>Projet individuel — 6 mois de formation — stack open source — infrastructure locale (dev) puis VPS (prod)</td></tr>
+</table>
+
+<h2>1.3 Analyse PESTEL</h2>
+<table>
+  <tr><th>Facteur</th><th>Opportunités</th><th>Menaces</th></tr>
+  <tr><td><strong>Politique</strong></td><td>Plan sécurité citoyenne, objectifs numériques de l'État, soutien aux civic tech</td><td>Évolutions réglementaires sur la vidéosurveillance participative</td></tr>
+  <tr><td><strong>Économique</strong></td><td>Stack open source (coût nul des licences), hébergement VPS accessible (20–40€/mois)</td><td>Coûts de stockage vidéo croissants, maintenance infrastructures</td></tr>
+  <tr><td><strong>Social</strong></td><td>Forte adoption mobile (95% des Français possèdent un smartphone), sentiment d'insécurité croissant</td><td>Fracture numérique, résistance à la surveillance communautaire, faux signalements</td></tr>
+  <tr><td><strong>Technologique</strong></td><td>Expo/React Native facilitant le développement cross-platform, géolocalisation précise, 4G/5G</td><td>Mises à jour fréquentes d'Expo SDK, compatibilité anciens smartphones</td></tr>
+  <tr><td><strong>Environnemental</strong></td><td>Signalements environnementaux (déchets sauvages, pollution), optimisation des déplacements des agents</td><td>Consommation énergétique du stockage vidéo</td></tr>
+  <tr><td><strong>Légal</strong></td><td>RGPD comme référence, framework ANSSI pour la sécurité JWT</td><td>Responsabilité en cas de faux signalement, droit à l'image en vidéo publique, conformité RGPD stricte</td></tr>
+</table>
+
+<h2>1.4 Analyse SWOT</h2>
+<div class="swot-grid">
+  <div class="swot-cell swot-s">
+    <div class="swot-title">✅ FORCES</div>
+    <ul style="margin:0; padding-left:14pt;">
+      <li>Application mobile native cross-platform (Android/iOS)</li>
+      <li>Inscription unique — accès permanent sans reconnexion</li>
+      <li>Signalement en moins de 10 secondes</li>
+      <li>Livestream vidéo intégré directement dans l'alerte</li>
+      <li>Contacts de confiance notifiés automatiquement (SOS)</li>
+      <li>Tableau de bord admin en temps réel</li>
+      <li>Architecture sécurisée (JWT, Argon2, variables d'env.)</li>
+    </ul>
+  </div>
+  <div class="swot-cell swot-w">
+    <div class="swot-title">⚠️ FAIBLESSES</div>
+    <ul style="margin:0; padding-left:14pt;">
+      <li>Projet individuel — charge de développement élevée</li>
+      <li>Stockage vidéo local (pas encore CDN)</li>
+      <li>Pas de validation communautaire croisée des alertes</li>
+      <li>Interface admin en anglais (non localisée)</li>
+      <li>Dépendance à Expo Go pour le développement mobile</li>
+    </ul>
+  </div>
+  <div class="swot-cell swot-o">
+    <div class="swot-title">🚀 OPPORTUNITÉS</div>
+    <ul style="margin:0; padding-left:14pt;">
+      <li>Marché de la civic tech en plein essor</li>
+      <li>Partenariats possibles avec collectivités et services de secours</li>
+      <li>Extension aux alertes environnementales</li>
+      <li>Ajout de notifications push vers les autorités</li>
+      <li>API REST documentée réutilisable par des tiers</li>
+    </ul>
+  </div>
+  <div class="swot-cell swot-t">
+    <div class="swot-title">🔴 MENACES</div>
+    <ul style="margin:0; padding-left:14pt;">
+      <li>Dépendance aux stores Apple/Google pour la distribution</li>
+      <li>Cybersécurité : protection des données de géolocalisation</li>
+      <li>Concurrence des applications institutionnelles (15/17/18)</li>
+      <li>Évolutions d'Expo SDK pouvant casser la compatibilité</li>
+    </ul>
+  </div>
+</div>
+
+<h2>1.5 Objectifs SMART</h2>
+<table>
+  <tr><th>Objectif</th><th>Spécifique</th><th>Mesurable</th><th>Atteignable</th><th>Réaliste</th><th>Temporel</th></tr>
+  <tr><td>MVP fonctionnel</td><td>4 types d'alertes + livestream + admin</td><td>Toutes fonctionnalités cœur opérationnelles</td><td>1 développeur, stack maîtrisée</td><td>6 mois de formation</td><td>Juin 2025</td></tr>
+  <tr><td>Sécurité</td><td>0 vulnérabilité critique (CWE)</td><td>Audit statique validé</td><td>Corrections CWE-321, 259, 778 réalisées</td><td>Spring Security + JWT</td><td>Continu</td></tr>
+  <tr><td>Tests</td><td>Suite JUnit couvrant les endpoints REST</td><td>Tests d'intégration passants (mvn test)</td><td>Profil test H2 configuré</td><td>JUnit 5 + MockMvc</td><td>Avr. 2025</td></tr>
+  <tr><td>Signalement</td><td>Alerte géolocalisée + média en &lt; 15 s</td><td>Chronomètre mesuré sur device réel</td><td>ImagePicker natif validé</td><td>Expo SDK 51</td><td>En continu</td></tr>
+  <tr><td>Admin</td><td>Dashboard temps réel avec rafraîchissement</td><td>Compteurs synchronisés avec la BDD</td><td>React/Vite + API Java</td><td>Architecture REST</td><td>Mai 2025</td></tr>
+</table>
+
+<!-- ============================================================ PARTIE 2 -->
+<h1><span class="section-number">Partie 2</span> — Cahier des charges</h1>
+
+<h2>2.1 Expression des besoins</h2>
+<h3>Besoins fonctionnels — Citoyens (application mobile)</h3>
+<ul>
+  <li><strong>NF1 — Inscription unique :</strong> formulaire d'inscription complet (nom, prénom, email, mot de passe sécurisé, téléphone, date de naissance) avec au moins un contact de confiance obligatoire. Après inscription, l'accès est permanent sans nouvelle authentification.</li>
+  <li><strong>NF2 — Déclenchement d'alerte :</strong> sélection du type d'alerte (SOS, Agression, Accident, Incendie), géolocalisation automatique, ajout optionnel d'une description.</li>
+  <li><strong>NF3 — Signalement photo :</strong> prise de photo via l'appareil photo natif, sauvegarde automatique en galerie, upload vers le serveur.</li>
+  <li><strong>NF4 — Signalement vidéo / Livestream :</strong> enregistrement vidéo natif, sauvegarde en galerie, upload automatique vers le serveur Node.js média, association à l'incident en cours.</li>
+  <li><strong>NF5 — Contacts de confiance :</strong> gestion CRUD des contacts (nom, email, téléphone), minimum 1 requis à l'inscription, possibilité d'en ajouter ultérieurement.</li>
+  <li><strong>NF6 — Historique :</strong> liste paginée des signalements de l'utilisateur avec statuts et dates.</li>
+</ul>
+<h3>Besoins fonctionnels — Administration (tableau de bord web)</h3>
+<ul>
+  <li><strong>NF7 — Tableau de bord :</strong> statistiques temps réel (signalements, utilisateurs, livestreams, alertes SOS), graphiques de statuts, incidents actifs géolocalisés.</li>
+  <li><strong>NF8 — Gestion des signalements :</strong> liste filtrée, changement de statut (PENDING → IN_REVIEW → VALIDATED → RESOLVED), suppression.</li>
+  <li><strong>NF9 — Gestion des livestreams :</strong> liste des vidéos, lecture intégrée, suppression depuis le serveur média.</li>
+  <li><strong>NF10 — Gestion des utilisateurs :</strong> liste, profil, suppression.</li>
+</ul>
+<h3>Besoins techniques</h3>
+<table>
+  <tr><th>Exigence</th><th>Cible</th></tr>
+  <tr><td>API REST Java (latence P95)</td><td>&lt; 300 ms en local</td></tr>
+  <tr><td>Upload vidéo</td><td>Jusqu'à 100 Mo par fichier</td></tr>
+  <tr><td>Compatibilité mobile</td><td>Android 10+ et iOS 13+ via Expo</td></tr>
+  <tr><td>Sécurité</td><td>JWT, Argon2, variables d'environnement pour secrets</td></tr>
+  <tr><td>Conformité données</td><td>RGPD — pas de stockage de données sensibles en clair</td></tr>
+  <tr><td>Tests automatisés</td><td>Suite JUnit 5 passante sur profil test (H2)</td></tr>
+</table>
+
+<h2>2.2 Personas utilisateurs</h2>
+<h3>Persona 1 — Amina, citoyenne active (34 ans)</h3>
+<p>Infirmière, utilisatrice quotidienne d'Android. Elle témoigne régulièrement d'agressions dans son quartier. Sa frustration : aucun outil ne lui permet de documenter rapidement un incident et de prévenir simultanément ses proches et les autorités. <em>Citation : « Je veux appuyer sur un bouton, filmer, et que mes contacts soient prévenus en même temps. »</em></p>
+
+<h3>Persona 2 — Marc, agent administratif (45 ans)</h3>
+<p>Responsable sécurité dans une collectivité. Il suit actuellement les incidents par email. Il a besoin d'un tableau de bord centralisé pour visualiser les alertes en temps réel, changer leur statut et les clôturer. <em>Citation : « J'ai besoin de voir tout ce qui se passe en un coup d'œil et de clôturer les incidents traités. »</em></p>
+
+<h3>Persona 3 — Julien, proche aidant (28 ans)</h3>
+<p>Frère d'un utilisateur de l'application. Il est déclaré comme contact de confiance. En cas d'alerte SOS de sa sœur, il souhaite être notifié instantanément avec la localisation exacte. <em>Citation : « Si elle appuie sur SOS, je veux être le premier prévenu avec l'adresse exacte. »</em></p>
+
+<h2>2.3 Benchmark concurrentiel</h2>
+<table>
+  <tr><th>Critère</th><th>Application 112</th><th>DansMaRue</th><th>BSafe</th><th><strong>Alert_Civique</strong></th></tr>
+  <tr><td>Couverture</td><td>Nationale (urgences)</td><td>Paris uniquement</td><td>Internationale</td><td><strong>Nationale</strong></td></tr>
+  <tr><td>Types d'alertes</td><td>Urgences médicales</td><td>Voirie / déchets</td><td>Agression personnelle</td><td><strong>SOS + 3 types civiques</strong></td></tr>
+  <tr><td>Vidéo / Livestream</td><td>Non</td><td>Photo uniquement</td><td>Oui (premium)</td><td><strong>Oui (natif, gratuit)</strong></td></tr>
+  <tr><td>Contacts de confiance</td><td>Non</td><td>Non</td><td>Oui</td><td><strong>Oui (depuis l'inscription)</strong></td></tr>
+  <tr><td>Tableau de bord admin</td><td>Centres 112</td><td>Mairie de Paris</td><td>Non</td><td><strong>Oui, personnalisable</strong></td></tr>
+  <tr><td>Inscription requise</td><td>Non</td><td>Optionnelle</td><td>Oui</td><td><strong>Oui (unique, permanente)</strong></td></tr>
+  <tr><td>Open source / API</td><td>Non</td><td>Partiellement</td><td>Non</td><td><strong>API REST ouverte</strong></td></tr>
+</table>
+<p>Alert_Civique se distingue par la combinaison unique : <strong>alerte multi-types + livestream + contacts de confiance + admin intégré</strong>, sans abonnement et avec une API REST exploitable.</p>
+
+<h2>2.4 Charte graphique</h2>
+<h3>Identité visuelle</h3>
+<p>L'identité visuelle d'Alert_Civique associe <strong>le bleu institutionnel</strong> (confiance, autorité) à <strong>l'orange urgence</strong> (réactivité, vigilance). Le logo représente un bouclier stylisé avec des barres sonores, évoquant la protection et la communication d'urgence.</p>
+<table>
+  <tr><th>Couleur</th><th>Code hex</th><th>Usage</th></tr>
+  <tr><td>Bleu confiance (primaire)</td><td>#1565C0</td><td>Navigation, en-têtes, boutons principaux, tab bar</td></tr>
+  <tr><td>Bleu foncé (accent)</td><td>#0d47a1</td><td>Ombres, bordures, éléments actifs</td></tr>
+  <tr><td>Orange urgence</td><td>#FF6600</td><td>Boutons SOS, alertes critiques, signal de diffusion</td></tr>
+  <tr><td>Rouge alerte</td><td>#e53935</td><td>Agression, suppression, badges d'erreur</td></tr>
+  <tr><td>Blanc</td><td>#FFFFFF</td><td>Fond des cartes, textes sur fond sombre</td></tr>
+  <tr><td>Gris clair</td><td>#e8ecf0</td><td>Fond général des écrans</td></tr>
+  <tr><td>Vert résolu</td><td>#43a047</td><td>Statut « résolu », confirmations</td></tr>
+</table>
+<h3>Typographie et principes UX</h3>
+<ul>
+  <li><strong>Police :</strong> System font (San Francisco sur iOS, Roboto sur Android) — cohérence native garantie</li>
+  <li><strong>Mobile First :</strong> toutes les interfaces conçues pour smartphone, adaptées aux petits écrans dès la conception</li>
+  <li><strong>Safe Areas :</strong> respect des zones sécurisées Android (barre de navigation) et iOS (encoche) via <code>useSafeAreaInsets</code></li>
+  <li><strong>Accessibilité :</strong> contrastes conformes (ratio &gt; 4,5:1), zones tactiles &gt; 44pt</li>
+  <li><strong>Feedback immédiat :</strong> indicateurs de chargement (ActivityIndicator), messages d'erreur explicites, animations de confirmation</li>
+</ul>
+
+<!-- ============================================================ PARTIE 3 -->
+<h1><span class="section-number">Partie 3</span> — Conception technique</h1>
+
+<h2>3.1 Architecture applicative</h2>
+<p>Alert_Civique repose sur une architecture <strong>multi-tiers distribuée</strong> composée de quatre couches indépendantes communicant via des APIs REST :</p>
+
+<div class="highlight-box">
+  <strong>Vue d'ensemble de l'architecture :</strong><br><br>
+  📱 <strong>App mobile</strong> (React Native / Expo — ports dynamiques) → appels HTTP/JWT<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;↓ ↑<br>
+  ☕ <strong>API REST Java</strong> (Spring Boot 3 — port 9090) → JPA/Hibernate<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;↓ ↑ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ ↑<br>
+  🗄️ <strong>Base de données</strong> (MySQL 8 — port 3306) &nbsp;&nbsp; 🎬 <strong>Serveur média</strong> (Node.js — port 9091)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ ↓<br>
+  🖥️ <strong>Admin web</strong> (React/Vite — port 3001) → appels HTTP/JWT
+</div>
+
+<table>
+  <tr><th>Couche</th><th>Technologie</th><th>Rôle</th></tr>
+  <tr><td>Application mobile</td><td>React Native 0.74 / Expo SDK 51</td><td>Interface citoyen : alertes, photo, vidéo, livestream, contacts</td></tr>
+  <tr><td>API REST (back-end principal)</td><td>Spring Boot 3.x / Java 17</td><td>Logique métier, authentification JWT, persistance JPA</td></tr>
+  <tr><td>Serveur média</td><td>Node.js 20 / Express.js</td><td>Upload vidéo, stockage fichiers, notifications WebSocket admin</td></tr>
+  <tr><td>Base de données</td><td>MySQL 8.0</td><td>Persistance : utilisateurs, signalements, livestreams, contacts</td></tr>
+  <tr><td>Dashboard admin</td><td>React 18 / Vite 5 / TypeScript</td><td>Gestion des incidents, utilisateurs, livestreams</td></tr>
+</table>
+
+<h3>Flux de données — Exemple : signalement vidéo</h3>
+<ol>
+  <li>L'utilisateur appuie sur « Vidéo » dans l'app mobile</li>
+  <li>L'app appelle <code>POST /api/livestream/create</code> sur Java → création de l'entrée en BDD (status = LIVE)</li>
+  <li>L'appareil photo natif s'ouvre (via <code>ImagePicker.launchCameraAsync</code>)</li>
+  <li>Après enregistrement, la vidéo est sauvegardée en galerie (<code>MediaLibrary.saveToLibraryAsync</code>)</li>
+  <li>La vidéo est uploadée vers Node.js (<code>POST /upload</code>)</li>
+  <li>Node.js retourne l'URL → l'app met à jour le livestream Java (<code>PUT /api/livestream/update</code> avec videoUrl)</li>
+  <li>Node.js notifie le dashboard admin en temps réel (WebSocket)</li>
+</ol>
+
+<h2>3.2 Modèle de données (MCD / MLD)</h2>
+<p>Le modèle de données MySQL est centré sur l'entité <strong>Report</strong> (signalement), reliée aux utilisateurs, aux contacts de confiance, aux livestreams et aux messages. Toutes les clés primaires sont auto-incrémentées (BIGINT IDENTITY).</p>
+
+<h3>Entités principales</h3>
+<table>
+  <tr><th>Entité (table)</th><th>Attributs clés</th><th>Relations</th></tr>
+  <tr><td><strong>users</strong></td><td>id, firstname, lastname, email (UNIQUE), password (Argon2), phone, birthdate, enabled</td><td>1:N reports, 1:N lives_stream, 1:N trusted_contacts</td></tr>
+  <tr><td><strong>roles</strong></td><td>role_id, name (ROLE_CLIENT, ROLE_ADMIN, ROLE_MODERATOR)</td><td>N:N users (table users_roles)</td></tr>
+  <tr><td><strong>reports</strong></td><td>report_id, user_id (FK), alert_type (ENUM), description, latitude, longitude, location_text, status (PENDING/IN_REVIEW/VALIDATED/RESOLVED/REJECTED), created_at</td><td>N:1 users, 1:N report_messages, 1:N lives_stream</td></tr>
+  <tr><td><strong>lives_stream</strong></td><td>livestream_id, user_id (FK), started_at, ended_at, stream_url, video_url, status, duration</td><td>N:1 users, N:1 reports</td></tr>
+  <tr><td><strong>trusted_contacts</strong></td><td>id, user_id (FK), name, email, phone</td><td>N:1 users</td></tr>
+  <tr><td><strong>report_messages</strong></td><td>id, report_id (FK), user_id (FK), content, created_at</td><td>N:1 reports, N:1 users</td></tr>
+  <tr><td><strong>account_activation</strong></td><td>id, user_id (FK), token, expires_at, used (BOOLEAN)</td><td>1:1 users</td></tr>
+</table>
+
+<h3>Règles de gestion</h3>
+<ul>
+  <li>Un utilisateur doit avoir au moins un contact de confiance à l'inscription</li>
+  <li>Un signalement passe obligatoirement par le statut PENDING avant tout autre statut</li>
+  <li>Un livestream est créé au moment du démarrage de l'enregistrement (status = LIVE) puis mis à jour avec l'URL vidéo après upload</li>
+  <li>Le token d'activation de compte a une durée de vie limitée (<code>app.jwt.activation-expiration-ms</code>)</li>
+  <li>Les mots de passe sont hashés avec Argon2 (jamais stockés en clair)</li>
+</ul>
+
+<h2>3.3 Choix technologiques justifiés</h2>
+<table>
+  <tr><th>Technologie</th><th>Justification</th><th>Alternative écartée</th></tr>
+  <tr><td><strong>Spring Boot 3 / Java 17</strong></td><td>Écosystème Java mature, support natif JWT et JPA, excellent support Spring Security pour l'authentification</td><td>Node.js/Express (moins adapté pour les architectures enterprise Java)</td></tr>
+  <tr><td><strong>React Native / Expo SDK 51</strong></td><td>Développement cross-platform unique (Android + iOS), accès aux APIs natives (caméra, GPS, galerie), hot reload rapide</td><td>Flutter (langage Dart moins répandu), développement natif Android/iOS (deux codebases)</td></tr>
+  <tr><td><strong>MySQL 8.0</strong></td><td>Base de données relationnelle robuste et éprouvée, compatible JPA/Hibernate, excellent support de Spring Data</td><td>PostgreSQL (fonctionnalités PostGIS non nécessaires ici), MongoDB (pas adapté aux relations fortes)</td></tr>
+  <tr><td><strong>Node.js / Express</strong></td><td>Upload multipart efficace, gestion des fichiers binaires (vidéo), notifications WebSocket légères vers l'admin</td><td>Spring Boot pour les médias (moins optimisé pour les streams binaires volumineux)</td></tr>
+  <tr><td><strong>React 18 / Vite</strong></td><td>Dashboard admin web SPA, rechargement à chaud ultra-rapide, TypeScript natif, build optimisé</td><td>Angular (trop lourd pour un tableau de bord), Vue.js</td></tr>
+  <tr><td><strong>JWT (io.jsonwebtoken)</strong></td><td>Authentification stateless, compatible REST et mobile, pas de session serveur (scalabilité horizontale)</td><td>Sessions serveur (problèmes de scalabilité), OAuth2 (complexité inutile pour ce périmètre)</td></tr>
+  <tr><td><strong>Argon2</strong></td><td>Algorithme de hachage de mot de passe le plus résistant aux attaques brute-force (vainqueur Password Hashing Competition 2015)</td><td>BCrypt (moins résistant aux attaques GPU), MD5/SHA1 (non adapté aux mots de passe)</td></tr>
+</table>
+
+<h2>3.4 Sécurité et conformité</h2>
+<h3>Authentification et autorisation</h3>
+<ul>
+  <li>JWT signé avec un secret externalisé en variable d'environnement (<code>JWT_SECRET</code>, <code>JWS_SECRET</code>)</li>
+  <li>Filtre Spring Security <code>JwtAuthenticationFilter</code> : validation du token à chaque requête protégée</li>
+  <li>Système RBAC (Role-Based Access Control) : <code>ROLE_CLIENT</code>, <code>ROLE_ADMIN</code>, <code>ROLE_MODERATOR</code></li>
+  <li>Validation des données à l'inscription côté client (React Native) ET côté serveur (Jakarta <code>@Valid</code>, annotation <code>@ValidPassword</code>)</li>
+  <li>Activation du compte par email avec token à durée limitée</li>
+</ul>
+<h3>Vulnérabilités corrigées (audit sécurité)</h3>
+<table>
+  <tr><th>Identifiant CWE</th><th>Vulnérabilité</th><th>Correction apportée</th></tr>
+  <tr><td><span class="badge badge-error">CWE-321</span></td><td>Clés cryptographiques JWT codées en dur dans le code source</td><td>Externalisation complète via variables d'environnement (<code>${JWT_SECRET}</code>, <code>${JWS_SECRET}</code>, <code>${JWT_ACTIVATION_SECRET}</code>)</td></tr>
+  <tr><td><span class="badge badge-error">CWE-259</span></td><td>Mot de passe administrateur codé en dur dans le code</td><td>Variable d'environnement <code>${ADMIN_PASSWORD}</code> avec valeur par défaut pour le développement</td></tr>
+  <tr><td><span class="badge badge-warning">CWE-778</span></td><td>Journalisation insuffisante des événements de sécurité</td><td>Ajout de logs <code>@Slf4j</code> sur les tentatives d'authentification, erreurs JWT, accès refusés</td></tr>
+</table>
+<h3>Conformité RGPD</h3>
+<ul>
+  <li>Collecte minimale : seules les données strictement nécessaires sont collectées</li>
+  <li>Consentement explicite à l'inscription pour la géolocalisation</li>
+  <li>Mots de passe jamais stockés en clair (Argon2)</li>
+  <li>Secrets applicatifs jamais versionnés (Git <code>.gitignore</code> sur les fichiers <code>.env</code>)</li>
+</ul>
+
+<!-- ============================================================ PARTIE 4 -->
+<h1><span class="section-number">Partie 4</span> — Développement et réalisation</h1>
+
+<h2>4.1 Gestion de projet — Méthode Agile / Scrum</h2>
+<p>Le projet a été géré selon les principes Agile avec des itérations de 2 semaines. Chaque itération couvre la conception, le développement, les tests et la démo de la fonctionnalité. La gestion des tâches a été réalisée via des listes de priorités (TODO lists) et des revues régulières avec le formateur.</p>
+<table>
+  <tr><th>Sprint</th><th>Durée</th><th>Objectif</th><th>Fonctionnalités livrées</th></tr>
+  <tr><td>Sprint 0</td><td>1 sem.</td><td>Setup infrastructure</td><td>Projet Spring Boot, base MySQL, projet Expo, dépôt GitHub</td></tr>
+  <tr><td>Sprint 1</td><td>2 sem.</td><td>Authentification</td><td>Inscription, JWT, rôles, activation email, <code>AuthContext</code> React Native</td></tr>
+  <tr><td>Sprint 2</td><td>2 sem.</td><td>Signalement photo</td><td>Capture photo, géolocalisation, upload Java, <code>ImagePicker</code></td></tr>
+  <tr><td>Sprint 3</td><td>2 sem.</td><td>Livestream vidéo</td><td>Enregistrement vidéo natif, upload Node.js, association au signalement, sauvegarde galerie</td></tr>
+  <tr><td>Sprint 4</td><td>2 sem.</td><td>Contacts de confiance</td><td>CRUD contacts, hook <code>useTrustedContacts</code>, récupération silencieuse de session</td></tr>
+  <tr><td>Sprint 5</td><td>2 sem.</td><td>Dashboard admin</td><td>Tableau de bord React/Vite, stats temps réel, gestion incidents, bouton Rafraîchir</td></tr>
+  <tr><td>Sprint 6</td><td>2 sem.</td><td>Tests &amp; sécurité</td><td>Suite JUnit 5, correction CWE-321/259/778, profil test H2, correction bug <code>node.media.base-url</code></td></tr>
+</table>
+
+<h2>4.2 Réalisations back-end — Spring Boot</h2>
+<h3>Structure du projet Java</h3>
+<ul>
+  <li><code>controller/</code> — Contrôleurs REST : <code>AuthController</code>, <code>UserController</code>, <code>ReportController</code>, <code>LiveStreamController</code>, <code>TrustedContactController</code>, <code>AccountActivationController</code></li>
+  <li><code>service/serviceImpl/</code> — Logique métier : <code>UserServiceImpl</code>, <code>LiveStreamServiceImpl</code>, <code>ReportServiceImpl</code>, <code>TrustedContactServiceImpl</code></li>
+  <li><code>repository/</code> — Interfaces Spring Data JPA avec requêtes personnalisées</li>
+  <li><code>entity/</code> — Entités JPA : <code>Users</code>, <code>Report</code>, <code>LiveStream</code>, <code>TrustedContact</code>, <code>ReportMessage</code>, <code>AccountActivation</code>, <code>Roles</code></li>
+  <li><code>dto/</code> — Records Java (DTO) pour le transfert de données</li>
+  <li><code>mapper/</code> — Services de mapping entité ↔ DTO</li>
+  <li><code>security/</code> — <code>JwtService</code>, <code>ActivationJwtService</code>, <code>JwtAuthenticationFilter</code>, <code>SecurityConfig</code></li>
+  <li><code>config/</code> — <code>DataInitializer</code> (<code>@Profile("!test")</code>), <code>PasswordConfig</code> (Argon2), <code>CorsConfig</code>, <code>RestTemplateConfig</code></li>
+</ul>
+
+<h3>Endpoints REST principaux</h3>
+<table>
+  <tr><th>Méthode</th><th>Endpoint</th><th>Description</th><th>Auth requise</th></tr>
+  <tr><td>POST</td><td>/api/auth/register</td><td>Inscription utilisateur avec contacts de confiance</td><td>Non</td></tr>
+  <tr><td>POST</td><td>/api/auth/login</td><td>Connexion — retourne JWT + userId</td><td>Non</td></tr>
+  <tr><td>GET</td><td>/api/auth/activate</td><td>Activation du compte par token email</td><td>Non</td></tr>
+  <tr><td>POST</td><td>/api/report</td><td>Créer un signalement géolocalisé</td><td>ROLE_CLIENT</td></tr>
+  <tr><td>GET</td><td>/api/report</td><td>Liste tous les signalements (admin)</td><td>ROLE_ADMIN</td></tr>
+  <tr><td>PUT</td><td>/api/report/{id}</td><td>Mettre à jour le statut d'un signalement</td><td>ROLE_ADMIN</td></tr>
+  <tr><td>POST</td><td>/api/livestream/create</td><td>Démarrer un livestream</td><td>ROLE_CLIENT</td></tr>
+  <tr><td>PUT</td><td>/api/livestream/update</td><td>Mettre à jour avec URL vidéo</td><td>ROLE_CLIENT</td></tr>
+  <tr><td>GET</td><td>/api/livestream</td><td>Liste tous les livestreams (admin)</td><td>ROLE_ADMIN</td></tr>
+  <tr><td>DELETE</td><td>/api/livestream/{id}</td><td>Supprimer livestream + vidéo Node.js</td><td>ROLE_ADMIN</td></tr>
+  <tr><td>GET</td><td>/api/trusted-contacts/user/{id}</td><td>Contacts de confiance d'un utilisateur</td><td>ROLE_CLIENT</td></tr>
+  <tr><td>POST</td><td>/api/trusted-contacts</td><td>Ajouter un contact de confiance</td><td>ROLE_CLIENT</td></tr>
+  <tr><td>DELETE</td><td>/api/trusted-contacts/{id}</td><td>Supprimer un contact de confiance</td><td>ROLE_CLIENT</td></tr>
+</table>
+
+<h3>Points techniques remarquables</h3>
+<ul>
+  <li><strong>Annotation <code>@PrePersist</code> sur LiveStream :</strong> <code>startedAt</code> et <code>status = "LIVE"</code> sont initialisés automatiquement à la création</li>
+  <li><strong>Communication Java → Node.js :</strong> <code>LiveStreamServiceImpl</code> appelle l'API Node.js via <code>RestTemplate</code> pour supprimer la vidéo lors du <code>DELETE /api/livestream/{id}</code></li>
+  <li><strong>Multi-profil Spring Boot :</strong> <code>application.properties</code> (MySQL prod) et <code>src/test/resources/application.properties</code> (H2 mémoire pour les tests)</li>
+  <li><strong>Script <code>schema.sql</code> :</strong> migration idempotente exécutée à chaque démarrage (<code>spring.sql.init.mode=always</code>)</li>
+</ul>
+
+<h2>4.3 Réalisations front-end — React Native &amp; Admin Web</h2>
+<h3>Application mobile React Native (Expo)</h3>
+<p>L'application est organisée avec <strong>expo-router</strong> (routage basé sur les fichiers) :</p>
+<ul>
+  <li><code>app/(tabs)/index.tsx</code> — Écran d'accueil avec boutons d'alerte et bannière d'incident</li>
+  <li><code>app/(tabs)/Contact.tsx</code> — Contacts de confiance (CRUD)</li>
+  <li><code>app/(tabs)/Priority.tsx</code> — Historique des signalements</li>
+  <li><code>app/(tabs)/LiveStream.tsx</code> — Lancement d'un livestream vidéo</li>
+  <li><code>app/(tabs)/Option.tsx</code> — Paramètres utilisateur</li>
+  <li><code>app/(tabs)/_layout.tsx</code> — Layout commun : tab bar, bannière incident, cloche avec badge</li>
+</ul>
+
+<h3>Hooks personnalisés (TypeScript)</h3>
+<table>
+  <tr><th>Hook</th><th>Rôle</th></tr>
+  <tr><td><code>useRegister</code></td><td>Formulaire d'inscription multi-étapes, validation REGEX côté client, appel RegisterService + auto-login</td></tr>
+  <tr><td><code>useTrustedContacts</code></td><td>Chargement, ajout et suppression des contacts de confiance ; récupération de session si userId absent</td></tr>
+  <tr><td><code>useLiveStreamManager</code></td><td>Orchestration du cycle livestream : démarrage stream → enregistrement → upload → association vidéo</td></tr>
+  <tr><td><code>useLiveStreamAPI</code></td><td>Appels API Java pour le livestream ; stale closure corrigée avec <code>useRef</code> pour l'ID du stream courant</td></tr>
+  <tr><td><code>useVideoRecording</code></td><td>Enregistrement vidéo via <code>ImagePicker.launchCameraAsync</code>, sauvegarde galerie <code>MediaLibrary</code></td></tr>
+  <tr><td><code>useVideoUpload</code></td><td>Upload multipart vers le serveur Node.js, gestion de la progression</td></tr>
+</table>
+
+<h3>Gestion de session — AuthContext</h3>
+<p>Le contexte d'authentification (<code>AuthContext.tsx</code>) implémente une récupération silencieuse de session :</p>
+<ol>
+  <li>Au démarrage, lecture de <code>@token</code>, <code>@user</code> et <code>@credentials</code> depuis AsyncStorage</li>
+  <li>Si <code>@user</code> est absent mais <code>@credentials</code> existent → appel automatique à <code>/api/auth/login</code> → restauration complète de la session</li>
+  <li>Ce mécanisme évite les erreurs de session sans demander à l'utilisateur de se réinscrire</li>
+</ol>
+
+<h3>Dashboard admin (React/Vite)</h3>
+<ul>
+  <li><code>DashBoard.tsx</code> — Statistiques (signalements, utilisateurs, livestreams, SOS), graphique Recharts des statuts, incidents actifs regroupés par zone géographique</li>
+  <li><code>StreamsList.tsx</code> — Liste des vidéos avec lecteur intégré</li>
+  <li><code>ReportsList.tsx</code> — Gestion des signalements avec workflow de statuts</li>
+  <li><code>UsersList.tsx</code> — Gestion des utilisateurs</li>
+  <li><code>AlertsList.tsx</code> — Messages d'alerte citoyens</li>
+  <li><code>services/api.ts</code> — Client HTTP centralisé, <code>getStats()</code> agrégeant les 4 endpoints en une seule promesse</li>
+</ul>
+
+<h2>4.4 Tests et qualité</h2>
+
+<p>La stratégie de tests du projet Alert_Civique s'articule en <strong>trois niveaux complémentaires</strong>, selon la pyramide de tests : tests API (vérification des contrats REST), tests d'intégration (comportement des couches assemblées), et tests end-to-end (parcours utilisateur complets sur device réel).</p>
+
+<div class="highlight-box">
+  <strong>Pyramide de tests Alert_Civique :</strong><br>
+  🔺 <strong>End-to-end</strong> — Tests manuels sur device Android réel (Expo Go) · parcours complets utilisateur<br>
+  🔷 <strong>Intégration</strong> — JUnit 5 + MockMvc + Spring Boot Test + H2 en mémoire · 7 classes · profil test<br>
+  🟦 <strong>Tests API</strong> — Postman · collections exportées · 30+ requêtes documentées · assertions HTTP
+</div>
+
+<!-- ═══════════════════════════ TESTS API ═══════════════════════════ -->
+<h3>1 — Tests API (Postman)</h3>
+<p>L'ensemble des endpoints REST de l'API Java a été testé et documenté via <strong>Postman</strong>. Une collection organisée par domaine fonctionnel permet de rejouer les scénarios de test à tout moment.</p>
+
+<h4>Organisation de la collection Postman</h4>
+<table>
+  <tr><th>Dossier</th><th>Endpoints testés</th><th>Nb requêtes</th></tr>
+  <tr><td>🔐 Authentification</td><td>POST /api/auth/register, POST /api/auth/login, GET /api/auth/activate</td><td>6</td></tr>
+  <tr><td>👤 Utilisateurs</td><td>GET /api/users, GET /api/users/{id}, PUT /api/users/{id}, DELETE /api/users/{id}</td><td>5</td></tr>
+  <tr><td>🚨 Signalements</td><td>POST /api/report, GET /api/report, GET /api/report/{id}, PUT /api/report/{id}, DELETE /api/report/{id}</td><td>7</td></tr>
+  <tr><td>🎬 Livestreams</td><td>POST /api/livestream/create, PUT /api/livestream/update, GET /api/livestream, GET /api/livestream/{id}, DELETE /api/livestream/{id}</td><td>6</td></tr>
+  <tr><td>👥 Contacts de confiance</td><td>GET /api/trusted-contacts/user/{id}, POST /api/trusted-contacts, DELETE /api/trusted-contacts/{id}</td><td>4</td></tr>
+  <tr><td>💬 Messages</td><td>GET /api/reportMessages, DELETE /api/reportMessages/{id}</td><td>3</td></tr>
+</table>
+
+<h4>Scénarios de tests API documentés</h4>
+<table>
+  <tr><th>Endpoint</th><th>Cas de test</th><th>Résultat attendu</th><th>Résultat</th></tr>
+  <tr><td>POST /api/auth/register</td><td>Inscription valide avec contact de confiance</td><td>HTTP 201 + userId retourné</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/auth/register</td><td>Email déjà existant</td><td>HTTP 409 Conflict</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/auth/register</td><td>Mot de passe ne respectant pas les règles</td><td>HTTP 400 Bad Request</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/auth/login</td><td>Identifiants corrects</td><td>HTTP 200 + JWT token + userId</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/auth/login</td><td>Mot de passe incorrect</td><td>HTTP 401 Unauthorized</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/report</td><td>Signalement sans token JWT</td><td>HTTP 403 Forbidden</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/report</td><td>Signalement avec token valide + géolocalisation</td><td>HTTP 201 + reportId</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>PUT /api/report/{id}</td><td>Changement de statut PENDING → IN_REVIEW</td><td>HTTP 200 + statut mis à jour</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>GET /api/report/{id}</td><td>ID inexistant</td><td>HTTP 404 Not Found</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/livestream/create</td><td>Création livestream avec userId valide</td><td>HTTP 201 + livestreamId + status LIVE</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>PUT /api/livestream/update</td><td>Ajout URL vidéo après upload</td><td>HTTP 200 + videoUrl enregistrée</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>DELETE /api/livestream/{id}</td><td>Suppression livestream → appel Node.js média</td><td>HTTP 200 + suppression BDD + fichier Node.js</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>POST /api/trusted-contacts</td><td>Ajout contact sans token</td><td>HTTP 403 Forbidden</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+  <tr><td>GET /api/trusted-contacts/user/{id}</td><td>Récupération contacts d'un utilisateur</td><td>HTTP 200 + liste JSON</td><td><span class="badge">✅ PASSÉ</span></td></tr>
+</table>
+
+<h4>Variables d'environnement Postman</h4>
+<p>La collection Postman utilise des variables d'environnement pour faciliter l'exécution :</p>
+<ul>
+  <li><code>{{base_url}}</code> = <code>http://localhost:9090</code> (Java API)</li>
+  <li><code>{{token}}</code> = récupéré automatiquement après login via un script de test Postman (<code>pm.environment.set("token", pm.response.json().token)</code>)</li>
+  <li><code>{{user_id}}</code> = récupéré après inscription pour chaîner les requêtes</li>
+</ul>
+
+<!-- ═══════════════════════════ TESTS INTÉGRATION ═══════════════════════════ -->
+<h3>2 — Tests d'intégration (JUnit 5 + Spring Boot Test)</h3>
+<p>Une suite complète de tests d'intégration vérifie le comportement de l'API en assemblant réellement les couches Controller → Service → Repository, sur une base <strong>H2 en mémoire</strong> recréée à chaque exécution.</p>
+
+<h4>Principe de fonctionnement</h4>
+<ul>
+  <li><code>@SpringBootTest(webEnvironment = RANDOM_PORT)</code> : démarre un contexte Spring complet sur un port aléatoire</li>
+  <li><code>@ActiveProfiles("test")</code> : active le profil test → base H2, SMTP désactivé, secrets JWT fixes</li>
+  <li><strong>MockMvc</strong> : simule les requêtes HTTP vers les controllers sans passer par le réseau</li>
+  <li>La base est <strong>recréée et vidée</strong> à chaque classe de test (<code>ddl-auto=create-drop</code>)</li>
+</ul>
+
+<h4>Classes de tests d'intégration</h4>
+<table>
+  <tr><th>Classe de test</th><th>Couche testée</th><th>Scénarios couverts</th></tr>
+  <tr><td><code>AlertCiviqueApplicationTests</code></td><td>Contexte global</td><td>Smoke test : chargement complet du contexte Spring sans erreur — valide que tous les beans sont correctement configurés</td></tr>
+  <tr><td><code>AuthControllerIntegrationTest</code></td><td>Controller + Service + Repository</td><td>Inscription réussie (HTTP 201), connexion (HTTP 200 + JWT), email dupliqué (HTTP 409), données incomplètes (HTTP 400), utilisateur désactivé (HTTP 403)</td></tr>
+  <tr><td><code>UserControllerIntegrationTest</code></td><td>Controller + Service + Repository</td><td>Création (201), lecture (200), mise à jour (200), suppression (200), utilisateur non trouvé (404), rôle invalide (400)</td></tr>
+  <tr><td><code>ReportControllerIntegrationTest</code></td><td>Controller + Service + Repository</td><td>Création signalement (201), liste (200), détail (200), mise à jour statut (200), suppression (200), ID inexistant (404)</td></tr>
+  <tr><td><code>AccountActivationControllerIntegrationTest</code></td><td>Controller + Service + Repository</td><td>Flux complet avec nouveau compte, token valide (200), token invalide (400), token expiré (400), token déjà utilisé (400), token manquant (400)</td></tr>
+  <tr><td><code>AccountActivationRepositoryTest</code></td><td>Repository (JPA)</td><td>Comptage des enregistrements, recherche par token, marquage comme utilisé</td></tr>
+  <tr><td><code>UserServiceTest</code></td><td>Service (logique métier)</td><td>Création utilisateur, hachage mot de passe (Argon2), recherche par email, gestion des rôles</td></tr>
+</table>
+
+<h4>Configuration du profil de test (<code>src/test/resources/application.properties</code>)</h4>
+<table>
+  <tr><th>Propriété</th><th>Valeur test</th><th>Raison</th></tr>
+  <tr><td><code>spring.datasource.url</code></td><td><code>jdbc:h2:mem:alertdb</code></td><td>Base H2 en mémoire — pas de dépendance MySQL</td></tr>
+  <tr><td><code>spring.jpa.hibernate.ddl-auto</code></td><td><code>create-drop</code></td><td>Schéma recréé proprement à chaque test</td></tr>
+  <tr><td><code>spring.sql.init.mode</code></td><td><code>never</code></td><td>Pas de script SQL au démarrage en test</td></tr>
+  <tr><td><code>spring.mail.host</code></td><td><code>localhost:1025</code></td><td>SMTP fictif — pas d'envoi d'emails réels</td></tr>
+  <tr><td><code>jwt.secret</code></td><td>Valeur fixe (32 chars)</td><td>Pas de dépendance à la variable d'env. <code>JWT_SECRET</code></td></tr>
+  <tr><td><code>node.media.base-url</code></td><td><code>http://localhost:9091</code></td><td>Propriété ajoutée après correction du bug de démarrage (LiveStreamServiceImpl)</td></tr>
+</table>
+
+<h4>Extrait de code — Test d'intégration AuthController</h4>
+<pre>
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+class AuthControllerIntegrationTest {
+
+    @Autowired private TestRestTemplate restTemplate;
+
+    @Test
+    void testLogin_Success() {
+        // 1. Créer un utilisateur en base
+        UserRegisterRequest reg = new UserRegisterRequest(
+            "Jean", "Dupont", "jean@test.fr", "Password1!", "0612345678", "1990-01-01", ...
+        );
+        restTemplate.postForEntity("/api/auth/register", reg, UserResponse.class);
+
+        // 2. Se connecter
+        LoginRequest login = new LoginRequest("jean@test.fr", "Password1!");
+        ResponseEntity&lt;LoginResponse&gt; resp =
+            restTemplate.postForEntity("/api/auth/login", login, LoginResponse.class);
+
+        // 3. Vérifications
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resp.getBody().getToken()).isNotBlank();
+        assertThat(resp.getBody().getUserId()).isPositive();
+    }
+
+    @Test
+    void testLogin_InvalidPassword() {
+        LoginRequest login = new LoginRequest("jean@test.fr", "WrongPassword!");
+        ResponseEntity&lt;String&gt; resp =
+            restTemplate.postForEntity("/api/auth/login", login, String.class);
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+}
+</pre>
+
+<h4>Exécution et résultats</h4>
+<pre>
+$ mvn test -Dspring.profiles.active=test
+
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] Results :
+[INFO]
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] BUILD SUCCESS
+[INFO] Total time: 18.432 s
+</pre>
+
+<!-- ═══════════════════════════ TESTS E2E ═══════════════════════════ -->
+<h3>3 — Tests end-to-end (E2E) — Device Android réel (Expo Go)</h3>
+<p>Les tests end-to-end valident les <strong>parcours utilisateur complets</strong> depuis l'interface mobile jusqu'à la base de données, en conditions réelles sur un smartphone Android physique via <strong>Expo Go</strong>. Ces tests couvrent l'intégration de toutes les couches : React Native → API Java → MySQL / Node.js média.</p>
+
+<h4>Environnement de test E2E</h4>
+<ul>
+  <li><strong>Device :</strong> smartphone Android physique (Android 12+)</li>
+  <li><strong>Client :</strong> Expo Go (dernière version)</li>
+  <li><strong>Réseau :</strong> WiFi local — device et serveur sur le même réseau</li>
+  <li><strong>Serveurs actifs :</strong> Java (port 9090) + Node.js (port 9091) + MySQL (port 3306)</li>
+</ul>
+
+<h4>Parcours E2E testés</h4>
+<table>
+  <tr><th>Parcours</th><th>Étapes</th><th>Vérifications</th><th>Résultat</th></tr>
+  <tr>
+    <td><strong>P1 — Inscription complète</strong></td>
+    <td>Remplir formulaire → saisir contact de confiance → valider → auto-login</td>
+    <td>Utilisateur créé en BDD · Session active · Accès aux onglets · Contact enregistré en BDD</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+  <tr>
+    <td><strong>P2 — Signalement photo</strong></td>
+    <td>Accueil → "Photo" → type d'alerte → appareil photo → prise de vue → confirmation</td>
+    <td>Photo sauvegardée en galerie · Signalement créé en BDD (status=PENDING) · Visible dans l'admin</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+  <tr>
+    <td><strong>P3 — Livestream vidéo</strong></td>
+    <td>Accueil → "Vidéo" → enregistrement natif → arrêt → upload automatique</td>
+    <td>Vidéo sauvegardée galerie · LiveStream créé en BDD · videoUrl associée · Vidéo visible admin</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+  <tr>
+    <td><strong>P4 — Gestion contacts</strong></td>
+    <td>Onglet Contacts → "+" → saisir nom/téléphone → Enregistrer</td>
+    <td>Contact ajouté en BDD · Apparu dans la liste · Suppression fonctionnelle</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+  <tr>
+    <td><strong>P5 — Récupération de session</strong></td>
+    <td>Fermer l'app → rouvrir → navigation directe sans réinscription</td>
+    <td>Session restaurée automatiquement · userId disponible · Contacts accessibles</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+  <tr>
+    <td><strong>P6 — Alerte SOS</strong></td>
+    <td>Accueil → bouton SOS → confirmation → signalement créé</td>
+    <td>Signalement type SOS en BDD · Badge cloche admin incrémenté · Bannière incident visible</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+  <tr>
+    <td><strong>P7 — Dashboard admin</strong></td>
+    <td>Connexion admin → tableau de bord → rafraîchir → liste signalements → changer statut</td>
+    <td>Compteurs synchronisés avec la BDD · Statut mis à jour côté Java · Visible côté mobile</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+  <tr>
+    <td><strong>P8 — Safe area Android</strong></td>
+    <td>Navigation dans tous les onglets sur Android avec barre de navigation système</td>
+    <td>Tab bar ne chevauche pas la barre système · Contenu entièrement visible</td>
+    <td><span class="badge">✅ PASSÉ</span></td>
+  </tr>
+</table>
+
+<h4>Bugs détectés et corrigés lors des tests E2E</h4>
+<table>
+  <tr><th>Bug détecté</th><th>Correction apportée</th></tr>
+  <tr><td><code>CameraView.recordAsync()</code> échoue sur Expo Go Android (erreur permission audio)</td><td>Remplacement par <code>ImagePicker.launchCameraAsync({ mediaTypes: 'videos' })</code></td></tr>
+  <tr><td><code>MediaLibrary.requestPermissionsAsync()</code> provoque un crash audio</td><td>Suppression de l'appel — <code>saveToLibraryAsync()</code> gère la permission seul</td></tr>
+  <tr><td>Tab bar chevauche la barre de navigation Android</td><td>Ajout de <code>paddingBottom: insets.bottom</code> via <code>useSafeAreaInsets</code></td></tr>
+  <tr><td>Contact de confiance impossible à ajouter (<code>user: null</code> en session)</td><td>Mécanisme de re-login silencieux dans <code>AuthContext</code> depuis les credentials stockés</td></tr>
+  <tr><td>ID livestream obsolète dans <code>sendStopStream</code> (stale closure)</td><td>Correction via <code>useRef</code> (<code>currentLivestreamIdRef</code>) toujours à jour</td></tr>
+  <tr><td>Dashboard admin affiche des données obsolètes après vidage BDD</td><td>Ajout d'un bouton "Rafraîchir" déclenchant un nouveau <code>getStats()</code></td></tr>
+</table>
+
+<h4>Couverture globale des tests</h4>
+<table>
+  <tr><th>Niveau</th><th>Outil</th><th>Nb scénarios</th><th>Résultat global</th></tr>
+  <tr><td>Tests API</td><td>Postman</td><td>30+ requêtes</td><td><span class="badge">✅ 100 % PASSÉ</span></td></tr>
+  <tr><td>Tests d'intégration</td><td>JUnit 5 + MockMvc + H2</td><td>27 tests (7 classes)</td><td><span class="badge">✅ 27/27 PASSÉ</span></td></tr>
+  <tr><td>Tests end-to-end</td><td>Device Android réel (Expo Go)</td><td>8 parcours complets</td><td><span class="badge">✅ 8/8 PASSÉ</span></td></tr>
+</table>
+
+<h2>4.5 Déploiement et infrastructure</h2>
+<h3>Environnements</h3>
+<table>
+  <tr><th>Environnement</th><th>Configuration</th></tr>
+  <tr><td>Développement local</td><td>Spring Boot (port 9090), Node.js (port 9091), MySQL local (port 3306), Admin Vite (port 3001), Expo Go sur Android</td></tr>
+  <tr><td>Test automatisé</td><td>H2 en mémoire, profil <code>test</code>, <code>mvn test</code></td></tr>
+  <tr><td>Production (cible)</td><td>VPS Linux, Nginx reverse proxy, HTTPS, MySQL sécurisé, variables d'environnement</td></tr>
+</table>
+<h3>Gestion des configurations sensibles</h3>
+<ul>
+  <li>Tous les secrets dans des variables d'environnement : <code>JWT_SECRET</code>, <code>JWS_SECRET</code>, <code>JWT_ACTIVATION_SECRET</code>, <code>ADMIN_PASSWORD</code>, <code>DB_URL</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code>, <code>MAIL_USERNAME</code>, <code>MAIL_PASSWORD</code></li>
+  <li>Fichier <code>.env</code> en local (non versionné, ajouté au <code>.gitignore</code>)</li>
+  <li>Valeurs par défaut pour le développement local définies dans <code>application.properties</code></li>
+</ul>
+<h3>CI/CD (cible)</h3>
+<ul>
+  <li>GitHub Actions : build Maven, <code>mvn test</code>, build npm, lint TypeScript</li>
+  <li>Versionning Git avec branches <code>main</code> / feature branches</li>
+</ul>
+
+<!-- ============================================================ PARTIE 5 -->
+<h1><span class="section-number">Partie 5</span> — Bilan et perspectives</h1>
+
+<h2>5.1 Compétences CDA validées</h2>
+<table>
+  <tr><th>Compétence du référentiel CDA (RNCP 37873)</th><th>Démonstration dans le projet</th></tr>
+  <tr><td>Installer et configurer son environnement de travail en respectant les recommandations de sécurité</td><td>Environnement multi-services (Java/Node.js/MySQL), variables d'env., .gitignore, profils Spring Boot</td></tr>
+  <tr><td>Développer des interfaces utilisateur</td><td>Application mobile React Native complète (6 écrans + navigation), dashboard admin React/Vite</td></tr>
+  <tr><td>Développer des composants métier sécurisés</td><td>Services Spring Boot (UserService, LiveStreamService, ReportService), logique JWT, Argon2, correction CWE</td></tr>
+  <tr><td>Contribuer à la gestion d'un projet informatique</td><td>Méthode Agile, sprints, GitHub, gestion des priorités, documentation</td></tr>
+  <tr><td>Analyser les besoins et maquetter une application</td><td>QQOQCP, PESTEL, SWOT, personas, benchmark, charte graphique, cahier des charges</td></tr>
+  <tr><td>Définir l'architecture logicielle d'une application</td><td>Architecture 4 couches (mobile + Java + Node.js + MySQL), diagrammes de flux, choix technologiques justifiés</td></tr>
+  <tr><td>Concevoir et mettre en œuvre une base de données relationnelle</td><td>Schéma MySQL normalisé (7 tables), entités JPA, relations, scripts SQL d'initialisation</td></tr>
+  <tr><td>Développer des composants d'accès aux données SQL</td><td>Repositories Spring Data JPA, requêtes JPQL personnalisées, transactions</td></tr>
+  <tr><td>Préparer et exécuter les plans de tests d'une application</td><td>Suite JUnit 5 (7 classes de tests), MockMvc, profil test H2, tests manuels sur device réel</td></tr>
+  <tr><td>Préparer et documenter le déploiement d'une application</td><td>Configuration multi-environnement, variables d'environnement, documentation API, README</td></tr>
+</table>
+
+<h2>5.2 Difficultés rencontrées et solutions apportées</h2>
+
+<h3>Difficulté 1 — Enregistrement vidéo sur Expo Go Android</h3>
+<p><strong>Problème :</strong> L'API <code>CameraView.recordAsync()</code> d'Expo échouait systématiquement sur Expo Go Android avec une erreur liée aux permissions audio.</p>
+<p><strong>Solution :</strong> Remplacement complet par <code>ImagePicker.launchCameraAsync({ mediaTypes: 'videos' })</code> qui délègue l'enregistrement à l'application caméra native du téléphone. Suppression de l'appel à <code>MediaLibrary.requestPermissionsAsync()</code> qui déclenchait un crash audio — l'appel à <code>MediaLibrary.saveToLibraryAsync()</code> se charge directement de la permission. Résultat : vidéos fonctionnelles et sauvegardées en galerie.</p>
+
+<h3>Difficulté 2 — Stale closure dans <code>sendStopStream</code></h3>
+<p><strong>Problème :</strong> Le hook <code>useLiveStreamAPI</code> capturait l'ID du livestream au moment de la création du callback, pas à son exécution. Si l'état React était mis à jour entre-temps, <code>sendStopStream</code> utilisait un ID obsolète (stale closure).</p>
+<p><strong>Solution :</strong> Introduction d'une <code>useRef</code> (<code>currentLivestreamIdRef</code>) mise à jour synchroniquement dans <code>sendStartStream</code>. Le callback <code>sendStopStream</code> lit toujours la valeur courante via <code>currentLivestreamIdRef.current</code>, contournant le problème de closure.</p>
+
+<h3>Difficulté 3 — Session utilisateur perdue (<code>user: null</code>)</h3>
+<p><strong>Problème :</strong> Après inscription, l'objet utilisateur pouvait ne pas être stocké dans AsyncStorage si l'auto-login échouait (erreur réseau). Lors du redémarrage de l'application, <code>user</code> était <code>null</code>, rendant impossible l'ajout de contacts de confiance.</p>
+<p><strong>Solution :</strong> Implémentation d'un mécanisme de récupération silencieuse dans <code>AuthContext</code> : si <code>@user</code> est absent au démarrage mais que <code>@credentials</code> existent, un appel automatique à <code>/api/auth/login</code> restaure la session complète (token + objet utilisateur avec userId) sans interaction utilisateur.</p>
+
+<h3>Difficulté 4 — Contexte Spring Boot ne démarre pas en tests</h3>
+<p><strong>Problème :</strong> Tous les tests JUnit échouaient avec <code>IllegalState Failed to load ApplicationContext</code>. Le fichier <code>src/test/resources/application.properties</code> remplaçait le fichier principal sans inclure la propriété <code>node.media.base-url</code>, injectée par <code>@Value</code> dans <code>LiveStreamServiceImpl</code> sans valeur par défaut.</p>
+<p><strong>Solution :</strong> Ajout de <code>node.media.base-url=http://localhost:9091</code> dans <code>src/test/resources/application.properties</code>. Tous les tests passent désormais.</p>
+
+<h3>Difficulté 5 — Tab bar chevauchant la navigation Android</h3>
+<p><strong>Problème :</strong> Sur Android, la barre d'onglets de l'application chevauchait la barre de navigation système (boutons retour/accueil).</p>
+<p><strong>Solution :</strong> Utilisation de <code>useSafeAreaInsets</code> pour appliquer dynamiquement <code>paddingBottom: insets.bottom</code> et <code>height: TAB_BAR_HEIGHT + insets.bottom</code> à la tab bar.</p>
+
+<h2>5.3 Axes d'amélioration et évolutions</h2>
+<h3>Évolutions fonctionnelles prioritaires</h3>
+<ul>
+  <li><strong>Notifications push :</strong> intégration d'Expo Push Notifications pour alerter les contacts de confiance en temps réel lors d'un SOS</li>
+  <li><strong>Carte interactive :</strong> affichage des incidents sur une carte (React Native Maps / Leaflet dans l'admin) avec clustering géographique</li>
+  <li><strong>Chat en temps réel :</strong> messagerie entre citoyens et modérateurs via WebSocket, directement dans l'app mobile</li>
+  <li><strong>Mode hors ligne :</strong> mise en file d'attente des signalements sans connexion, envoi automatique à la reconnexion</li>
+  <li><strong>Application mobile publiée :</strong> build Expo EAS et publication sur Google Play Store / Apple App Store</li>
+</ul>
+<h3>Évolutions techniques</h3>
+<ul>
+  <li>Migration de MySQL vers PostgreSQL avec PostGIS pour les requêtes géospatiales avancées (zones de chaleur, proximité)</li>
+  <li>Mise en place d'un CDN pour le stockage et la diffusion des vidéos (AWS S3 / Cloudflare R2)</li>
+  <li>Conteneurisation Docker Compose pour faciliter le déploiement</li>
+  <li>Pipeline CI/CD complet GitHub Actions avec déploiement automatique sur VPS</li>
+  <li>Internationalisation (i18n) de l'application mobile et de l'admin</li>
+</ul>
+
+<!-- ============================================================ ANNEXE A -->
+<h1><span class="section-number">Annexe A</span> — Extraits de code commentés</h1>
+
+<h2>A.1 Back-end Spring Boot — Récupération silencieuse de session (AuthContext)</h2>
+<pre>
+// AuthContext.tsx — Récupération automatique de session au démarrage
+// Si @user est null mais @credentials existent → re-login silencieux
+async function reLoginWithCredentials(creds) {
+  const response = await fetch(`${JAVA_BASE_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: creds.email, password: creds.password }),
+  });
+  if (!response.ok) return null;
+  const data = await response.json();
+  const userId = data.userId ?? data.id ?? 0;
+  if (!userId) return null;
+  return {
+    token: data.token ?? data.accessToken ?? '',
+    user: {
+      userId,
+      name: [data.firstname, data.lastname].filter(Boolean).join(' '),
+      email: data.email ?? creds.email,
+      isAdmin: data.isAdmin ?? false,
+    },
+  };
+}
+</pre>
+
+<h2>A.2 Back-end Spring Boot — Entité LiveStream avec @PrePersist</h2>
+<pre>
+// LiveStream.java — Initialisation automatique à la création
+@Entity
+@Table(name = "lives_stream")
+public class LiveStream {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "livestream_id")
+    private Long livestreamId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Users user;
+
+    @Column(name = "video_url")
+    private String videoUrl;
+
+    @Column(name = "status")
+    private String status;
+
+    // Initialisé automatiquement à la création de l'enregistrement
+    @PrePersist
+    protected void onCreate() {
+        startedAt = LocalDateTime.now();
+        status = "LIVE"; // Statut initial obligatoire
+    }
+}
+</pre>
+
+<h2>A.3 Front-end React Native — Correction stale closure avec useRef</h2>
+<pre>
+// useLiveStreamApi.ts — Fix stale closure avec useRef
+export function useLiveStreamAPI(token, userId) {
+  const [currentLivestreamId, setCurrentLivestreamId] = useState(null);
+
+  // useRef : toujours à jour, même dans les callbacks capturés par closure
+  const currentLivestreamIdRef = useRef(null);
+
+  const sendStartStream = useCallback(async (facing) => {
+    const response = await LiveStreamService.sendLiveStreamData(payload, token);
+    const id = response?.livestreamId || null;
+
+    setCurrentLivestreamId(id);           // Mise à jour React state (async)
+    currentLivestreamIdRef.current = id;  // Mise à jour ref (synchrone, toujours frais)
+    return id;
+  }, [userId, token]);
+
+  const sendStopStream = useCallback(async () => {
+    // Utilise la ref, pas le state — évite le stale closure
+    const id = currentLivestreamIdRef.current;
+    if (!id) return;
+    await LiveStreamService.sendLiveStreamData({ livestreamId: id, ... }, token);
+  }, [userId, token]);
+}
+</pre>
+
+<h2>A.4 Tests d'intégration — AuthControllerIntegrationTest</h2>
+<pre>
+// AuthControllerIntegrationTest.java — Test d'inscription et connexion
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")  // Utilise H2 en mémoire
+class AuthControllerIntegrationTest {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Test
+    void testRegister_Success() {
+        // Prépare la requête d'inscription
+        UserRegisterRequest request = new UserRegisterRequest(
+            "Jean", "Dupont", "jean.dupont@test.fr",
+            "Password1234!", "0612345678", "1990-06-15", ...
+        );
+
+        // Appelle l'endpoint d'inscription
+        ResponseEntity&lt;UserResponse&gt; response = restTemplate
+            .postForEntity("/api/auth/register", request, UserResponse.class);
+
+        // Vérifie le succès : HTTP 201 Created + userId retourné
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody().getId()).isNotNull();
+    }
+}
+</pre>
+
+<!-- ============================================================ ANNEXE B -->
+<h1><span class="section-number">Annexe B</span> — Schéma de base de données</h1>
+<p>Le schéma ci-dessous présente les tables MySQL de l'application Alert_Civique et leurs relations principales.</p>
+<table>
+  <tr><th>Table</th><th>Colonne principale</th><th>Type SQL</th><th>Contrainte</th></tr>
+  <tr><td rowspan="5"><strong>users</strong></td><td>id</td><td>BIGINT</td><td>PRIMARY KEY AUTO_INCREMENT</td></tr>
+  <tr><td>email</td><td>VARCHAR(255)</td><td>UNIQUE NOT NULL</td></tr>
+  <tr><td>password</td><td>VARCHAR(255)</td><td>NOT NULL (Argon2 hash)</td></tr>
+  <tr><td>phone</td><td>VARCHAR(20)</td><td>NOT NULL</td></tr>
+  <tr><td>enabled</td><td>BOOLEAN</td><td>DEFAULT FALSE</td></tr>
+  <tr><td rowspan="4"><strong>reports</strong></td><td>report_id</td><td>BIGINT</td><td>PRIMARY KEY AUTO_INCREMENT</td></tr>
+  <tr><td>user_id</td><td>BIGINT</td><td>FK → users(id)</td></tr>
+  <tr><td>alert_type</td><td>VARCHAR(50)</td><td>NOT NULL (SOS / AGRESSION / ACCIDENT / INCENDIE)</td></tr>
+  <tr><td>status</td><td>VARCHAR(20)</td><td>DEFAULT 'PENDING'</td></tr>
+  <tr><td rowspan="4"><strong>lives_stream</strong></td><td>livestream_id</td><td>BIGINT</td><td>PRIMARY KEY AUTO_INCREMENT</td></tr>
+  <tr><td>user_id</td><td>BIGINT</td><td>FK → users(id)</td></tr>
+  <tr><td>video_url</td><td>VARCHAR(500)</td><td>NULL jusqu'à upload</td></tr>
+  <tr><td>status</td><td>VARCHAR(20)</td><td>DEFAULT 'LIVE' (@PrePersist)</td></tr>
+  <tr><td rowspan="3"><strong>trusted_contacts</strong></td><td>id</td><td>BIGINT</td><td>PRIMARY KEY AUTO_INCREMENT</td></tr>
+  <tr><td>user_id</td><td>BIGINT</td><td>FK → users(id) NOT NULL</td></tr>
+  <tr><td>phone</td><td>VARCHAR(20)</td><td>NOT NULL</td></tr>
+  <tr><td rowspan="2"><strong>account_activation</strong></td><td>token</td><td>VARCHAR(500)</td><td>UNIQUE NOT NULL</td></tr>
+  <tr><td>used</td><td>BOOLEAN</td><td>DEFAULT FALSE</td></tr>
+</table>
+
+<h3>Relations principales</h3>
+<ul>
+  <li><code>users</code> → <code>reports</code> : 1 utilisateur peut avoir N signalements (OneToMany)</li>
+  <li><code>users</code> → <code>lives_stream</code> : 1 utilisateur peut avoir N livestreams (OneToMany)</li>
+  <li><code>users</code> → <code>trusted_contacts</code> : 1 utilisateur peut avoir N contacts de confiance (OneToMany)</li>
+  <li><code>reports</code> → <code>report_messages</code> : 1 signalement peut avoir N messages (OneToMany)</li>
+  <li><code>users</code> ↔ <code>roles</code> : relation ManyToMany via table <code>users_roles</code></li>
+</ul>
+
+<!-- ============================================================ ANNEXE C -->
+<h1><span class="section-number">Annexe C</span> — Lexique technique</h1>
+<table>
+  <tr><th>Terme</th><th>Définition</th></tr>
+  <tr><td><strong>API REST</strong></td><td>Interface de programmation basée sur HTTP, exposant des ressources sous format JSON via les méthodes GET/POST/PUT/DELETE.</td></tr>
+  <tr><td><strong>JWT (JSON Web Token)</strong></td><td>Standard d'authentification stateless : token signé contenant les claims de l'utilisateur, validé à chaque requête sans session serveur.</td></tr>
+  <tr><td><strong>Argon2</strong></td><td>Algorithme de hachage de mot de passe, vainqueur de la Password Hashing Competition (2015). Résistant aux attaques GPU et rainbow tables.</td></tr>
+  <tr><td><strong>React Native / Expo</strong></td><td>Framework JavaScript permettant de développer des applications mobiles natives iOS et Android à partir d'une base de code unique.</td></tr>
+  <tr><td><strong>Spring Boot</strong></td><td>Framework Java facilitant la création d'applications Spring autonomes et prêtes pour la production, avec configuration automatique.</td></tr>
+  <tr><td><strong>Spring Security</strong></td><td>Module Spring gérant l'authentification, les autorisations (RBAC) et la protection contre les attaques courantes (CSRF, XSS).</td></tr>
+  <tr><td><strong>JPA / Hibernate</strong></td><td>Java Persistence API : standard Java de mapping objet-relationnel (ORM). Hibernate en est l'implémentation principale, permettant de manipuler la base MySQL via des objets Java.</td></tr>
+  <tr><td><strong>AsyncStorage</strong></td><td>Système de stockage clé-valeur asynchrone et persistant fourni par React Native, équivalent mobile de localStorage.</td></tr>
+  <tr><td><strong>Stale Closure</strong></td><td>Problème React où un callback capture une valeur d'état obsolète. Résolu par l'utilisation de <code>useRef</code> pour les valeurs devant toujours être fraîches.</td></tr>
+  <tr><td><strong>expo-router</strong></td><td>Système de routage pour Expo basé sur la structure des fichiers (comme Next.js), permettant une navigation déclarative.</td></tr>
+  <tr><td><strong>ImagePicker (Expo)</strong></td><td>Module Expo donnant accès à l'appareil photo natif du smartphone pour la capture photo ou vidéo.</td></tr>
+  <tr><td><strong>MediaLibrary (Expo)</strong></td><td>Module Expo permettant d'accéder à la galerie photos/vidéos du téléphone et d'y sauvegarder des fichiers.</td></tr>
+  <tr><td><strong>MockMvc</strong></td><td>Framework Spring Boot Test permettant de simuler des requêtes HTTP vers les controllers sans démarrer un vrai serveur HTTP.</td></tr>
+  <tr><td><strong>H2</strong></td><td>Base de données relationnelle en mémoire utilisée pour les tests automatisés Spring Boot — légère, sans installation, réinitialisée à chaque test.</td></tr>
+  <tr><td><strong>CWE (Common Weakness Enumeration)</strong></td><td>Catalogue de vulnérabilités logicielles maintenu par MITRE. CWE-321 (clés crypto en dur), CWE-259 (mots de passe en dur), CWE-778 (logs insuffisants).</td></tr>
+  <tr><td><strong>WebSocket</strong></td><td>Protocole de communication bidirectionnel persistant entre client et serveur, utilisé pour les notifications temps réel vers le dashboard admin.</td></tr>
+  <tr><td><strong>RGPD</strong></td><td>Règlement Général sur la Protection des Données (UE 2016/679) : cadre légal encadrant la collecte, le traitement et la conservation des données personnelles.</td></tr>
+  <tr><td><strong>Safe Area / useSafeAreaInsets</strong></td><td>Zone de l'écran non masquée par les éléments système (encoche, barre de navigation Android). Le hook <code>useSafeAreaInsets</code> retourne les marges à respecter.</td></tr>
+  <tr><td><strong>Vite</strong></td><td>Outil de build frontend ultra-rapide pour les projets React/Vue/Svelte, utilisé pour le dashboard d'administration Alert_Civique.</td></tr>
+</table>
+
+<!-- ============================================================ ANNEXE D -->
+<h1><span class="section-number">Annexe D</span> — Bibliographie et ressources</h1>
+<h3>Documentation officielle des technologies utilisées</h3>
+<ul>
+  <li>Spring Boot — Documentation officielle : <code>https://docs.spring.io/spring-boot</code></li>
+  <li>Spring Security Reference : <code>https://docs.spring.io/spring-security</code></li>
+  <li>React Native — Documentation officielle : <code>https://reactnative.dev</code></li>
+  <li>Expo — Documentation SDK 51 : <code>https://docs.expo.dev</code></li>
+  <li>expo-router : <code>https://expo.github.io/router</code></li>
+  <li>MySQL 8.0 Reference Manual : <code>https://dev.mysql.com/doc/refman/8.0</code></li>
+  <li>JUnit 5 User Guide : <code>https://junit.org/junit5/docs/current/user-guide</code></li>
+</ul>
+<h3>Référentiels et normes</h3>
+<ul>
+  <li>Titre CDA — Référentiel RNCP 37873 : <code>https://www.francecompetences.fr</code></li>
+  <li>RGPD — Texte officiel (CNIL) : <code>https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on</code></li>
+  <li>OWASP Top 10 — Bonnes pratiques sécurité : <code>https://owasp.org/Top10</code></li>
+  <li>CWE — Common Weakness Enumeration (MITRE) : <code>https://cwe.mitre.org</code></li>
+  <li>Référentiel ANSSI — Sécurité des applications web : <code>https://www.ssi.gouv.fr</code></li>
+  <li>Password Hashing Competition (Argon2) : <code>https://www.password-hashing.net</code></li>
+</ul>
+<h3>Ressources pédagogiques</h3>
+<ul>
+  <li>Baeldung — Spring Boot &amp; Spring Security : <code>https://www.baeldung.com</code></li>
+  <li>React Native Paper — Composants UI : <code>https://reactnativepaper.com</code></li>
+  <li>Doranco — Supports de cours CDA, session 2024-2025</li>
+</ul>
+
+<br><br>
+<hr style="border: 1px solid #1565C0; margin: 30pt 0 10pt;">
+<p style="text-align:center; color:#546e7a; font-size:9pt;">
+  <strong>Alert_Civique</strong> — Titre Professionnel Concepteur Développeur d'Applications — Niveau 6<br>
+  Session 2024–2025 | Stéphane CALIXTE | Doranco
+</p>
+
+</body>
+</html>

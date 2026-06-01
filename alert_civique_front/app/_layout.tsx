@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { GeolocalisationProvider } from '@/components/GeolocalisationContext';
+
 import { AuthProvider } from '@/contexts/AuthContext';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { MessagesProvider } from '@/contexts/MessagesContext';

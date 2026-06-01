@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="label" for="node" attr.name="label" attr.type="string"/>
+  <key id="node_type" for="node" attr.name="node_type" attr.type="string"/>
+  <key id="source_file" for="node" attr.name="source_file" attr.type="string"/>
+  <key id="community" for="node" attr.name="community" attr.type="int"/>
+  <key id="relation" for="edge" attr.name="relation" attr.type="string"/>
+  <key id="confidence" for="edge" attr.name="confidence" attr.type="string"/>
+  <key id="confidence_score" for="edge" attr.name="confidence_score" attr.type="double"/>
+  <key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+  <graph id="G" edgedefault="undirected">
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java">
+      <data key="label">LocalDateTimeDeserializer</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_com_fasterxml_jackson_core_jsonparser">
+      <data key="label">com.fasterxml.jackson.core.JsonParser</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_com_fasterxml_jackson_databind_deserializationcontext">
+      <data key="label">com.fasterxml.jackson.databind.DeserializationContext</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_com_fasterxml_jackson_databind_deser_std_stddeserializer">
+      <data key="label">com.fasterxml.jackson.databind.deser.std.StdDeserializer</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_io_ioexception">
+      <data key="label">java.io.IOException</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_localdatetime">
+      <data key="label">java.time.LocalDateTime</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_offsetdatetime">
+      <data key="label">java.time.OffsetDateTime</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_format_datetimeformatter">
+      <data key="label">java.time.format.DateTimeFormatter</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_format_datetimeparseexception">
+      <data key="label">java.time.format.DateTimeParseException</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer">
+      <data key="label">LocalDateTimeDeserializer</data>
+      <data key="node_type">Class</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer_localdatetimedeserializer">
+      <data key="label">.LocalDateTimeDeserializer()</data>
+      <data key="node_type">Method</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer_deserialize">
+      <data key="label">.deserialize()</data>
+      <data key="node_type">Method</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\jackson\LocalDateTimeDeserializer.java</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java">
+      <data key="label">JacksonConfig</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer">
+      <data key="label">com.enterprise.alert_civique.config.jackson.LocalDateTimeDeserializer</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_com_fasterxml_jackson_databind_module_simplemodule">
+      <data key="label">com.fasterxml.jackson.databind.module.SimpleModule</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_org_springframework_context_annotation_bean">
+      <data key="label">org.springframework.context.annotation.Bean</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_org_springframework_context_annotation_configuration">
+      <data key="label">org.springframework.context.annotation.Configuration</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_java_time_localdatetime">
+      <data key="label">java.time.LocalDateTime</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_jacksonconfig">
+      <data key="label">JacksonConfig</data>
+      <data key="node_type">Class</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_jacksonconfig_alertciviquejacksonmodule">
+      <data key="label">.alertCiviqueJacksonModule()</data>
+      <data key="node_type">Method</data>
+      <data key="source_file">.\src\main\java\com\enterprise\alert_civique\config\JacksonConfig.java</data>
+      <data key="community">1</data>
+    </node>
+    <edge id="e0" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_com_fasterxml_jackson_core_jsonparser">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e1" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_com_fasterxml_jackson_databind_deserializationcontext">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e2" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_com_fasterxml_jackson_databind_deser_std_stddeserializer">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e3" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_io_ioexception">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e4" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_localdatetime">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e5" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_offsetdatetime">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e6" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_format_datetimeformatter">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e7" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_import_java_time_format_datetimeparseexception">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e8" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e9" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer_localdatetimedeserializer">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e10" source="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer" target="src_main_java_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer_java_localdatetimedeserializer_deserialize">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e11" source="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java" target="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_com_enterprise_alert_civique_config_jackson_localdatetimedeserializer">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e12" source="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java" target="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_com_fasterxml_jackson_databind_module_simplemodule">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e13" source="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java" target="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_org_springframework_context_annotation_bean">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e14" source="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java" target="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_org_springframework_context_annotation_configuration">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e15" source="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java" target="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_import_java_time_localdatetime">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e16" source="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java" target="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_jacksonconfig">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e17" source="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_jacksonconfig" target="src_main_java_com_enterprise_alert_civique_config_jacksonconfig_java_jacksonconfig_alertciviquejacksonmodule">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+  </graph>
+</graphml>

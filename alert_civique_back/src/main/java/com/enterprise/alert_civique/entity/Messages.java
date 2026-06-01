@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.enterprise.alert_civique.enum1.MessageType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,6 +39,7 @@ public class Messages {
     @JoinColumn(name = "report_id", nullable = true)
     private Reports report;
 
+    @JsonIgnore
     @ManyToOne(optional = true)
     @JoinColumn(name = "alert_id", nullable = true)
     private EmergenciesAlert emergenciesAlert;

@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alert_Civique — Annexe F — DevOps & Infrastructure</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Calibri', Arial, sans-serif; font-size: 10pt; color: #222; background: #fff; line-height: 1.5; }
+
+  .cover { text-align: center; padding: 60px 40px; border-bottom: 4px solid #1565C0; margin-bottom: 40px; }
+  .cover .project-title { font-size: 28pt; font-weight: 900; background: #111; color: #fff; padding: 16px 32px; display: inline-block; letter-spacing: 2px; }
+  .cover .subtitle { font-size: 12pt; color: #FF6600; font-style: italic; margin-top: 8px; }
+  .cover .annex-title { font-size: 16pt; font-weight: bold; color: #1565C0; margin-top: 24px; }
+  .cover .meta { font-size: 9pt; color: #555; margin-top: 12px; }
+  .cover .stats-box { display: inline-flex; gap: 32px; margin-top: 24px; padding: 16px 32px; border: 2px solid #1565C0; border-radius: 4px; }
+  .cover .stat .num { font-size: 22pt; font-weight: 900; color: #1565C0; }
+  .cover .stat .label { font-size: 8pt; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+
+  .toc { page-break-after: always; padding: 0 40px 40px; }
+  .toc h2 { font-size: 14pt; color: #1565C0; border-bottom: 2px solid #1565C0; padding-bottom: 6px; margin-bottom: 16px; }
+  .toc ul { list-style: none; }
+  .toc ul li { padding: 4px 0; font-size: 9.5pt; border-bottom: 1px dotted #ddd; display: flex; justify-content: space-between; }
+  .toc-section { color: #1565C0; font-weight: bold; margin-top: 10px !important; font-size: 10pt !important; }
+
+  .section { padding: 0 40px 40px; }
+  .section.new-page { page-break-before: always; }
+
+  .section-header { background: #1565C0; color: #fff; padding: 12px 20px; border-radius: 4px 4px 0 0; margin-bottom: 16px; }
+  .section-header h2 { font-size: 13pt; font-weight: bold; }
+  .section-header .meta { font-size: 8pt; color: rgba(255,255,255,0.85); margin-top: 4px; }
+
+  .file-block { border: 1px solid #ddd; border-radius: 4px; overflow: hidden; margin-top: 20px; page-break-inside: avoid; }
+  .file-header { background: #E3F2FD; border-bottom: 1px solid #1565C0; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .file-header h3 { font-size: 10.5pt; color: #1565C0; font-weight: bold; font-family: 'Consolas', monospace; }
+  .file-header .desc { font-size: 8.5pt; color: #555; font-style: italic; margin-top: 3px; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { font-size: 7.5pt; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+  .b-docker  { background: #E3F2FD; color: #0D47A1; border: 1px solid #90CAF9; }
+  .b-config  { background: #E8F5E9; color: #1B5E20; border: 1px solid #A5D6A7; }
+  .b-maven   { background: #FFF3E0; color: #E65100; border: 1px solid #FFCC80; }
+  .b-node    { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+  .b-ci      { background: #FCE4EC; color: #880E4F; border: 1px solid #F48FB1; }
+  .b-script  { background: #E8EAF6; color: #283593; border: 1px solid #9FA8DA; }
+  .b-git     { background: #EFEBE9; color: #3E2723; border: 1px solid #BCAAA4; }
+  .b-env     { background: #F3E5F5; color: #4A148C; border: 1px solid #CE93D8; }
+
+  pre { background: #1a1a2e; color: #e8e8e8; padding: 14px 16px; font-family: 'Consolas', 'Courier New', monospace; font-size: 7.5pt; line-height: 1.6; overflow-x: auto; tab-size: 2; }
+  pre .cmt { color: #6a9955; font-style: italic; }
+  pre .kw  { color: #569cd6; }
+  pre .str { color: #ce9178; }
+  pre .num { color: #b5cea8; }
+  pre .prop { color: #9cdcfe; }
+
+  .arch-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 9pt; }
+  .arch-table th { background: #1565C0; color: #fff; padding: 8px 12px; text-align: left; }
+  .arch-table td { padding: 7px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+  .arch-table tr:nth-child(even) td { background: #F5F5F5; }
+  .arch-table .port { font-family: monospace; color: #E65100; font-weight: bold; }
+  .arch-table code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 8pt; }
+
+  .info-box { background: #E3F2FD; border-left: 4px solid #1565C0; padding: 10px 14px; margin: 16px 0; font-size: 9pt; border-radius: 0 4px 4px 0; }
+  .warn-box  { background: #FFF3E0; border-left: 4px solid #FF9800; padding: 10px 14px; margin: 16px 0; font-size: 9pt; border-radius: 0 4px 4px 0; }
+  .danger-box { background: #FFEBEE; border-left: 4px solid #F44336; padding: 10px 14px; margin: 16px 0; font-size: 9pt; border-radius: 0 4px 4px 0; }
+
+  .deps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .dep-card { border: 1px solid #ddd; border-radius: 4px; padding: 10px 14px; font-size: 8.5pt; }
+  .dep-card h4 { color: #1565C0; font-size: 9pt; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 8px; }
+  .dep-card ul { list-style: none; }
+  .dep-card ul li { padding: 2px 0; border-bottom: 1px dotted #f0f0f0; display: flex; justify-content: space-between; }
+  .dep-card ul li .v { color: #888; font-size: 7.5pt; }
+
+  .pipeline-steps { counter-reset: step; margin: 16px 0; }
+  .pipeline-step { counter-increment: step; display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .pipeline-step::before { content: counter(step); background: #1565C0; color: #fff; font-weight: bold; font-size: 9pt; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .pipeline-step .step-content { font-size: 9pt; flex: 1; }
+  .pipeline-step .step-content strong { color: #1565C0; }
+  .pipeline-step .step-content code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 8pt; }
+
+  .env-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin: 12px 0; }
+  .env-table th { background: #37474F; color: #fff; padding: 7px 10px; text-align: left; }
+  .env-table td { padding: 6px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  .env-table tr:nth-child(even) td { background: #FAFAFA; }
+  .env-table .var { font-family: monospace; color: #0D47A1; font-weight: bold; }
+  .env-table .req { color: #D32F2F; font-weight: bold; font-size: 7.5pt; }
+  .env-table .opt { color: #388E3C; font-size: 7.5pt; }
+
+  .page-footer { text-align: center; font-size: 7.5pt; color: #aaa; border-top: 1px solid #ddd; margin-top: 40px; padding-top: 10px; }
+
+  @media print {
+    .new-page { page-break-before: always; }
+    pre { font-size: 7pt; }
+    body { font-size: 9pt; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ COUVERTURE ══════════ -->
+<div class="cover">
+  <div class="project-title">ALERT_CIVIQUE</div>
+  <div class="subtitle">« Votre voix, notre vigilance »</div>
+  <div class="annex-title">Annexe F — DevOps &amp; Infrastructure</div>
+  <div class="meta">
+    Stéphane CALIXTE &nbsp;|&nbsp; Doranco &nbsp;|&nbsp; Titre CDA Niveau 6 &nbsp;|&nbsp; Session 2024–2025
+  </div>
+  <div style="margin-top:20px;">
+    <div class="stats-box">
+      <div class="stat" style="text-align:center"><div class="num">4</div><div class="label">Services Docker</div></div>
+      <div class="stat" style="text-align:center"><div class="num">5</div><div class="label">Ports exposés</div></div>
+      <div class="stat" style="text-align:center"><div class="num">12</div><div class="label">Vars d'env. sécurisées</div></div>
+      <div class="stat" style="text-align:center"><div class="num">4</div><div class="label">Modules déployés</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TABLE DES MATIÈRES ══════════ -->
+<div class="toc">
+  <h2>Sommaire de l'Annexe F</h2>
+  <ul>
+    <li class="toc-section"><span>F.1 — Architecture de déploiement</span><span></span></li>
+    <li><span style="padding-left:16px">Tableau des services, ports, technologies</span><span></span></li>
+    <li class="toc-section"><span>F.2 — Docker &amp; Conteneurisation</span><span></span></li>
+    <li><span style="padding-left:16px">docker-compose.ci.yml</span><span>Jenkins + SonarQube + PostgreSQL</span></li>
+    <li><span style="padding-left:16px">alert_civique_back/Dockerfile</span><span>Build multi-étages Maven + OpenJDK 17</span></li>
+    <li><span style="padding-left:16px">alert_civique_front/Dockerfile</span><span>Node 18 Alpine + Expo CLI</span></li>
+    <li class="toc-section"><span>F.3 — Configuration Spring Boot</span><span></span></li>
+    <li><span style="padding-left:16px">application.properties</span><span>MySQL, JWT, Mail, Upload, Node Media</span></li>
+    <li><span style="padding-left:16px">application-test.properties</span><span>H2 in-memory, profil @ActiveProfiles("test")</span></li>
+    <li class="toc-section"><span>F.4 — Build Maven — pom.xml</span><span></span></li>
+    <li><span style="padding-left:16px">Dépendances, plugins, sécurité OWASP</span><span></span></li>
+    <li class="toc-section"><span>F.5 — Configuration Node.js (package.json)</span><span></span></li>
+    <li><span style="padding-left:16px">alert_civique_mongo · alert_civique_admin · alert_civique_front</span><span></span></li>
+    <li class="toc-section"><span>F.6 — Variables d'environnement</span><span></span></li>
+    <li><span style="padding-left:16px">.env.ci.template · alert_civique_mongo/.env</span><span></span></li>
+    <li><span style="padding-left:16px">Tableau complet des variables par service</span><span></span></li>
+    <li class="toc-section"><span>F.7 — Scripts de déploiement</span><span></span></li>
+    <li><span style="padding-left:16px">start-device.sh — Lancement Expo sur appareil Android réel</span><span></span></li>
+    <li class="toc-section"><span>F.8 — .gitignore</span><span></span></li>
+    <li><span style="padding-left:16px">.gitignore racine · alert_civique_back · alert_civique_admin</span><span></span></li>
+    <li class="toc-section"><span>F.9 — Pipeline CI/CD cible</span><span></span></li>
+    <li><span style="padding-left:16px">Étapes : lint → test → build → Docker → déploiement VPS</span><span></span></li>
+  </ul>
+</div>
+
+<!-- ══════════ F.1 ARCHITECTURE ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2>F.1 — Architecture de déploiement</h2>
+    <div class="meta">Vue d'ensemble des services, ports et technologies du projet Alert-Civique</div>
+  </div>
+
+  <table class="arch-table">
+    <thead>
+      <tr><th>Service</th><th>Technologie</th><th>Port</th><th>Rôle</th><th>Commande de démarrage</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>API REST Backend</strong></td>
+        <td>Spring Boot 4.0.3 / Java 17</td>
+        <td class="port">9090</td>
+        <td>Auth JWT, signalements, livestreams, RBAC</td>
+        <td><code>mvn spring-boot:run</code></td>
+      </tr>
+      <tr>
+        <td><strong>Serveur Node.js Média</strong></td>
+        <td>Node.js 20 / Express + Socket.IO</td>
+        <td class="port">9091</td>
+        <td>Upload vidéo multipart, WebSocket chat, MongoDB</td>
+        <td><code>npm run dev</code></td>
+      </tr>
+      <tr>
+        <td><strong>Dashboard Admin</strong></td>
+        <td>React 18 / Vite 5 / TypeScript</td>
+        <td class="port">3001</td>
+        <td>Gestion incidents, utilisateurs, livestreams</td>
+        <td><code>npm run dev</code></td>
+      </tr>
+      <tr>
+        <td><strong>App Mobile</strong></td>
+        <td>React Native 0.83 / Expo SDK 55</td>
+        <td class="port">19000</td>
+        <td>Interface citoyen : alertes, photo, vidéo, SOS</td>
+        <td><code>npx expo start</code></td>
+      </tr>
+      <tr>
+        <td><strong>Base de données principale</strong></td>
+        <td>MySQL 8.0 / MariaDB</td>
+        <td class="port">3306</td>
+        <td>Persistance utilisateurs, signalements, rôles</td>
+        <td>— (service système)</td>
+      </tr>
+      <tr>
+        <td><strong>Base de données messages</strong></td>
+        <td>MongoDB 7.x</td>
+        <td class="port">27017</td>
+        <td>Messages chat temps réel, livestreams MongoDB</td>
+        <td>— (service système)</td>
+      </tr>
+      <tr>
+        <td><strong>Jenkins (CI/CD)</strong></td>
+        <td>jenkins/jenkins:lts-jdk17</td>
+        <td class="port">8081</td>
+        <td>Pipeline CI/CD : test → build → deploy</td>
+        <td><code>docker-compose -f docker-compose.ci.yml up</code></td>
+      </tr>
+      <tr>
+        <td><strong>SonarQube (qualité)</strong></td>
+        <td>sonarqube:lts-community</td>
+        <td class="port">9000</td>
+        <td>Analyse statique, couverture, dette technique</td>
+        <td><code>docker-compose -f docker-compose.ci.yml up</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box">
+    <strong>Flux de démarrage local :</strong><br>
+    1. MySQL démarre (port 3306) → 2. Spring Boot démarre (port 9090) → 3. Node.js démarre (port 9091) → 4. Admin React démarre (port 3001) → 5. Expo démarre (port 19000) → 6. App mobile se connecte via Expo Go
+  </div>
+</div>
+
+<!-- ══════════ F.2 DOCKER ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.2 — Docker &amp; Conteneurisation</h2>
+    <div class="meta">Dockerfiles et docker-compose pour le développement, les tests et la CI/CD</div>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>docker-compose.ci.yml</h3>
+        <div class="desc">Orchestration CI/CD : Jenkins (port 8081) + SonarQube (port 9000) + PostgreSQL (base SonarQube)</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-docker">Docker Compose</span>
+        <span class="badge b-ci">CI/CD</span>
+      </div>
+    </div>
+<pre>version: '3.9'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: alert_civique_jenkins
+    ports:
+      - "8081:8080"   # Jenkins UI accessible sur http://localhost:8081
+      - "50000:50000" # Port agent Jenkins (builds distribués)
+    volumes:
+      - jenkins_data:/var/jenkins_home  # Persistance config Jenkins
+      - .:/workspace:cached             # Montage du code source
+    environment:
+      - JAVA_OPTS=-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true -Djenkins.install.runSetupWizard=false
+    restart: unless-stopped
+    privileged: true  # Docker-in-Docker si nécessaire
+
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: alert_civique_sonarqube
+    ports:
+      - "9000:9000"   # SonarQube dashboard
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres/sonarqube
+      - SONAR_JDBC_USERNAME=${SONAR_JDBC_USERNAME:-sonar}
+      - SONAR_JDBC_PASSWORD=${SONAR_JDBC_PASSWORD:-sonar}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: alert_civique_postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-sonar}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-sonar}
+      - POSTGRES_DB=sonarqube
+    volumes:
+      - sonarqube_data:/var/lib/postgresql/data  # Persistance données SonarQube
+    restart: unless-stopped
+
+volumes:
+  jenkins_data:     # Données Jenkins (jobs, plugins, historique)
+  sonarqube_data:   # Données SonarQube (projets, analyses, métriques)</pre>
+  </div>
+
+  <div class="info-box" style="margin-top:12px;">
+    <strong>Commandes CI/CD :</strong><br>
+    • Démarrer : <code>docker-compose -f docker-compose.ci.yml up -d</code><br>
+    • Arrêter : <code>docker-compose -f docker-compose.ci.yml down</code><br>
+    • Jenkins : <a href="#">http://localhost:8081</a> — SonarQube : <a href="#">http://localhost:9000</a>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_back/Dockerfile</h3>
+        <div class="desc">Build multi-étages — Stage 1 : compilation Maven (Java 17) → Stage 2 : runtime OpenJDK slim</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-docker">Dockerfile</span>
+        <span class="badge b-maven">Spring Boot</span>
+      </div>
+    </div>
+<pre># ── STAGE 1 : Build ───────────────────────────────────────────────────────────
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests   # Compilation sans tests (exécutés en CI)
+
+# ── STAGE 2 : Runtime ─────────────────────────────────────────────────────────
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=builder /app/target/alert_civique.jar app.jar  # Copie du JAR compilé
+EXPOSE 8080
+
+CMD ["java", "-jar", "app.jar"]</pre>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_front/Dockerfile</h3>
+        <div class="desc">Image Node.js 18 Alpine — Installation Expo CLI — Démarrage avec tunnel Expo (accès sans pare-feu)</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-docker">Dockerfile</span>
+        <span class="badge b-node">Expo</span>
+      </div>
+    </div>
+<pre>FROM node:18-alpine
+WORKDIR /app
+
+# Installation globale d'Expo CLI
+RUN npm install -g expo-cli
+
+# Installation des dépendances
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+
+# Ports Expo : Metro Bundler (19000), Expo DevTools (19001), Expo Web (19002)
+EXPOSE 19000 19001 19002
+
+# --tunnel : tunnel ngrok pour accès depuis appareils mobiles sans réseau local partagé
+CMD ["npx", "expo", "start", "--tunnel"]</pre>
+  </div>
+</div>
+
+<!-- ══════════ F.3 SPRING BOOT CONFIG ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.3 — Configuration Spring Boot</h2>
+    <div class="meta">alert_civique_back/src/main/resources/ — Profil production + profil test</div>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>application.properties</h3>
+        <div class="desc">Configuration complète : MySQL, JPA/Hibernate, JWT, Mail SMTP Gmail, Upload 100MB, Node Media Server, logging</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-config">Spring Boot</span>
+        <span class="badge b-env">Variables d'env.</span>
+      </div>
+    </div>
+<pre># ── Application ───────────────────────────────────────────────────────────────
+spring.application.name=alert_civique
+server.port=9090
+server.address=0.0.0.0  # Écoute toutes les interfaces (accès depuis mobile)
+
+# ── DATASOURCE — MySQL/MariaDB ─────────────────────────────────────────────────
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/alertdb?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Europe/Paris}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD:}
+
+# ── JPA / HIBERNATE ────────────────────────────────────────────────────────────
+spring.jpa.hibernate.ddl-auto=validate          # Valide le schéma sans le modifier
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.jpa.show-sql=true
+spring.jpa.generate-ddl=false
+spring.jpa.properties.hibernate.format_sql=true
+
+# ── SQL INIT ───────────────────────────────────────────────────────────────────
+spring.sql.init.mode=always
+spring.sql.init.continue-on-error=false
+spring.jpa.defer-datasource-initialization=false
+
+# ── H2 Console (désactivé en production) ──────────────────────────────────────
+spring.h2.console.enabled=false
+
+# ── MongoDB — désactivé (non utilisé en production Spring Boot) ───────────────
+spring.autoconfigure.exclude=\
+  org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
+  org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
+  org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration
+
+# ── LOGGING ────────────────────────────────────────────────────────────────────
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+logging.level.org.springframework.boot.autoconfigure=INFO
+logging.level.root=INFO
+logging.file.path=logs
+logging.file.name=alert_civique.log
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+
+# ── NODE.JS MEDIA SERVER ───────────────────────────────────────────────────────
+node.media.base-url=${NODE_MEDIA_URL:http://localhost:9091}
+
+# ── UPLOADS VIDÉO LIVESTREAM (100 MB max) ─────────────────────────────────────
+spring.servlet.multipart.max-file-size=100MB
+spring.servlet.multipart.max-request-size=100MB
+spring.web.resources.static-locations=classpath:/static/,file:src/main/resources/static/uploads/
+
+# ── INITIALISATION ADMIN ───────────────────────────────────────────────────────
+# SECURITY CWE-259 : mot de passe admin via variable d'environnement (plus de hard-code)
+app.init.admin-password=${ADMIN_PASSWORD:admin}
+
+# ── JWT CONFIGURATION ──────────────────────────────────────────────────────────
+# SECURITY CWE-321 : clés JWT via variables d'environnement (plus de hard-code)
+jws.secret=${JWS_SECRET:alertcivique-dev-jws-secret-key-must-be-32chars}
+jwt.secret=${JWT_SECRET:alertcivique-dev-jwt-secret-key-must-be-32chars}
+app.jwt.activation-secret=${JWT_ACTIVATION_SECRET:alertcivique-dev-activation-key-32chars}
+app.jwt.activation-expiration-ms=86400000   # 24 heures
+
+# ── MAIL CONFIGURATION — Gmail SMTP ───────────────────────────────────────────
+# SECURITY : credentials mail via variables d'environnement
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=${MAIL_USERNAME:noreply@localhost}
+spring.mail.password=${MAIL_PASSWORD:changeme}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true</pre>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>application-test.properties</h3>
+        <div class="desc">Profil test : H2 in-memory (create-drop), JWT base64, Mail localhost — activé par @ActiveProfiles("test")</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-config">Profil Test</span>
+        <span class="badge b-env">H2 In-Memory</span>
+      </div>
+    </div>
+<pre># ── JWT SECRETS POUR TESTS (base64 encodé) ────────────────────────────────────
+app.jwt.activation-secret=${JWT_ACTIVATION_SECRET:VGVzdEFjdGl2YXRpb25TZWNyZXRLZXkyMDI0}
+app.jwt.secret=${JWT_SECRET:VGVzdFNlY3JldEtleTIwMjQ=}
+
+# ── DATASOURCE H2 IN-MEMORY ───────────────────────────────────────────────────
+spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+# ── JPA — create-drop : schéma recréé à chaque exécution de tests ─────────────
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+
+# ── MAIL SMTP LOCALHOST (pas d'envoi réel en tests) ───────────────────────────
+spring.mail.host=${MAIL_HOST:localhost}
+spring.mail.port=${MAIL_PORT:25}
+spring.mail.username=${MAIL_USERNAME:test}
+spring.mail.password=${MAIL_PASSWORD:test}
+
+# ── NODE MEDIA SERVER (mock local pour tests) ─────────────────────────────────
+# IMPORTANT : propriété requise, sans quoi l'ApplicationContext Spring ne démarre pas
+# (Difficulté 4 documentée section 6.2 du dossier)
+node.media.base-url=http://localhost:9091</pre>
+  </div>
+
+  <div class="warn-box">
+    <strong>Point critique :</strong> La propriété <code>node.media.base-url</code> doit être présente dans <code>application-test.properties</code>. Son absence provoque une erreur <em>"Could not resolve placeholder"</em> et empêche l'ApplicationContext de démarrer, faisant échouer toute la suite JUnit.
+  </div>
+</div>
+
+<!-- ══════════ F.4 POM.XML ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.4 — Build Maven — pom.xml</h2>
+    <div class="meta">alert_civique_back/pom.xml — Spring Boot 4.0.3, Java 17, dépendances sécurité et plugins</div>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>pom.xml</h3>
+        <div class="desc">Configuration Maven complète : parent Spring Boot 4.0.3, dépendances, plugins compiler + packaging</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-maven">Maven</span>
+        <span class="badge b-config">Spring Boot 4.0.3</span>
+      </div>
+    </div>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;!-- ── Parent Spring Boot ─────────────────────────────────────────────── --&gt;
+  &lt;parent&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+    &lt;version&gt;4.0.3&lt;/version&gt;
+    &lt;relativePath/&gt;
+  &lt;/parent&gt;
+
+  &lt;groupId&gt;com.enterprise&lt;/groupId&gt;
+  &lt;artifactId&gt;alert_civique&lt;/artifactId&gt;
+  &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+  &lt;name&gt;alert_civique&lt;/name&gt;
+  &lt;description&gt;Application de signalement civique&lt;/description&gt;
+
+  &lt;properties&gt;
+    &lt;java.version&gt;17&lt;/java.version&gt;
+  &lt;/properties&gt;
+
+  &lt;dependencies&gt;
+
+    &lt;!-- ── Sécurité — OWASP Encoder (prévention XSS - CWE-79) ─────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.owasp.encoder&lt;/groupId&gt;
+      &lt;artifactId&gt;encoder&lt;/artifactId&gt;
+      &lt;version&gt;1.4.0&lt;/version&gt;
+      &lt;scope&gt;compile&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── Sécurité — Bouncy Castle (cryptographie) ──────────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.bouncycastle&lt;/groupId&gt;
+      &lt;artifactId&gt;bcprov-jdk18on&lt;/artifactId&gt;
+      &lt;version&gt;1.83&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── Spring Boot Core ───────────────────────────────────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-validation&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-mail&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-websocket&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-mongodb&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── Sérialisation JSON avec types Java 8 (LocalDate, etc.) ────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.fasterxml.jackson.datatype&lt;/groupId&gt;
+      &lt;artifactId&gt;jackson-datatype-jsr310&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── DevTools (rechargement auto en développement) ─────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+      &lt;optional&gt;true&lt;/optional&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── Base de données ─────────────────────────────────────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.mysql&lt;/groupId&gt;
+      &lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.mariadb.jdbc&lt;/groupId&gt;
+      &lt;artifactId&gt;mariadb-java-client&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;!-- H2 in-memory pour les tests ──────────────────────────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.h2database&lt;/groupId&gt;
+      &lt;artifactId&gt;h2&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── Lombok (génération code boilerplate) ────────────────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+      &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+      &lt;optional&gt;true&lt;/optional&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── Tests ──────────────────────────────────────────────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- ── JWT — jjwt 0.11.5 ──────────────────────────────────────────── --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;
+      &lt;artifactId&gt;jjwt-api&lt;/artifactId&gt;
+      &lt;version&gt;0.11.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;
+      &lt;artifactId&gt;jjwt-impl&lt;/artifactId&gt;
+      &lt;version&gt;0.11.5&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;
+      &lt;artifactId&gt;jjwt-jackson&lt;/artifactId&gt;
+      &lt;version&gt;0.11.5&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+  &lt;/dependencies&gt;
+
+  &lt;build&gt;
+    &lt;plugins&gt;
+
+      &lt;!-- ── Maven Compiler Plugin — Java 17 + Lombok ──────────────────── --&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+        &lt;configuration&gt;
+          &lt;encoding&gt;UTF-8&lt;/encoding&gt;
+          &lt;annotationProcessorPaths&gt;
+            &lt;path&gt;
+              &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+              &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;/path&gt;
+          &lt;/annotationProcessorPaths&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+
+      &lt;!-- ── Spring Boot Maven Plugin — packaging JAR exécutable ────────── --&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+        &lt;configuration&gt;
+          &lt;excludes&gt;
+            &lt;exclude&gt;
+              &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+              &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;/exclude&gt;
+          &lt;/excludes&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+
+&lt;/project&gt;</pre>
+  </div>
+
+  <div style="margin-top:20px;">
+    <strong style="color:#1565C0; font-size:10pt;">Résumé des dépendances clés</strong>
+    <div class="deps-grid">
+      <div class="dep-card">
+        <h4>Sécurité &amp; Authentification</h4>
+        <ul>
+          <li><span>spring-boot-starter-security</span><span class="v">4.0.3</span></li>
+          <li><span>jjwt-api / impl / jackson</span><span class="v">0.11.5</span></li>
+          <li><span>owasp encoder (XSS)</span><span class="v">1.4.0</span></li>
+          <li><span>bcprov-jdk18on (crypto)</span><span class="v">1.83</span></li>
+        </ul>
+      </div>
+      <div class="dep-card">
+        <h4>Persistance &amp; BDD</h4>
+        <ul>
+          <li><span>spring-boot-starter-data-jpa</span><span class="v">4.0.3</span></li>
+          <li><span>mysql-connector-j</span><span class="v">latest</span></li>
+          <li><span>mariadb-java-client</span><span class="v">latest</span></li>
+          <li><span>h2 (tests in-memory)</span><span class="v">latest</span></li>
+        </ul>
+      </div>
+      <div class="dep-card">
+        <h4>Web &amp; Communication</h4>
+        <ul>
+          <li><span>spring-boot-starter-web</span><span class="v">4.0.3</span></li>
+          <li><span>spring-boot-starter-websocket</span><span class="v">4.0.3</span></li>
+          <li><span>spring-boot-starter-mail</span><span class="v">4.0.3</span></li>
+          <li><span>jackson-datatype-jsr310</span><span class="v">latest</span></li>
+        </ul>
+      </div>
+      <div class="dep-card">
+        <h4>Build &amp; Productivité</h4>
+        <ul>
+          <li><span>lombok</span><span class="v">latest</span></li>
+          <li><span>spring-boot-devtools</span><span class="v">4.0.3</span></li>
+          <li><span>spring-boot-starter-test</span><span class="v">4.0.3</span></li>
+          <li><span>spring-boot-starter-validation</span><span class="v">4.0.3</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ F.5 PACKAGE.JSON ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.5 — Configuration Node.js (package.json)</h2>
+    <div class="meta">Scripts, dépendances et configuration des trois modules Node.js du projet</div>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_mongo/package.json</h3>
+        <div class="desc">Serveur Node.js temps réel — Express, Socket.IO, Mongoose, Multer — Tests Jest + Supertest</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-node">Node.js 20</span>
+        <span class="badge b-config">Serveur Média</span>
+      </div>
+    </div>
+<pre>{
+  "name": "alert-civique-server",
+  "version": "1.0.0",
+  "description": "Real-time chat server for Alert Civique app with MongoDB",
+  "main": "server.js",
+  "scripts": {
+    "start":      "node server.js",            // Production
+    "dev":        "nodemon server.js",          // Développement (hot reload)
+    "test":       "jest --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch --forceExit"
+  },
+  "dependencies": {
+    "cors":       "^2.8.5",     // Cross-Origin Resource Sharing
+    "dotenv":     "^16.3.1",    // Chargement des variables d'environnement
+    "express":    "^4.18.2",    // Framework HTTP
+    "fs-extra":   "^11.3.4",    // Opérations fichiers étendues
+    "mongoose":   "^8.0.3",     // ORM MongoDB
+    "multer":     "^1.4.5-lts.1", // Upload fichiers multipart (vidéos)
+    "socket.io":  "^4.7.4",     // WebSocket temps réel
+    "uuid":       "^9.0.1"      // Génération d'identifiants uniques
+  },
+  "devDependencies": {
+    "jest":       "^29.7.0",    // Framework de tests
+    "nodemon":    "^3.0.2",     // Redémarrage automatique
+    "supertest":  "^7.2.2"      // Tests HTTP d'intégration
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/__tests__/**/*.test.js"]
+  }
+}</pre>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_admin/package.json</h3>
+        <div class="desc">Dashboard React 18 + Vite — Chart.js, recharts, hls.js, Socket.IO — Tests Vitest + Coverage</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-node">React 18</span>
+        <span class="badge b-config">Vite 5</span>
+      </div>
+    </div>
+<pre>{
+  "name": "alert-civique-admin",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start":          "vite nodemon main.tsx",
+    "dev":            "vite",                          // Serveur de développement (port 3001)
+    "build":          "tsc &amp;&amp; vite build",             // Build TypeScript + bundle Vite
+    "preview":        "vite preview",                  // Aperçu du build production
+    "test":           "vitest run",                    // Tests une seule fois
+    "test:watch":     "vitest",                        // Tests en mode watch
+    "test:coverage":  "vitest run --coverage"          // Rapport de couverture
+  },
+  "dependencies": {
+    "chart.js":         "^4.4.0",    // Graphiques statistiques
+    "hls.js":           "^1.6.16",   // Lecture livestreams HLS
+    "lucide-react":     "^1.8.0",    // Icônes React
+    "nodemon":          "^3.1.14",   // Rechargement auto
+    "react":            "^18.3.1",
+    "react-chartjs-2":  "^5.2.0",   // Wrapper React pour Chart.js
+    "react-dom":        "^18.3.1",
+    "recharts":         "^3.8.1",   // Graphiques supplémentaires
+    "socket.io-client": "^4.8.3"    // Connexion WebSocket temps réel
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom":    "^6.4.8",
+    "@testing-library/react":       "^16.0.0",
+    "@testing-library/user-event":  "^14.5.2",
+    "@vitejs/plugin-react":         "^4.3.1",
+    "@vitest/coverage-v8":          "^1.6.0",
+    "jsdom":       "^24.1.3",        // Environnement DOM pour tests
+    "typescript":  "^5.9.3",
+    "vite":        "^5.4.1",
+    "vitest":      "^1.6.0"
+  }
+}</pre>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_front/package.json</h3>
+        <div class="desc">App React Native Expo SDK 55 — Cartographie, géolocalisation, caméra, médias, Socket.IO</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-node">Expo SDK 55</span>
+        <span class="badge b-config">React Native 0.83</span>
+      </div>
+    </div>
+<pre>{
+  "name": "alert_civique",
+  "main": "expo-router/entry",
+  "version": "1.0.0",
+  "scripts": {
+    "start":         "expo start",
+    "reset-project": "node ./scripts/reset-project.js",
+    "android":       "expo start --android",   // Lancement Android
+    "ios":           "expo start --ios",        // Lancement iOS
+    "web":           "expo start --web",
+    "lint":          "expo lint",
+    "test":          "jest",
+    "test:watch":    "jest --watch"
+  },
+  "dependencies": {
+    "expo":                            "~55.0.26",   // SDK de base
+    "react":                           "19.2.0",
+    "react-native":                    "0.83.6",
+    "expo-router":                     "~55.0.16",   // Navigation basée sur fichiers
+
+    // ── Caméra &amp; Médias ─────────────────────────────────────────────────────
+    "expo-camera":                     "~55.0.19",
+    "expo-image-picker":               "~55.0.20",   // Capture photo/vidéo native
+    "expo-media-library":              "~55.0.17",   // Sauvegarde en galerie
+
+    // ── Géolocalisation ──────────────────────────────────────────────────────
+    "expo-location":                   "~55.1.10",
+    "@react-native-community/geolocation": "^3.4.0",
+
+    // ── Stockage &amp; Sécurité ──────────────────────────────────────────────────
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo-secure-store":               "~55.0.14",   // Stockage sécurisé JWT
+
+    // ── Cartographie ─────────────────────────────────────────────────────────
+    "@maplibre/maplibre-react-native": "^10.4.2",
+    "react-native-maps":               "^1.27.2",
+
+    // ── Notifications &amp; SMS ──────────────────────────────────────────────────
+    "expo-sms":                        "~55.0.14",   // Envoi SMS contacts confiance
+
+    // ── Communication temps réel ─────────────────────────────────────────────
+    "socket.io-client":                "^4.8.3",
+
+    // ── Audio/Vidéo ──────────────────────────────────────────────────────────
+    "expo-av":                         "~16.0.8",
+
+    // ── Navigation ───────────────────────────────────────────────────────────
+    "@react-navigation/bottom-tabs":   "^7.4.0",
+    "@react-navigation/native":        "^7.1.8",
+    "react-native-safe-area-context":  "~5.6.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^12.5.0",
+    "@types/react":    "^19.2.14",
+    "eslint":          "^9.25.0",
+    "eslint-config-expo": "~55.0.1",
+    "jest-expo":       "~55.0.0",
+    "typescript":      "~5.9.2"
+  }
+}</pre>
+  </div>
+</div>
+
+<!-- ══════════ F.6 VARIABLES D'ENVIRONNEMENT ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.6 — Variables d'environnement</h2>
+    <div class="meta">Gestion des secrets par variables d'environnement — conformité CWE-321, CWE-259</div>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>.env.ci.template</h3>
+        <div class="desc">Template de configuration pour l'environnement CI/CD — à copier en .env.ci (non commité)</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-ci">CI/CD</span>
+        <span class="badge b-env">Template</span>
+      </div>
+    </div>
+<pre># Alert Civique - CI/CD Environment Configuration Template
+# SECURITY WARNING: This file contains sensitive configuration
+# Do NOT commit actual secrets to version control
+#
+# Usage : copier ce fichier en .env.ci et remplir les vraies valeurs
+# S'assurer que .env.ci est dans .gitignore
+
+# ── PostgreSQL / SonarQube Database ───────────────────────────────────────────
+# Valeurs par défaut "sonar" pour les tests — changer en production
+POSTGRES_USER=sonar
+POSTGRES_PASSWORD=sonar
+
+# ── SonarQube Configuration ───────────────────────────────────────────────────
+SONAR_JDBC_USERNAME=sonar
+SONAR_JDBC_PASSWORD=sonar
+
+# ── Jenkins Configuration (Optionnel) ─────────────────────────────────────────
+# Les credentials Jenkins sont gérés via l'interface Jenkins
+# Pour setup avancé, configurer les credentials directement dans Jenkins
+# JENKINS_ADMIN_USER=admin
+# JENKINS_ADMIN_PASSWORD=change_me
+
+# ── Application Secrets (pour tests d'intégration CI/CD) ─────────────────────
+# Ces variables sont nécessaires si les tests d'intégration tournent en CI/CD
+# JWS_SECRET=your-test-secret-key
+# JWT_SECRET=your-test-secret-key
+# JWT_ACTIVATION_SECRET=your-base64-encoded-test-secret</pre>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_mongo/.env</h3>
+        <div class="desc">Configuration serveur Node.js — MongoDB local (dev) et Atlas (production)</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-env">Variables d'env.</span>
+        <span class="badge b-node">Node.js</span>
+      </div>
+    </div>
+<pre># MongoDB local (développement)
+MONGODB_URI=mongodb://localhost:27017/alert-civique
+
+# MongoDB Atlas (production — remplacer &lt;password&gt; par le vrai mot de passe)
+# MONGODB_URI=mongodb+srv://Mindheart:&lt;password&gt;@cluster0.yqeupfa.mongodb.net/alert-civique?retryWrites=true&amp;w=majority
+
+PORT=9091</pre>
+  </div>
+
+  <div style="margin-top:20px;">
+    <strong style="color:#1565C0; font-size:10pt;">Tableau complet des variables d'environnement par service</strong>
+    <table class="env-table" style="margin-top:12px;">
+      <thead>
+        <tr><th>Variable</th><th>Service</th><th>Valeur par défaut</th><th>Obligatoire</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="var">DB_URL</td><td>Spring Boot</td><td>jdbc:mysql://localhost:3306/alertdb</td><td class="opt">opt.</td><td>URL connexion MySQL</td></tr>
+        <tr><td class="var">DB_USERNAME</td><td>Spring Boot</td><td>root</td><td class="opt">opt.</td><td>Utilisateur MySQL</td></tr>
+        <tr><td class="var">DB_PASSWORD</td><td>Spring Boot</td><td>(vide)</td><td class="req">req. prod</td><td>Mot de passe MySQL</td></tr>
+        <tr><td class="var">JWT_SECRET</td><td>Spring Boot</td><td>alertcivique-dev-jwt-...</td><td class="req">req. prod</td><td>Clé HMAC-SHA256 JWT (CWE-321)</td></tr>
+        <tr><td class="var">JWS_SECRET</td><td>Spring Boot</td><td>alertcivique-dev-jws-...</td><td class="req">req. prod</td><td>Clé secondaire JWT</td></tr>
+        <tr><td class="var">JWT_ACTIVATION_SECRET</td><td>Spring Boot</td><td>alertcivique-dev-activation-...</td><td class="req">req. prod</td><td>Clé token d'activation compte</td></tr>
+        <tr><td class="var">ADMIN_PASSWORD</td><td>Spring Boot</td><td>admin</td><td class="req">req. prod</td><td>Mot de passe admin initial (CWE-259)</td></tr>
+        <tr><td class="var">MAIL_USERNAME</td><td>Spring Boot</td><td>noreply@localhost</td><td class="req">req. prod</td><td>Email expéditeur (Gmail SMTP)</td></tr>
+        <tr><td class="var">MAIL_PASSWORD</td><td>Spring Boot</td><td>changeme</td><td class="req">req. prod</td><td>App password Gmail</td></tr>
+        <tr><td class="var">NODE_MEDIA_URL</td><td>Spring Boot</td><td>http://localhost:9091</td><td class="opt">opt.</td><td>URL serveur Node.js médias</td></tr>
+        <tr><td class="var">MONGODB_URI</td><td>Node.js</td><td>mongodb://localhost:27017/alert-civique</td><td class="opt">opt.</td><td>Connexion MongoDB (local ou Atlas)</td></tr>
+        <tr><td class="var">PORT</td><td>Node.js</td><td>9091</td><td class="opt">opt.</td><td>Port serveur Node.js</td></tr>
+        <tr><td class="var">POSTGRES_USER</td><td>Docker CI</td><td>sonar</td><td class="opt">opt.</td><td>Utilisateur PostgreSQL (SonarQube)</td></tr>
+        <tr><td class="var">POSTGRES_PASSWORD</td><td>Docker CI</td><td>sonar</td><td class="opt">opt.</td><td>Mot de passe PostgreSQL</td></tr>
+        <tr><td class="var">SONAR_JDBC_USERNAME</td><td>Docker CI</td><td>sonar</td><td class="opt">opt.</td><td>JDBC SonarQube</td></tr>
+        <tr><td class="var">SONAR_JDBC_PASSWORD</td><td>Docker CI</td><td>sonar</td><td class="opt">opt.</td><td>JDBC SonarQube password</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="danger-box">
+    <strong>Règle de sécurité absolue :</strong> Les fichiers <code>.env</code>, <code>.env.ci</code>, <code>application-prod.properties</code> et tous les fichiers contenant des secrets réels sont dans le <code>.gitignore</code>. Seuls les templates (ex: <code>.env.ci.template</code>, <code>.env.example</code>) peuvent être commités. Ne jamais mettre de secrets réels dans le code source (CWE-321, CWE-259).
+  </div>
+</div>
+
+<!-- ══════════ F.7 SCRIPTS ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.7 — Scripts de déploiement</h2>
+    <div class="meta">Scripts d'automatisation pour le développement et le déploiement</div>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_front/start-device.sh</h3>
+        <div class="desc">Lancement Expo sur appareil Android réel — Détection ADB USB/WiFi, démarrage Node.js en arrière-plan</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-script">Bash Script</span>
+        <span class="badge b-node">Android</span>
+      </div>
+    </div>
+<pre>#!/usr/bin/env bash
+# Lance Expo sur un vrai appareil Android connecté en USB ou via WiFi
+
+ADB="$HOME/AppData/Local/Android/Sdk/platform-tools/adb.exe"
+
+echo ""
+echo "=== Alert Civique — Démarrage sur appareil réel ==="
+echo ""
+
+# Vérifier que ADB existe
+if [ ! -f "$ADB" ]; then
+  echo "ERREUR : adb.exe introuvable."
+  echo "Installe Android Studio : https://developer.android.com/studio"
+  exit 1
+fi
+
+# Lister les appareils connectés
+DEVICES=$("$ADB" devices | grep -v "List of" | grep "device$")
+
+if [ -z "$DEVICES" ]; then
+  echo "Aucun appareil détecté."
+  echo ""
+  echo "Options :"
+  echo "  1) Branche ton téléphone en USB et accepte le débogage USB"
+  echo "  2) Connexion WiFi : entre l'IP dans Paramètres → Options développeur → Débogage sans fil"
+  echo ""
+  read -p "IP:PORT du téléphone (laisser vide pour annuler) : " WIFI_ADDR
+  if [ -n "$WIFI_ADDR" ]; then
+    "$ADB" connect "$WIFI_ADDR"
+    sleep 2
+    DEVICES=$("$ADB" devices | grep -v "List of" | grep "device$")
+  fi
+fi
+
+if [ -z "$DEVICES" ]; then
+  echo ""
+  echo "Toujours aucun appareil. Vérifie :"
+  echo "  - Débogage USB activé (Paramètres → Options développeur)"
+  echo "  - Câble USB branché + popup 'Autoriser' acceptée sur le téléphone"
+  exit 1
+fi
+
+echo "Appareil(s) détecté(s) :"
+echo "$DEVICES"
+echo ""
+
+# Démarrer le serveur Node.js en arrière-plan
+echo "Démarrage du serveur Node.js en arrière-plan..."
+cd "$(dirname "$0")/server" &amp;&amp; node server.js &amp;
+SERVER_PID=$!
+echo "Serveur Node.js PID: $SERVER_PID"
+cd "$(dirname "$0")"
+
+echo ""
+echo "Lancement d'Expo..."
+npx expo start --android</pre>
+  </div>
+
+  <div style="margin-top:20px;">
+    <strong style="color:#1565C0; font-size:10pt;">Commandes de démarrage par module</strong>
+    <table class="arch-table" style="margin-top:12px;">
+      <thead>
+        <tr><th>Module</th><th>Environnement</th><th>Commande</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Backend Spring Boot</td><td>Développement</td><td><code>cd alert_civique_back &amp;&amp; mvn spring-boot:run</code></td></tr>
+        <tr><td>Backend Spring Boot</td><td>Tests</td><td><code>cd alert_civique_back &amp;&amp; mvn test</code></td></tr>
+        <tr><td>Backend Spring Boot</td><td>Build JAR</td><td><code>cd alert_civique_back &amp;&amp; mvn clean package -DskipTests</code></td></tr>
+        <tr><td>Backend Spring Boot</td><td>Production Docker</td><td><code>docker build -t alert-civique-back . &amp;&amp; docker run -p 8080:8080 alert-civique-back</code></td></tr>
+        <tr><td>Serveur Node.js</td><td>Développement</td><td><code>cd alert_civique_mongo &amp;&amp; npm run dev</code></td></tr>
+        <tr><td>Serveur Node.js</td><td>Production</td><td><code>cd alert_civique_mongo &amp;&amp; npm start</code></td></tr>
+        <tr><td>Serveur Node.js</td><td>Tests</td><td><code>cd alert_civique_mongo &amp;&amp; npm test</code></td></tr>
+        <tr><td>Admin React</td><td>Développement</td><td><code>cd alert_civique_admin &amp;&amp; npm run dev</code></td></tr>
+        <tr><td>Admin React</td><td>Build prod</td><td><code>cd alert_civique_admin &amp;&amp; npm run build</code></td></tr>
+        <tr><td>Admin React</td><td>Tests + coverage</td><td><code>cd alert_civique_admin &amp;&amp; npm run test:coverage</code></td></tr>
+        <tr><td>App Mobile</td><td>Android (émulateur)</td><td><code>cd alert_civique_front &amp;&amp; npm run android</code></td></tr>
+        <tr><td>App Mobile</td><td>Appareil réel</td><td><code>cd alert_civique_front &amp;&amp; bash start-device.sh</code></td></tr>
+        <tr><td>CI/CD Docker</td><td>Démarrer Jenkins+Sonar</td><td><code>docker-compose -f docker-compose.ci.yml up -d</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════ F.8 GITIGNORE ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.8 — Fichiers .gitignore</h2>
+    <div class="meta">Exclusion des fichiers sensibles, binaires et générés du contrôle de version</div>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>.gitignore (racine du monorepo)</h3>
+        <div class="desc">Règles globales : secrets, IDE, logs, builds Java/Node/Expo, certificats, Docker overrides</div>
+      </div>
+      <div class="badges">
+        <span class="badge b-git">Git</span>
+        <span class="badge b-ci">Sécurité</span>
+      </div>
+    </div>
+<pre># ════════════════════════════════════════════════════════
+#  ALERT-CIVIQUE — .gitignore racine (monorepo)
+# ════════════════════════════════════════════════════════
+
+# ── OS ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ─────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml *.ipr *.iws *.suo *.user
+
+# ── SECRETS — Ne jamais commiter ────────────────────────
+.env
+.env.local
+.env.*.local
+!.env.example          # Le template .env.example est commité
+secrets.properties
+application-local.properties
+application-dev.properties
+application-prod.properties
+application-staging.properties
+
+# ── Clés &amp; certificats ──────────────────────────────────
+*.key *.pem *.p12 *.p8 *.jks *.mobileprovision
+*.keystore *.pfx *.cer *.der
+
+# ── Docker overrides locaux ──────────────────────────────
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ── Logs ────────────────────────────────────────────────
+*.log *.log.* *.log.gz *.gz
+logs/ log/
+
+# ═══════════════════════════════════════════════════════
+#  JAVA / MAVEN / SPRING BOOT  (alert_civique_back)
+# ═══════════════════════════════════════════════════════
+target/
+*.class *.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.mvn/wrapper/maven-wrapper.jar
+spring-shell.log
+
+# Uploads vidéo générés au runtime
+alert_civique_back/src/main/resources/static/uploads/
+
+# Rapports de tests Surefire / JaCoCo
+alert_civique_back/target/surefire-reports/
+alert_civique_back/target/site/
+
+# ═══════════════════════════════════════════════════════
+#  NODE.JS  (alert_civique_admin + alert_civique_mongo)
+# ═══════════════════════════════════════════════════════
+node_modules/
+npm-debug.*
+yarn-debug.* yarn-error.*
+.pnp .pnp.js
+package-lock.json.bak
+
+# Vite / React (alert_civique_admin)
+alert_civique_admin/dist/
+alert_civique_admin/.vite/
+*.tsbuildinfo
+
+# ═══════════════════════════════════════════════════════
+#  EXPO / REACT NATIVE  (alert_civique_front)
+# ═══════════════════════════════════════════════════════
+.expo/
+web-build/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+/ios/ /android/    # Dossiers natifs générés par Expo
+*.hprof
+
+# ═══════════════════════════════════════════════════════
+#  DIVERS
+# ═══════════════════════════════════════════════════════
+*.tmp *.bak *.cache
+.nyc_output/ coverage/ .turbo/</pre>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_back/.gitignore</h3>
+        <div class="desc">Règles spécifiques Spring Boot : target/, classes, secrets, IDE IntelliJ/Eclipse/VS Code</div>
+      </div>
+      <div class="badges"><span class="badge b-git">Git</span><span class="badge b-maven">Maven</span></div>
+    </div>
+<pre># Maven
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE — STS, IntelliJ IDEA, NetBeans, VS Code
+.apt_generated .classpath .factorypath .project .settings .springBeans .sts4-cache
+.idea *.iws *.iml *.ipr
+/nbproject/private/ /nbbuild/ /dist/ /nbdist/ /.nb-gradle/ build/
+.vscode/
+
+# Sécurité — Fichiers sensibles
+application-local.properties
+application-dev.properties
+application-prod.properties
+application-staging.properties
+.env .env.local .env.*.local .env.ci .env.ci.local
+!.env.example
+
+# Certificats et secrets
+*.key *.pem *.secret *.keystore *.pfx
+secrets.properties
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Logs &amp; Uploads runtime
+*.log *.log.* *.gz
+logs/
+src/main/resources/static/uploads/
+
+# OS
+.DS_Store Thumbs.db</pre>
+  </div>
+
+  <div class="file-block">
+    <div class="file-header">
+      <div>
+        <h3>alert_civique_admin/.gitignore</h3>
+        <div class="desc">Règles spécifiques React/Vite : dist/, node_modules/, variables d'environnement</div>
+      </div>
+      <div class="badges"><span class="badge b-git">Git</span><span class="badge b-node">Vite</span></div>
+    </div>
+<pre># Vite / React Admin
+node_modules/
+dist/          # Build de production (généré par npm run build)
+.vite/         # Cache Vite
+*.tsbuildinfo  # Cache TypeScript
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store Thumbs.db</pre>
+  </div>
+</div>
+
+<!-- ══════════ F.9 PIPELINE CI/CD ══════════ -->
+<div class="section new-page">
+  <div class="section-header">
+    <h2>F.9 — Pipeline CI/CD cible</h2>
+    <div class="meta">Architecture du pipeline de livraison continue défini dans le dossier (section 5.5.3)</div>
+  </div>
+
+  <div class="info-box">
+    Le pipeline CI/CD ci-dessous représente la cible définie dans le dossier professionnel (section 5.5.3). L'infrastructure Jenkins + SonarQube est déployable via <code>docker-compose.ci.yml</code>. Les workflows GitHub Actions (<code>.github/workflows/</code>) constituent l'évolution prévue pour la V2.
+  </div>
+
+  <div class="pipeline-steps" style="margin-top:20px;">
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Lint &amp; Format</strong> — ESLint + Prettier<br>
+        <span style="color:#555">Vérification qualité code TypeScript/JavaScript — déclenché sur chaque push en branche feature</span><br>
+        <code>npx eslint . &amp;&amp; npx prettier --check .</code>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Tests Java (JUnit 5)</strong> — Maven + H2 in-memory<br>
+        <span style="color:#555">Suite complète 22 classes — déclenché sur push main / PR — profil @ActiveProfiles("test")</span><br>
+        <code>mvn test</code> → BUILD SUCCESS — 0 failures, 0 errors
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Tests Frontend (Jest + Vitest)</strong><br>
+        <span style="color:#555">Tests unitaires React Native (Jest) + Admin React (Vitest) avec rapport de couverture</span><br>
+        <code>npx jest &amp;&amp; npx vitest run --coverage</code>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Analyse statique SonarQube</strong><br>
+        <span style="color:#555">Couverture de code, dette technique, vulnérabilités (CWE), code smells — seuil : quality gate</span><br>
+        <code>mvn sonar:sonar -Dsonar.host.url=http://localhost:9000</code>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Build Java (JAR exécutable)</strong> — Maven<br>
+        <span style="color:#555">Génération du JAR Spring Boot — déclenché après merge PR en main</span><br>
+        <code>mvn package -DskipTests</code> → <code>target/alert_civique.jar</code>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Build React Admin (bundle Vite)</strong><br>
+        <span style="color:#555">Compilation TypeScript + bundle optimisé Vite pour production</span><br>
+        <code>npm run build</code> → <code>dist/</code>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Docker Build</strong> — Construction des images<br>
+        <span style="color:#555">Build image Spring Boot (multi-stage) + Node.js — déclenché sur merge main</span><br>
+        <code>docker build -t alert-civique-back:latest ./alert_civique_back</code>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Déploiement VPS</strong> — SSH + Docker Compose<br>
+        <span style="color:#555">Déploiement sur VPS Linux via SSH — <code>docker-compose up -d</code> — déclenché sur tag de version</span><br>
+        <code>ssh user@vps "docker-compose up -d --pull always"</code>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-content">
+        <strong>Tests smoke post-déploiement</strong> — curl / Postman<br>
+        <span style="color:#555">Vérification endpoints critiques après déploiement : /api/auth/login, /api/report, /health</span><br>
+        <code>curl -f http://vps:9090/api/health</code>
+      </div>
+    </div>
+  </div>
+
+  <table class="arch-table" style="margin-top:24px;">
+    <thead>
+      <tr><th>Étape</th><th>Outil</th><th>Action</th><th>Déclencheur</th><th>Statut</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Lint &amp; Format</td><td>ESLint + Prettier</td><td>Vérification qualité TypeScript/JS</td><td>Push branche feature</td><td>Cible V2</td></tr>
+      <tr><td>Tests Java</td><td>Maven + JUnit 5</td><td><code>mvn test</code> — suite H2</td><td>Push main / PR</td><td>Opérationnel</td></tr>
+      <tr><td>Tests JS/TS</td><td>Jest + Vitest</td><td>Tests unitaires front</td><td>Push main / PR</td><td>Opérationnel</td></tr>
+      <tr><td>Analyse statique</td><td>SonarQube</td><td>Couverture + dette technique</td><td>Push main</td><td>Docker prêt</td></tr>
+      <tr><td>Build Java</td><td>Maven</td><td><code>mvn package -DskipTests</code></td><td>PR mergée</td><td>Cible V2</td></tr>
+      <tr><td>Build React</td><td>Vite</td><td><code>npm run build</code></td><td>PR mergée</td><td>Cible V2</td></tr>
+      <tr><td>Docker Build</td><td>Docker</td><td>Build image Spring Boot + Node.js</td><td>Merge main</td><td>Cible V2</td></tr>
+      <tr><td>Déploiement VPS</td><td>SSH + Docker Compose</td><td><code>docker-compose up -d</code></td><td>Tag version</td><td>Cible V2</td></tr>
+      <tr><td>Tests smoke</td><td>curl / Postman</td><td>Vérification endpoints critiques</td><td>Post-déploiement</td><td>Cible V2</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn-box" style="margin-top:16px;">
+    <strong>Note :</strong> Les workflows GitHub Actions (<code>.github/workflows/*.yml</code>) sont définis comme évolution V2 dans le dossier. L'infrastructure Docker Jenkins + SonarQube (<code>docker-compose.ci.yml</code>) est opérationnelle localement. Le pipeline complet est implémenté manuellement pour la V1.
+  </div>
+</div>
+
+<div class="page-footer">
+  Alert_Civique &nbsp;|&nbsp; Annexe F — DevOps &amp; Infrastructure &nbsp;|&nbsp; Stéphane CALIXTE &nbsp;|&nbsp; Doranco &nbsp;|&nbsp; Titre CDA Niveau 6 &nbsp;|&nbsp; Session 2024–2025
+</div>
+
+</body>
+</html>

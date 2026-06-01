@@ -11,8 +11,6 @@ import com.enterprise.alert_civique.repository.ReportRepository;
 import com.enterprise.alert_civique.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-
 @Service
 public class ReportMessageMapperService {
 
@@ -37,7 +35,7 @@ public class ReportMessageMapperService {
             entity.getReport() != null ? entity.getReport().getReportId() : null,
             entity.getMessages() != null ? entity.getMessages().getMessageId() : null,
             entity.getReason(),
-            entity.getCreatedAt() != null ? LocalDate.parse(entity.getCreatedAt()) : null,
+            entity.getCreatedAt(),
             entity.getAlertType(),
             entity.getSenderName()
         );
@@ -70,7 +68,7 @@ public class ReportMessageMapperService {
         reportMessage.setAlertType(dto.alertType());
         reportMessage.setSenderName(dto.senderName());
         reportMessage.setCreatedAt(
-            dto.createdAt() != null ? dto.createdAt().toString() : LocalDate.now().toString()
+            dto.createdAt() != null ? dto.createdAt() : java.time.LocalDate.now().toString()
         );
 
         return reportMessage;

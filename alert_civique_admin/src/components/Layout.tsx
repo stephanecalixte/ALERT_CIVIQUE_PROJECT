@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { useApp } from '../contexts/AppContext';
 import {
   LayoutDashboard, Flame, AlertTriangle, Video, Users, LogOut,
-  Activity, MapPin, Bell
+  Activity, MapPin, Bell, MessageSquare
 } from 'lucide-react';
 
 interface LayoutProps { children: ReactNode }
@@ -14,24 +14,25 @@ const navItems = [
   { id: 'streams', label: 'Live Streams', icon: Video },
   { id: 'emergencies', label: 'Urgences terrain', icon: MapPin },
   { id: 'users', label: 'Utilisateurs', icon: Users },
+  { id: 'chat', label: 'Chat en direct', icon: MessageSquare },
 ];
 
 export function Layout({ children }: LayoutProps) {
   const { section, navigate, logout, currentUser } = useApp();
 
   return (
-    <div className="relative min-h-screen bg-black/40 font-mono">
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative', zIndex: 2 }}>
       {/* Barre latérale fixe */}
-      <aside className="fixed left-0 top-0 h-full w-72 bg-black/70 backdrop-blur-md border-r border-cyan-900/60 shadow-2xl z-20">
-        <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-cyan-800/50">
-            <h1 className="text-2xl font-bold tracking-wider bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
-              FIRECONTROL
-            </h1>
-            <p className="text-xs text-cyan-500/70 mt-1">Incident Management System</p>
+      <aside className="sidebar" style={{ width: 220, flexShrink: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border)' }}>
+            <div className="hdr-logo" style={{ fontSize: 16, letterSpacing: 2 }}>ALERT CIVIQUE</div>
+            <p style={{ fontSize: 10, fontFamily: 'Share Tech Mono', color: 'var(--txt-lo)', letterSpacing: 1, marginTop: 4 }}>
+              Incident Management System
+            </p>
           </div>
 
-          <nav className="flex-1 py-6 space-y-1">
+          <nav style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = section === item.id;
@@ -39,48 +40,67 @@ export function Layout({ children }: LayoutProps) {
                 <button
                   key={item.id}
                   onClick={() => navigate(item.id as any)}
-                  className={`
-                    w-full flex items-center gap-3 px-6 py-3 text-left transition-all duration-200
-                    ${isActive
-                      ? 'bg-cyan-900/40 border-l-4 border-cyan-400 text-cyan-200'
-                      : 'text-gray-400 hover:bg-white/5 hover:text-cyan-300'
-                    }
-                  `}
+                  className={`nav-item${isActive ? ' active' : ''}`}
                 >
-                  <Icon size={20} />
-                  <span className="text-sm font-medium tracking-wide">{item.label}</span>
-                  {isActive && <Activity size={14} className="ml-auto text-cyan-400 animate-pulse" />}
+                  <Icon size={16} />
+                  <span>{item.label}</span>
+                  {isActive && <Activity size={12} style={{ marginLeft: 'auto', color: 'var(--primary)' }} />}
                 </button>
               );
             })}
           </nav>
 
-          <div className="p-6 border-t border-cyan-800/50">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-cyan-800/50 flex items-center justify-center">
-                <Bell size={16} className="text-cyan-400" />
+          <div className="side-footer">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--card)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Bell size={14} style={{ color: 'var(--primary)' }} />
               </div>
-              <div className="flex-1 text-xs">
-                <p className="text-gray-400">{currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : 'Officer'}</p>
-                <p className="text-cyan-500">Role: Admin</p>
+              <div style={{ fontSize: 11 }}>
+                <div style={{ color: 'var(--txt-md)' }}>{currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : 'Officer'}</div>
+                <div style={{ color: 'var(--primary)', fontSize: 10 }}>Role: Admin</div>
               </div>
             </div>
             <button
               onClick={logout}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded border border-red-800/50 text-red-400 hover:bg-red-950/30 transition"
+              className="btn btn-danger"
+              style={{ width: '100%', justifyContent: 'center' }}
             >
-              <LogOut size={16} /> Logout
+              <LogOut size={14} /> Logout
             </button>
           </div>
         </div>
       </aside>
 
       {/* Contenu principal */}
-      <main className="ml-72 p-6 relative z-10 min-h-screen">
-        <div className="backdrop-blur-sm bg-black/30 rounded-2xl border border-white/10 p-6 shadow-2xl">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Zone scrollable */}
+        <div className="main page" style={{ flex: 1, overflowY: 'auto' }}>
           {children}
         </div>
-      </main>
+
+        {/* Footer */}
+        <footer style={{
+          flexShrink: 0,
+          padding: '10px 24px',
+          borderTop: '1px solid var(--border)',
+          background: 'rgba(3,9,18,0.9)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontFamily: 'Share Tech Mono, monospace',
+          fontSize: 11,
+          color: 'var(--txt-lo)',
+          letterSpacing: 1,
+        }}>
+          <span style={{ textTransform: 'uppercase' }}>
+            Alert Civique &copy; {new Date().getFullYear()} — Command Center v1.0
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 6px var(--green)', display: 'inline-block' }} />
+            Tous systèmes opérationnels
+          </span>
+        </footer>
+      </div>
     </div>
   );
 }

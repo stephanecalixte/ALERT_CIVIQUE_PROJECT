@@ -45,6 +45,13 @@ public class RegisterServiceTest {
         // Nettoyer la base avant chaque test
         userRepository.deleteAll();
 
+        // S'assurer que ROLE_CLIENT existe (DataInitializer ne tourne pas en profil test)
+        if (roleRepository.findFirstByName("ROLE_CLIENT").isEmpty()) {
+            Roles roleClient = new Roles();
+            roleClient.setName("ROLE_CLIENT");
+            roleRepository.save(roleClient);
+        }
+
         // Créer une demande d'inscription valide
         validRequest = new UserRegisterRequestDto();
         validRequest.setFirstname("John");
@@ -63,7 +70,7 @@ public class RegisterServiceTest {
 
         // Assert
         assertNotNull(response, "La réponse ne doit pas être null");
-        assertNotNull(response.getUserId(), "L'ID utilisateur doit être généré");
+        assertNotNull(response.getId(), "L'ID utilisateur doit être généré");
         assertEquals(validRequest.getEmail().toLowerCase(), response.getEmail(), "L'email doit correspondre");
         assertEquals(validRequest.getFirstname(), response.getFirstname(), "Le firstname doit correspondre");
         assertEquals(validRequest.getLastname(), response.getLastname(), "Le lastname doit correspondre");
@@ -190,7 +197,7 @@ public class RegisterServiceTest {
 
         // Assert
         assertNotNull(response, "La réponse ne doit pas être null");
-        Users savedUser = userRepository.findById(response.getUserId()).orElse(null);
+        Users savedUser = userRepository.findById(response.getId()).orElse(null);
         assertNotNull(savedUser, "L'utilisateur doit exister dans la DB");
         assertTrue(savedUser.getRoles().stream()
                 .anyMatch(r -> "ROLE_CLIENT".equals(r.getName())),

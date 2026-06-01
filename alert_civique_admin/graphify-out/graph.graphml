@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="label" for="node" attr.name="label" attr.type="string"/>
+  <key id="node_type" for="node" attr.name="node_type" attr.type="string"/>
+  <key id="source_file" for="node" attr.name="source_file" attr.type="string"/>
+  <key id="community" for="node" attr.name="community" attr.type="int"/>
+  <key id="relation" for="edge" attr.name="relation" attr.type="string"/>
+  <key id="confidence" for="edge" attr.name="confidence" attr.type="string"/>
+  <key id="confidence_score" for="edge" attr.name="confidence_score" attr.type="double"/>
+  <key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+  <graph id="G" edgedefault="undirected">
+    <node id="src_components_playercontrols_tsx">
+      <data key="label">PlayerControls</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_import_lucide_react_play">
+      <data key="label">lucide-react/Play</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_import_lucide_react_pause">
+      <data key="label">lucide-react/Pause</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_import_lucide_react_volume2">
+      <data key="label">lucide-react/Volume2</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_import_lucide_react_volumex">
+      <data key="label">lucide-react/VolumeX</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_import_lucide_react_maximize2">
+      <data key="label">lucide-react/Maximize2</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_import_lucide_react_minimize2">
+      <data key="label">lucide-react/Minimize2</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_fmt">
+      <data key="label">fmt()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playercontrols_tsx_playercontrols">
+      <data key="label">PlayerControls()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\src\components\PlayerControls.tsx</data>
+      <data key="community">1</data>
+    </node>
+    <node id="src_components_playeroverlay_tsx">
+      <data key="label">PlayerOverlay</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\src\components\PlayerOverlay.tsx</data>
+      <data key="community">3</data>
+    </node>
+    <node id="src_components_playeroverlay_tsx_import_lucide_react_alerttriangle">
+      <data key="label">lucide-react/AlertTriangle</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerOverlay.tsx</data>
+      <data key="community">3</data>
+    </node>
+    <node id="src_components_playeroverlay_tsx_import_lucide_react_loader2">
+      <data key="label">lucide-react/Loader2</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerOverlay.tsx</data>
+      <data key="community">3</data>
+    </node>
+    <node id="src_components_playeroverlay_tsx_import_lucide_react_radio">
+      <data key="label">lucide-react/Radio</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerOverlay.tsx</data>
+      <data key="community">3</data>
+    </node>
+    <node id="src_components_playeroverlay_tsx_import_lucide_react_refreshcw">
+      <data key="label">lucide-react/RefreshCw</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerOverlay.tsx</data>
+      <data key="community">3</data>
+    </node>
+    <node id="src_components_playeroverlay_tsx_import_hooks_usehlsplayer_playerstatus">
+      <data key="label">../hooks/useHlsPlayer/PlayerStatus</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\components\PlayerOverlay.tsx</data>
+      <data key="community">3</data>
+    </node>
+    <node id="src_hooks_usehlsplayer_ts">
+      <data key="label">useHlsPlayer</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\src\hooks\useHlsPlayer.ts</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_hooks_usehlsplayer_ts_import_react_useeffect">
+      <data key="label">react/useEffect</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useHlsPlayer.ts</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_hooks_usehlsplayer_ts_import_react_useref">
+      <data key="label">react/useRef</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useHlsPlayer.ts</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_hooks_usehlsplayer_ts_import_react_usestate">
+      <data key="label">react/useState</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useHlsPlayer.ts</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_hooks_usehlsplayer_ts_import_react_usecallback">
+      <data key="label">react/useCallback</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useHlsPlayer.ts</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_hooks_usehlsplayer_ts_import_hls_js_hls">
+      <data key="label">hls.js/Hls</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useHlsPlayer.ts</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_hooks_usehlsplayer_ts_usehlsplayer">
+      <data key="label">useHlsPlayer()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\src\hooks\useHlsPlayer.ts</data>
+      <data key="community">2</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts">
+      <data key="label">useStreamsData</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_import_react_useeffect">
+      <data key="label">react/useEffect</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_import_react_useref">
+      <data key="label">react/useRef</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_import_react_usestate">
+      <data key="label">react/useState</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_import_react_usecallback">
+      <data key="label">react/useCallback</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_import_socket_io_client_io">
+      <data key="label">socket.io-client/io</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_import_services_api_api">
+      <data key="label">../services/api/api</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_import_types_adminstream">
+      <data key="label">../types/AdminStream</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="src_hooks_usestreamsdata_ts_usestreamsdata">
+      <data key="label">useStreamsData()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\src\hooks\useStreamsData.ts</data>
+      <data key="community">0</data>
+    </node>
+    <edge id="e0" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_import_lucide_react_play">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e1" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_import_lucide_react_pause">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e2" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_import_lucide_react_volume2">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e3" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_import_lucide_react_volumex">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e4" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_import_lucide_react_maximize2">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e5" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_import_lucide_react_minimize2">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e6" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_fmt">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e7" source="src_components_playercontrols_tsx" target="src_components_playercontrols_tsx_playercontrols">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e8" source="src_components_playeroverlay_tsx" target="src_components_playeroverlay_tsx_import_lucide_react_alerttriangle">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e9" source="src_components_playeroverlay_tsx" target="src_components_playeroverlay_tsx_import_lucide_react_loader2">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e10" source="src_components_playeroverlay_tsx" target="src_components_playeroverlay_tsx_import_lucide_react_radio">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e11" source="src_components_playeroverlay_tsx" target="src_components_playeroverlay_tsx_import_lucide_react_refreshcw">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e12" source="src_components_playeroverlay_tsx" target="src_components_playeroverlay_tsx_import_hooks_usehlsplayer_playerstatus">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e13" source="src_hooks_usehlsplayer_ts" target="src_hooks_usehlsplayer_ts_import_react_useeffect">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e14" source="src_hooks_usehlsplayer_ts" target="src_hooks_usehlsplayer_ts_import_react_useref">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e15" source="src_hooks_usehlsplayer_ts" target="src_hooks_usehlsplayer_ts_import_react_usestate">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e16" source="src_hooks_usehlsplayer_ts" target="src_hooks_usehlsplayer_ts_import_react_usecallback">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e17" source="src_hooks_usehlsplayer_ts" target="src_hooks_usehlsplayer_ts_import_hls_js_hls">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e18" source="src_hooks_usehlsplayer_ts" target="src_hooks_usehlsplayer_ts_usehlsplayer">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e19" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_import_react_useeffect">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e20" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_import_react_useref">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e21" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_import_react_usestate">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e22" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_import_react_usecallback">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e23" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_import_socket_io_client_io">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e24" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_import_services_api_api">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e25" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_import_types_adminstream">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e26" source="src_hooks_usestreamsdata_ts" target="src_hooks_usestreamsdata_ts_usestreamsdata">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+  </graph>
+</graphml>

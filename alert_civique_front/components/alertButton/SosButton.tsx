@@ -6,7 +6,6 @@ import {
   View,
   ActivityIndicator,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { useReportFlow, ReportFlowResult } from '@/hooks/useReportFlow';
 import { useMessagesContext } from '@/contexts/MessagesContext';
@@ -126,14 +125,6 @@ export default function SosButton({ onSosComplete }: SosButtonProps) {
 
   const handleSosPress = async () => {
     const flowResult = await triggerSos();
-    if (flowResult.error === 'not_authenticated') {
-      Alert.alert(
-        'Connexion requise',
-        'Vous devez être connecté pour envoyer un SOS.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
     setAlertType('sos');
     sendAlertReport('sos');
     onSosComplete?.(flowResult);

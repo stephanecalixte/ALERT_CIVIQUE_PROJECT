@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-20T00:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="SOS" id="seq-sos">
+    <mxGraphModel grid="0" pageWidth="1200" pageHeight="1380" shadow="1">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="t" value="Diagramme de Séquence — Déclenchement SOS&#xa;React Native · useReportFlow · Backend Spring Boot · MariaDB" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;whiteSpace=wrap;rounded=1;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="80" y="10" width="1040" height="50" as="geometry" /></mxCell>
+
+        <!-- HEADERS  cx: Citoyen=110 | AppMobile=310 | useReportFlow=540 | Backend=770 | MariaDB=1000 -->
+        <mxCell id="h1" value="&lt;b&gt;Citoyen&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1"><mxGeometry x="30" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h2" value="&lt;b&gt;App Mobile&lt;/b&gt;&#xa;React Native" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="230" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h3" value="&lt;b&gt;useReportFlow&lt;/b&gt;&#xa;Hook" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="460" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h4" value="&lt;b&gt;Backend API&lt;/b&gt;&#xa;Spring Boot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="690" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h5" value="&lt;b&gt;MariaDB&lt;/b&gt;&#xa;Base de données" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="920" y="70" width="160" height="50" as="geometry" /></mxCell>
+
+        <!-- LIFELINES -->
+        <mxCell id="l1" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="110" y="120" as="sourcePoint" /><mxPoint x="110" y="1310" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l2" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#6c8ebf;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="310" y="120" as="sourcePoint" /><mxPoint x="310" y="1310" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l3" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#6c8ebf;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="120" as="sourcePoint" /><mxPoint x="540" y="1310" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l4" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#82b366;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="770" y="120" as="sourcePoint" /><mxPoint x="770" y="1310" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l5" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#d79b00;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="1000" y="120" as="sourcePoint" /><mxPoint x="1000" y="1310" as="targetPoint" /></mxGeometry></mxCell>
+
+        <!-- MESSAGES -->
+        <mxCell id="m1" value="1. Appuie bouton SOS" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="110" y="175" as="sourcePoint" /><mxPoint x="310" y="175" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m2" value="2. triggerSos()" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="310" y="230" as="sourcePoint" /><mxPoint x="540" y="230" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m3" value="3. getCurrentPositionAsync()  state='locating'" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="285" as="sourcePoint" /><mxPoint x="540" y="320" as="targetPoint" /><Array as="points"><mxPoint x="625" y="285" /><mxPoint x="625" y="320" /></Array></mxGeometry></mxCell>
+        <mxCell id="m4" value="4. reverseGeocodeAsync() → adresse lisible" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="355" as="sourcePoint" /><mxPoint x="540" y="390" as="targetPoint" /><Array as="points"><mxPoint x="625" y="355" /><mxPoint x="625" y="390" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="m5" value="5. POST /api/geolocalisation  { lat, lon, timestamp }" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="430" as="sourcePoint" /><mxPoint x="770" y="430" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m6" value="6. save(geolocalisation)" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="770" y="485" as="sourcePoint" /><mxPoint x="1000" y="485" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m7" value="7. « geolocalisationId »" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="1000" y="540" as="sourcePoint" /><mxPoint x="770" y="540" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m8" value="8. 201 Created { geolocalisationId }" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="770" y="595" as="sourcePoint" /><mxPoint x="540" y="595" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m9" value="9. POST /api/report  { alertType:'sos', status:PENDING, anonymous, geolocalisationId }" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="650" as="sourcePoint" /><mxPoint x="770" y="650" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m10" value="10. reportRepository.save(report)" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="770" y="705" as="sourcePoint" /><mxPoint x="1000" y="705" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m11" value="11. « reportId, status:PENDING »" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="1000" y="760" as="sourcePoint" /><mxPoint x="770" y="760" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m12" value="12. 201 Created { reportId }" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="770" y="815" as="sourcePoint" /><mxPoint x="540" y="815" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m13" value="13. POST /api/push-notification  { userId, reportId }" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="870" as="sourcePoint" /><mxPoint x="770" y="870" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m14" value="14. POST /api/emergencies-alert  { email:'autorites@alertcivique.fr' }" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="920" as="sourcePoint" /><mxPoint x="770" y="920" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m15" value="15. POST /api/trusted-contact/notify  (contacts de confiance)" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="970" as="sourcePoint" /><mxPoint x="770" y="970" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m16" value="16. ReportFlowResult { reportId, done, pushNotificationSent }" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="1030" as="sourcePoint" /><mxPoint x="310" y="1030" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m17" value="17. Afficher ConfirmationScreen ✓  state='done'" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="310" y="1090" as="sourcePoint" /><mxPoint x="110" y="1090" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="note" value="⚠ Hors ligne : saveOffline() → AsyncStorage (@report_offline_queue)&#xa;Reconnexion : retryOfflineQueue() renvoie automatiquement les reports en attente" style="text;html=1;align=left;strokeColor=#b85450;fillColor=#f8cecc;rounded=1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="570" y="1155" width="470" height="45" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

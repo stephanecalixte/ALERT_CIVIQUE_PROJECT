@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useLiveStreamManager } from '../../hooks/useLiveStreamManager';
 import LiveStreamCamera from '../../components/LiveStreamCamera';
-import { useAuth } from '../../contexts/AuthContext';
+
 
 interface LiveStreamScreenProps {
   onClose?: () => void;
@@ -11,8 +11,8 @@ interface LiveStreamScreenProps {
 }
 
 export default function LiveStreamScreen({ onClose, autoStart: autoStartProp = false }: LiveStreamScreenProps) {
-  const { user } = useAuth();
-  const userId = user?.userId?.toString();
+
+
   const router = useRouter();
   const params = useLocalSearchParams<{ autoStart?: string }>();
   const autoStart = autoStartProp || params.autoStart === 'true';
@@ -29,13 +29,7 @@ export default function LiveStreamScreen({ onClose, autoStart: autoStartProp = f
     streams,
   } = useLiveStreamManager(autoStart);
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Chargement... (User ID: {userId})</Text>
-      </View>
-    );
-  }
+ 
 
   if (!hasPermission) {
     return (
@@ -62,7 +56,7 @@ export default function LiveStreamScreen({ onClose, autoStart: autoStartProp = f
         <>
           <View style={styles.header}>
             <Text style={styles.title}>Live Stream</Text>
-            <Text style={styles.subtitle}>User: {userId}</Text>
+          
           </View>
           <TouchableOpacity style={styles.startButton} onPress={toggleCamera}>
             <Text style={styles.startButtonText}>Démarrer Live Stream</Text>

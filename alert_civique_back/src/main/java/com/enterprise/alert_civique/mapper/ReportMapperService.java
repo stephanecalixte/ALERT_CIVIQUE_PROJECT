@@ -25,13 +25,16 @@ public class ReportMapperService {
         Long userId = report.getUser() != null ?
             report.getUser().getUserId() : null;
 
+        Double latitude = report.getGeolocalisation() != null ? report.getGeolocalisation().getLatitude() : null;
+        Double longitude = report.getGeolocalisation() != null ? report.getGeolocalisation().getLongitude() : null;
+
         return new ReportDTO(
             report.getReportId(),
             report.getDescription(),
             report.getCreatedAt(),
-            null,           // latitude
-            null,           // longitude
-            null,           // locationText
+            latitude,
+            longitude,
+            null,           // locationText — champ libre non stocké en entité
             status,
             priority,
             report.getAnonymous(),

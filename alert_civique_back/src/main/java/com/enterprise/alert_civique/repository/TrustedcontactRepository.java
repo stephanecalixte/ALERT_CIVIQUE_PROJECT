@@ -12,6 +12,6 @@ import com.enterprise.alert_civique.entity.TrustedContact;
 @Repository
 public interface TrustedcontactRepository extends JpaRepository<TrustedContact, Long> {
 
-    List<TrustedContact> findByUserId(Long userId);
+    List<TrustedContact> findByUserUserId(Long userId);
 
 }

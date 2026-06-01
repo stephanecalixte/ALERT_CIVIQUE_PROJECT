@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { CameraView } from 'expo-camera';
 import { useLiveStreamManager } from '../../hooks/useLiveStreamManager';
-
 import { AlertType } from '@/contexts/AlertContext';
 
 interface LiveStreamScreenProps {
@@ -14,17 +12,13 @@ interface LiveStreamScreenProps {
 
 export default function LiveStreamScreen({ onClose, autoStart = false, reportId, alertType }: LiveStreamScreenProps) {
   const {
-    facing,
-    toggleCameraFacing,
     isLoading,
     isCameraActive,
     hasPermission,
-    cameraRef,
     toggleCamera,
     recording,
     isUploading,
     checkCameraPermission,
-    onCameraReady,
   } = useLiveStreamManager(autoStart, onClose, reportId, alertType);
 
   useEffect(() => {
@@ -34,6 +28,7 @@ export default function LiveStreamScreen({ onClose, autoStart = false, reportId,
   if (isLoading) {
     return (
       <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007AFF" />
         <Text style={styles.text}>Chargement...</Text>
       </View>
     );
@@ -43,67 +38,55 @@ export default function LiveStreamScreen({ onClose, autoStart = false, reportId,
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Permission caméra requise</Text>
-        <TouchableOpacity onPress={checkCameraPermission} style={styles.permissionButton}>
-          <Text style={styles.permissionButtonText}>Autoriser la caméra</Text>
+        <TouchableOpacity onPress={checkCameraPermission} style={styles.actionButton}>
+          <Text style={styles.actionButtonText}>Autoriser la caméra</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  // Overlay upload en cours
   if (isUploading) {
     return (
       <View style={styles.container}>
-        <View style={styles.uploadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.uploadingText}>Enregistrement de la vidéo...</Text>
-        </View>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={styles.statusText}>Envoi de la vidéo en cours...</Text>
+      </View>
+    );
+  }
+
+  if (recording) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#FF3B30" />
+        <Text style={styles.statusText}>Ouverture de la caméra...</Text>
+        <Text style={styles.hintText}>Enregistre ta vidéo puis appuie sur stop dans la caméra</Text>
+      </View>
+    );
+  }
+
+  if (isCameraActive) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={styles.statusText}>Préparation...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {onClose && !isCameraActive && (
+      {onClose && (
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeButtonText}>Fermer</Text>
         </TouchableOpacity>
       )}
-
-      {isCameraActive ? (
-        <View style={styles.cameraContainer}>
-          <CameraView
-            ref={cameraRef}
-            style={styles.camera}
-            facing={facing}
-            mode="video"
-            onCameraReady={onCameraReady}
-          />
-
-          {recording && (
-            <View style={styles.recordingIndicator}>
-              <View style={styles.recordingDot} />
-              <Text style={styles.recordingText}>ENREGISTREMENT EN COURS</Text>
-            </View>
-          )}
-
-          <TouchableOpacity style={styles.stopButton} onPress={toggleCamera}>
-            <Text style={styles.stopButtonText}>Arrêter</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
-            <Text style={styles.flipButtonText}>⟳</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.startContainer}>
-          <Text style={styles.title}>Enregistrement vidéo</Text>
-          <Text style={styles.subtitle}>La vidéo sera sauvegardée automatiquement</Text>
-          <TouchableOpacity style={styles.startButton} onPress={toggleCamera}>
-            <Text style={styles.startButtonText}>▶ Démarrer</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <View style={styles.startContainer}>
+        <Text style={styles.title}>Enregistrement vidéo</Text>
+        <Text style={styles.subtitle}>La vidéo sera sauvegardée sur ton téléphone et envoyée aux autorités</Text>
+        <TouchableOpacity style={styles.actionButton} onPress={toggleCamera}>
+          <Text style={styles.actionButtonText}>▶ Démarrer</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -112,37 +95,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-  },
-  cameraContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  camera: {
-    flex: 1,
-  },
-  startContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
-  uploadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  startContainer: {
     alignItems: 'center',
-    gap: 20,
-  },
-  uploadingText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    padding: 20,
   },
   closeButton: {
     position: 'absolute',
     top: 50,
     right: 20,
-    zIndex: 100,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     padding: 10,
     borderRadius: 20,
   },
@@ -150,40 +115,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  stopButton: {
-    position: 'absolute',
-    bottom: 30,
-    alignSelf: 'center',
-    backgroundColor: '#FF3B30',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'white',
-  },
-  stopButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  flipButton: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  flipButtonText: {
-    color: 'white',
-    fontSize: 24,
-  },
-  startButton: {
+  actionButton: {
     backgroundColor: '#FF3B30',
     paddingHorizontal: 40,
     paddingVertical: 18,
@@ -191,7 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  startButtonText: {
+  actionButtonText: {
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
@@ -208,43 +140,23 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
+  statusText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  hintText: {
+    color: '#999',
+    fontSize: 13,
+    marginTop: 12,
+    textAlign: 'center',
+  },
   text: {
     fontSize: 18,
     color: 'white',
     textAlign: 'center',
-  },
-  permissionButton: {
-    backgroundColor: '#FF3B30',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
     marginTop: 20,
-  },
-  permissionButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  recordingIndicator: {
-    position: 'absolute',
-    top: 50,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  recordingDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#FF3B30',
-    marginRight: 8,
-  },
-  recordingText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12,
   },
 });

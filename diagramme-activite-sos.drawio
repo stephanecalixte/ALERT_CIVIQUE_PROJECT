@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-20T00:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="Activité - SOS" id="activity-sos">
+    <mxGraphModel grid="1" gridSize="10" pageWidth="1169" pageHeight="1980" shadow="1">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Diagramme d'Activité — Déclenchement SOS&#xa;Alert Civique · React Native · Spring Boot · MariaDB" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="300" y="10" width="580" height="55" as="geometry" /></mxCell>
+
+        <mxCell id="note" value="Contexte : Le citoyen signale un incident urgent via le bouton SOS.&#xa;Aucune connexion requise — le signalement peut être anonyme." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;whiteSpace=wrap;rounded=1;fontSize=11;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="300" y="73" width="580" height="45" as="geometry" /></mxCell>
+
+        <!-- NOEUD INITIAL -->
+        <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1"><mxGeometry x="560" y="145" width="40" height="40" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 1 -->
+        <mxCell id="act_sos" value="&lt;b&gt;Utilisateur appuie sur le bouton SOS&lt;/b&gt;&#xa;SosButton.tsx → handleSosPress()&#xa;useReportFlow.triggerSos()" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="220" width="380" height="65" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 2 -->
+        <mxCell id="act_perm" value="Demande permission localisation&#xa;expo-location: requestForegroundPermissions()" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="323" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- DÉCISION permission -->
+        <mxCell id="dec_perm" value="Permission&#xa;accordée ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="415" width="200" height="70" as="geometry" /></mxCell>
+        <mxCell id="err_perm" value="Afficher message d'erreur&#xa;permission refusée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="423" width="190" height="54" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 3 -->
+        <mxCell id="act_gps" value="Récupération position GPS&#xa;getCurrentPositionAsync()  —  state = 'locating'" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="525" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- DÉCISION GPS -->
+        <mxCell id="dec_gps" value="GPS&#xa;disponible ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="617" width="200" height="70" as="geometry" /></mxCell>
+        <mxCell id="act_nogps" value="locationText = 'Position inconnue'&#xa;lat / lon = undefined" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="625" width="190" height="54" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 4 -->
+        <mxCell id="act_geocode" value="Reverse géocodage&#xa;reverseGeocodeAsync() → adresse lisible (rue, ville)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="730" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 5 -->
+        <mxCell id="act_post_geo" value="POST /api/geolocalisation&#xa;GeolocalisationService.create()  —  { lat, lon, timestamp }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="825" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 6 -->
+        <mxCell id="act_post_rep" value="POST /api/report&#xa;ReportService.createReport()&#xa;{ alertType:'sos', status:PENDING, anonymous, geolocalisationId }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="920" width="380" height="70" as="geometry" /></mxCell>
+
+        <!-- DÉCISION réseau -->
+        <mxCell id="dec_net" value="Réseau&#xa;disponible ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="1028" width="200" height="70" as="geometry" /></mxCell>
+        <mxCell id="act_offline" value="⚠ Sauvegarde hors ligne&#xa;AsyncStorage (@report_offline_queue)&#xa;retryOfflineQueue() à la reconnexion" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="1028" width="190" height="70" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 7 Backend -->
+        <mxCell id="act_backend" value="Backend : Validation DTO  —  ReportMapperService.toEntity()&#xa;Résolution User + Géolocalisation&#xa;reportRepository.save(report)  —  Status = PENDING  (MariaDB)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1148" width="380" height="70" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 8 Push notification -->
+        <mxCell id="act_push" value="POST /api/push-notification&#xa;PushNotificationService.send()  →  Utilisateur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1258" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 9 Alerte autorités -->
+        <mxCell id="act_auth" value="POST /api/emergencies-alert&#xa;EmergenciesAlertService  →  autorites@alertcivique.fr" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1353" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 10 Contacts -->
+        <mxCell id="act_trusted" value="POST /api/trusted-contact/notify&#xa;TrustedContactService  →  Contacts de confiance notifiés" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1448" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 11 Résultat -->
+        <mxCell id="act_result" value="Retourner ReportFlowResult&#xa;{ reportId, offline:false, pushNotificationSent, authorityAlertSent }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1548" width="380" height="60" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 12 Confirmation -->
+        <mxCell id="act_confirm" value="Afficher ConfirmationScreen ✓&#xa;state = 'done'" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1658" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- NOEUD FINAL -->
+        <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;double=1;" vertex="1" parent="1"><mxGeometry x="560" y="1753" width="40" height="40" as="geometry" /></mxCell>
+
+        <!-- ===== EDGES ===== -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="start" target="act_sos" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_sos" target="act_perm" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_perm" target="dec_perm" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e4" value="Non" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_perm" target="err_perm" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="Corriger" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="err_perm" target="act_perm" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="350" /><mxPoint x="770" y="350" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e6" value="Oui" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_perm" target="act_gps" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_gps" target="dec_gps" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e8" value="Oui" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_gps" target="act_geocode" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" value="Non" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_gps" target="act_nogps" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9b" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_nogps" target="act_post_geo" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="852" /><mxPoint x="770" y="852" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_geocode" target="act_post_geo" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_post_geo" target="act_post_rep" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_post_rep" target="dec_net" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e13" value="Non" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_net" target="act_offline" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" value="Reconnexion" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="act_offline" target="act_backend" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="1183" /><mxPoint x="770" y="1183" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e15" value="Oui" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_net" target="act_backend" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_backend" target="act_push" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_push" target="act_auth" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_auth" target="act_trusted" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_trusted" target="act_result" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_result" target="act_confirm" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_confirm" target="end" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

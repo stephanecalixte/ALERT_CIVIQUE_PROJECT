@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-20T00:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="Inscription" id="seq-inscription">
+    <mxGraphModel grid="0" pageWidth="1020" pageHeight="1020" shadow="1">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="t" value="Diagramme de Séquence — Inscription (Création de compte)&#xa;React Native · Backend Spring Boot · BCrypt · JWT · MariaDB" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=center;whiteSpace=wrap;rounded=1;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="60" y="10" width="900" height="50" as="geometry" /></mxCell>
+
+        <!-- HEADERS  cx: Utilisateur=100 | RegisterScreen=300 | Backend=560 | MariaDB=860 -->
+        <mxCell id="h1" value="&lt;b&gt;Utilisateur&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1"><mxGeometry x="20" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h2" value="&lt;b&gt;RegisterScreen.tsx&lt;/b&gt;&#xa;React Native" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h3" value="&lt;b&gt;Backend API&lt;/b&gt;&#xa;Spring Boot · AuthService · BCrypt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="460" y="70" width="200" height="50" as="geometry" /></mxCell>
+        <mxCell id="h4" value="&lt;b&gt;MariaDB&lt;/b&gt;&#xa;Base de données" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="780" y="70" width="160" height="50" as="geometry" /></mxCell>
+
+        <!-- LIFELINES -->
+        <mxCell id="l1" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint" /><mxPoint x="100" y="970" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l2" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#6c8ebf;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="300" y="120" as="sourcePoint" /><mxPoint x="300" y="970" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l3" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#82b366;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="560" y="120" as="sourcePoint" /><mxPoint x="560" y="970" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l4" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#d79b00;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="860" y="120" as="sourcePoint" /><mxPoint x="860" y="970" as="targetPoint" /></mxGeometry></mxCell>
+
+        <!-- MESSAGES -->
+        <mxCell id="m1" value="1. Saisit nom, prénom, email, mot de passe, confirmation" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="175" as="sourcePoint" /><mxPoint x="300" y="175" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m2" value="2. POST /api/auth/register  { nom, prenom, email, password }" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="300" y="230" as="sourcePoint" /><mxPoint x="560" y="230" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m3" value="3. findByEmail(email) — vérification doublon" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="560" y="285" as="sourcePoint" /><mxPoint x="860" y="285" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m4" value="4. « User | null »" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="860" y="340" as="sourcePoint" /><mxPoint x="560" y="340" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="note_conflict" value="[Si email existant → 409 Conflict — RegisterScreen affiche 'Email déjà utilisé']" style="text;html=1;align=left;strokeColor=#b85450;fillColor=#f8cecc;rounded=1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="430" y="358" width="490" height="28" as="geometry" /></mxCell>
+
+        <mxCell id="m5" value="5. BCrypt.encode(password) — chiffrement mot de passe" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="560" y="415" as="sourcePoint" /><mxPoint x="560" y="450" as="targetPoint" /><Array as="points"><mxPoint x="645" y="415" /><mxPoint x="645" y="450" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="m6" value="6. userRepository.save(user)  rôle par défaut: ROLE_USER" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="560" y="490" as="sourcePoint" /><mxPoint x="860" y="490" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m7" value="7. « User { userId, email, role:ROLE_USER } »" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="860" y="545" as="sourcePoint" /><mxPoint x="560" y="545" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m8" value="8. JwtService.generateToken(userDetails)" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="560" y="595" as="sourcePoint" /><mxPoint x="560" y="630" as="targetPoint" /><Array as="points"><mxPoint x="645" y="595" /><mxPoint x="645" y="630" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="m9" value="9. 201 Created  { token, userId, email, role }" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="560" y="675" as="sourcePoint" /><mxPoint x="300" y="675" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m10" value="10. AsyncStorage.setItem('token', jwt)  + mise à jour AuthContext" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="300" y="725" as="sourcePoint" /><mxPoint x="300" y="760" as="targetPoint" /><Array as="points"><mxPoint x="385" y="725" /><mxPoint x="385" y="760" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="m11" value="11. Accès à l'application — HomeScreen" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="300" y="810" as="sourcePoint" /><mxPoint x="100" y="810" as="targetPoint" /></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -10,7 +10,8 @@ public class InputSanitizer {
         if (input == null) {
             return null;
         }
-        return Encode.forHtml(input.trim());
+        String stripped = input.trim().replaceAll("<[^>]*>", "");
+        return Encode.forHtml(stripped);
     }
 
 }

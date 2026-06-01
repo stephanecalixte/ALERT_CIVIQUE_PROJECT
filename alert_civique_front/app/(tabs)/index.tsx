@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapScreen from '@/components/MapScreen';
+import MapScreen from '@/app/views/MapScreen';
 import LoadingPage from '../views/loadingPage/LoadingPage';
 import SosButton from '@/components/alertButton/SosButton';
 import { ConfirmationScreen } from '@/components/alertButton/SosButton';
@@ -9,11 +9,14 @@ import MessageButton from '@/components/alertButton/MessageButton';
 import CameraButton from '@/components/alertButton/CameraButton';
 import MicButton from '@/components/alertButton/MicButton';
 import LiveStreamScreen from '@/app/views/LiveStreamSreen';
-import CameraScreen from '@/components/CameraScreen';
-import AudioRecordScreen from '@/components/AudioRecordScreen';
+import CameraScreen from '@/app/views/CameraScreen';
+import AudioRecordScreen from '@/app/views/AudioRecordScreen';
 import { useAlert, AlertType } from '@/contexts/AlertContext';
 import { useMessagesContext } from '@/contexts/MessagesContext';
 import { ReportFlowResult } from '@/hooks/useReportFlow';
+import ReportService from '@/app/lib/services/ReportService';
+import { useAuth } from '@/contexts/AuthContext';
+import { getLocationData } from '@/hooks/useGpsRegion';
 
 type OverlayType = null | 'livestream' | 'photo' | 'audio' | 'sos-confirm' | 'sos-stream';
 
@@ -25,10 +28,22 @@ export default function HomeScreen() {
 
   const { setAlertType } = useAlert();
   const { sendAlertReport } = useMessagesContext();
+  const { token, user } = useAuth();
 
   const handleAlertSelect = (type: AlertType) => {
     setAlertType(type);
     sendAlertReport(type);
+    (async () => {
+      const { latitude, longitude, locationText } = await getLocationData();
+      ReportService.createReport({
+        description: `Signalement ${type}`,
+        alertType: type,
+        anonymous: !user?.userId,
+        ...(user?.userId && { userId: Number(user.userId) }),
+        ...(latitude != null && { latitude, longitude: longitude ?? undefined }),
+        ...(locationText && { locationText }),
+      }, token ?? '').catch(() => {});
+    })();
   };
 
   const closeOverlay = () => {

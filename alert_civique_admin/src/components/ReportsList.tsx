@@ -2,19 +2,21 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { api, STATUS_LABEL, NEXT_STATUS, fmtDate } from '../services/api';
 import { CheckCircle, XCircle, Archive, RefreshCw } from 'lucide-react';
+import type { AdminReport } from '../types';
 
 export function ReportsList() {
-  const { token, toast } = useApp();   // ← OK
-  const [reports, setReports] = useState<any[]>([]);
+  const { token, toast } = useApp();
+  const [reports, setReports] = useState<AdminReport[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     if (!token) return;
+    setLoading(true);
     try {
       const data = await api.getReports(token);
       setReports(data);
-    } catch (err) {
-      toast('Failed to load reports', 'error');
+    } catch {
+      toast('Impossible de charger les signalements', 'error');
     } finally {
       setLoading(false);
     }
@@ -33,10 +35,13 @@ export function ReportsList() {
   };
 
   const deleteReport = async (id: number) => {
-    if (confirm('Delete this report?')) {
+    if (!confirm('Supprimer ce signalement ?')) return;
+    try {
       await api.deleteReport(id, token);
-      toast('Report deleted', 'info');
+      toast('Signalement supprimé', 'info');
       load();
+    } catch {
+      toast('Échec de la suppression', 'error');
     }
   };
 
@@ -44,9 +49,14 @@ export function ReportsList() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-5">
-        <h2 className="text-2xl font-bold text-white">🔥 Fire Reports</h2>
-        <button onClick={load} className="p-2 rounded bg-cyan-900/50 hover:bg-cyan-800"><RefreshCw size={18} /></button>
+      <div className="page-hdr">
+        <div>
+          <h2 className="page-title">Signalements</h2>
+          <p className="page-sub">Gestion des incidents déclarés</p>
+        </div>
+        <button onClick={load} className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <RefreshCw size={14} /> Actualiser
+        </button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">

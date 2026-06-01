@@ -162,7 +162,9 @@ const REGEX = {
 
       // 2. Auto-login — userId vient de userResponse.id (source fiable)
       console.log('📝 Étape 2: login...');
-      const userId = userResponse.id;
+      const userId = userResponse.id ?? (userResponse as any).userId;
+      console.log('✅ Inscription OK, userId brut:', userId, JSON.stringify(userResponse));
+      if (!userId) throw new Error('ID utilisateur non reçu du serveur');
       const loginResponse = await loginUser(form.email, form.password, userId);
       console.log('✅ Login OK, token:', loginResponse.token ? '✅' : '❌');
       const token = loginResponse.token;

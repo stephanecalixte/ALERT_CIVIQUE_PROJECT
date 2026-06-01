@@ -25,14 +25,14 @@ export function EmergenciesList() {
   useEffect(() => { load(); }, [token]);
 
   const deleteEmergency = async (id: number) => {
-    if (confirm('Resolve this emergency?')) {
-      try {
-        await api.deleteEmergency(id, token);
-        toast('Emergency resolved', 'success');
-        load();
-      } catch {
-        toast('Delete failed', 'error');
-      }
+    if (!id) return;
+    if (!confirm('Résoudre cette urgence ?')) return;
+    try {
+      await api.deleteEmergency(id, token);
+      toast('Urgence résolue', 'success');
+      load();
+    } catch {
+      toast('Échec de la suppression', 'error');
     }
   };
 
@@ -42,7 +42,7 @@ export function EmergenciesList() {
   const getMessage = (e: AdminEmergency) => {
     if (e.messages && e.messages.length > 0) {
       const m = e.messages[0];
-      return m.content ?? m.text ?? m.body ?? 'No description';
+      return m.message ?? m.content ?? m.text ?? m.body ?? 'No description';
     }
     return 'No description';
   };

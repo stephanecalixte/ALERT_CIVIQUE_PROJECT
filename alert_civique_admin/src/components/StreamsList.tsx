@@ -1,232 +1,345 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, memo, useCallback, type Dispatch, type SetStateAction } from 'react'
 import { useApp } from '../contexts/AppContext'
-import { api, fmtDate } from '../services/api'
-import { Video, Trash2, RefreshCw, Play, Signal, Radio } from 'lucide-react'
+import { fmtDate } from '../services/api'
+import { Trash2, RefreshCw, Play, Tv2, WifiOff, StopCircle } from 'lucide-react'
 import type { AdminStream } from '../types'
 import { VideoPlayer } from './VideoPlayer'
+import { useStreamsData } from '../hooks/useStreamsData'
 
-const POLL_INTERVAL = 5000 // 5 secondes
+const POLL = 5000
 
+/* ── Bruit statique animé (canvas) ──────────────────────────────── */
+function StaticNoise() {
+  const ref = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const c   = ref.current!
+    const ctx = c.getContext('2d')!
+    const d   = ctx.createImageData(c.width, c.height)
+    for (let i = 0; i < d.data.length; i += 4) {
+      const v = (Math.random() * 55) | 0
+      d.data[i] = d.data[i+1] = d.data[i+2] = v
+      d.data[i+3] = 255
+    }
+    ctx.putImageData(d, 0, 0)
+  }, [])
+
+  return (
+    <canvas ref={ref} width={80} height={50}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.08 }} />
+  )
+}
+
+function ClockDisplay() {
+  const [clock, setClock] = useState('')
+  useEffect(() => {
+    const tick = () => {
+      const d = new Date()
+      setClock([d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, '0')).join(':'))
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+  return <div className="clock" style={{ fontSize: 20 }}>{clock}</div>
+}
+
+/* ── Un écran de moniteur TV ─────────────────────────────────────── */
+const Monitor = memo(function Monitor({
+  stream, index, selected, onOpen, onDelete, onEnd,
+}: {
+  stream: AdminStream
+  index: number
+  selected: boolean
+  onOpen: Dispatch<SetStateAction<AdminStream | null>>
+  onDelete: (s: AdminStream) => void
+  onEnd: (s: AdminStream) => void
+}) {
+  const [hovered, setHovered] = useState(false)
+  const online = ['LIVE', 'ONLINE'].includes(stream.status?.toUpperCase() ?? '')
+  const url    = stream.streamUrl ?? stream.videoUrl ?? ''
+  const cam    = String(stream.livestreamId ?? index + 1).padStart(2, '0')
+
+  const borderColor = selected
+    ? 'var(--primary)'
+    : hovered ? (online ? '#ff6b5a' : 'var(--border-hi)') : (online ? 'rgba(255,59,48,.45)' : 'var(--border)')
+
+  const outerGlow = selected
+    ? '0 0 0 2px var(--primary), 0 0 30px rgba(0,180,255,.25)'
+    : online ? '0 0 18px rgba(255,59,48,.18)' : '0 4px 24px rgba(0,0,0,.55)'
+
+  return (
+    <div
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: url ? 'pointer' : 'default' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={url ? () => onOpen(prev => prev?.livestreamId === stream.livestreamId ? null : stream) : undefined}
+    >
+      <div style={{
+        width: '100%', background: 'linear-gradient(160deg, #1c2030 0%, #12161f 60%, #0c1018 100%)',
+        border: `2px solid ${borderColor}`, borderRadius: 10, padding: '8px 8px 0',
+        boxShadow: outerGlow, transition: 'border-color .2s, box-shadow .2s', position: 'relative',
+      }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, borderRadius: '8px 8px 0 0',
+          background: 'linear-gradient(90deg, #252a36, #2e3444, #252a36)' }} />
+        <div style={{ position: 'absolute', top: 1, left: 0, right: 0, display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', padding: '0 10px', zIndex: 10 }}>
+          <span style={{ display: 'block', width: 6, height: 6, borderRadius: '50%',
+            background: online ? 'var(--red)' : '#1a2030',
+            boxShadow: online ? '0 0 6px var(--red), 0 0 14px rgba(255,59,48,.4)' : 'none',
+            animation: online ? 'tvLed 1.8s ease-in-out infinite' : 'none' }} />
+          <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 7, letterSpacing: '0.2em', color: '#2a3550' }}>
+            CAM {cam}
+          </span>
+        </div>
+
+        <div style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 5, overflow: 'hidden',
+          background: '#000', marginTop: 5,
+          boxShadow: online ? 'inset 0 0 40px rgba(0,0,0,.7)' : 'inset 0 0 50px rgba(0,0,0,.95)' }}>
+
+          {online ? (
+            <div style={{ position: 'absolute', inset: 0,
+              background: 'radial-gradient(ellipse at center, rgba(0,40,20,.15) 0%, #000 100%)' }} />
+          ) : <StaticNoise />}
+
+          {!online && (
+            <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <WifiOff size={16} style={{ color: '#1e2a3a', opacity: .7 }} />
+              <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9,
+                letterSpacing: '0.3em', color: '#1e2a3a' }}>NO SIGNAL</span>
+            </div>
+          )}
+
+          {online && (
+            <div style={{ position: 'absolute', top: 7, left: 7, zIndex: 10, display: 'flex',
+              alignItems: 'center', gap: 4, background: 'rgba(0,0,0,.72)',
+              border: '1px solid rgba(255,59,48,.5)', borderRadius: 3, padding: '2px 6px' }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--red)',
+                boxShadow: '0 0 6px var(--red)', display: 'block', animation: 'tvLed .9s ease-in-out infinite' }} />
+              <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8,
+                letterSpacing: '0.25em', color: '#ff6b5a' }}>LIVE</span>
+            </div>
+          )}
+
+          {url && hovered && (
+            <div style={{ position: 'absolute', inset: 0, zIndex: 15, display: 'flex',
+              alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.45)' }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(0,0,0,.65)',
+                border: `1.5px solid ${online ? 'var(--red)' : 'var(--primary)'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: online ? '0 0 20px rgba(255,59,48,.3)' : '0 0 20px rgba(0,180,255,.3)' }}>
+                <Play size={16} style={{ color: online ? 'var(--red)' : 'var(--primary)', marginLeft: 2 }} />
+              </div>
+            </div>
+          )}
+
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 8,
+            padding: '12px 8px 5px', background: 'linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 100%)' }}>
+            <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, letterSpacing: '0.12em',
+              color: online ? '#5a8a9a' : '#1e2a3a' }}>
+              {stream.userId ? `OP · ${stream.userId}` : `FLUX #${stream.livestreamId ?? '—'}`}
+            </div>
+            {stream.startedAt && (
+              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 7, color: '#1e2a3a', marginTop: 1 }}>
+                {fmtDate(stream.startedAt)}
+              </div>
+            )}
+          </div>
+
+          {/* Effets CRT */}
+          <div style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none',
+            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.1) 2px, rgba(0,0,0,.1) 4px)' }} />
+          <div style={{ position: 'absolute', inset: 0, zIndex: 21, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.6) 100%)' }} />
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '30%',
+            zIndex: 22, pointerEvents: 'none', borderRadius: '5px 5px 0 0',
+            background: 'linear-gradient(to bottom, rgba(255,255,255,.028), transparent)' }} />
+        </div>
+
+        <div style={{ background: 'linear-gradient(160deg, #1a1f2c, #12161e)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '6px 10px', borderTop: '1px solid rgba(255,255,255,.06)', gap: 6 }}>
+          <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 6,
+            letterSpacing: '0.22em', color: '#1e2535', flex: 1 }}>CAM·{cam}</span>
+          {online && (
+            <button
+              onClick={e => { e.stopPropagation(); onEnd(stream) }}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer',
+                background: 'rgba(255,150,0,.12)', border: '1px solid rgba(255,150,0,.4)',
+                borderRadius: 4, padding: '3px 8px', color: '#ff9600',
+                fontFamily: "'Share Tech Mono', monospace", fontSize: 9, letterSpacing: '0.1em' }}
+              title="Terminer le flux"
+            >
+              <StopCircle size={10} /> TERMINER
+            </button>
+          )}
+          <button
+            onClick={e => { e.stopPropagation(); onDelete(stream) }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer',
+              background: 'rgba(255,48,30,.1)', border: '1px solid rgba(255,48,30,.35)',
+              borderRadius: 4, padding: '3px 8px', color: '#ff4030',
+              fontFamily: "'Share Tech Mono', monospace", fontSize: 9, letterSpacing: '0.1em' }}
+            title="Supprimer le flux"
+          >
+            <Trash2 size={10} /> SUPPR
+          </button>
+        </div>
+      </div>
+
+      <div style={{ width: 32, height: 9, background: 'linear-gradient(160deg, #1a1f2c, #0e1218)', borderRadius: '0 0 3px 3px' }} />
+      <div style={{ width: 54, height: 5, background: 'linear-gradient(160deg, #16192200, #0e1218)',
+        borderRadius: '0 0 5px 5px', boxShadow: '0 3px 8px rgba(0,0,0,.5)',
+        border: '1px solid rgba(255,255,255,.03)', borderTop: 'none' }} />
+    </div>
+  )
+}, (prev, next) =>
+  prev.stream.livestreamId === next.stream.livestreamId &&
+  prev.stream.status       === next.stream.status       &&
+  prev.stream.videoUrl     === next.stream.videoUrl     &&
+  prev.selected            === next.selected            &&
+  prev.index               === next.index
+)
+
+/* ═══════════════════════════════════════════════════════════════════
+   COMPOSANT PRINCIPAL — UI seule, données via useStreamsData
+═══════════════════════════════════════════════════════════════════ */
 export function StreamsList() {
   const { token, toast } = useApp()
-  const [streams,        setStreams]        = useState<AdminStream[]>([])
-  const [loading,        setLoading]        = useState(true)
-  const [lastUpdate,     setLastUpdate]     = useState<Date | null>(null)
-  const [liveCount,      setLiveCount]      = useState(0)
-  const [selectedStream, setSelectedStream] = useState<AdminStream | null>(null)
-  const pollRef = useRef<ReturnType<typeof setInterval>>()
 
-  /* ── Fetch silencieux (sans spinner) pour le polling ── */
-  const fetchStreams = useCallback(async (silent = false) => {
-    if (!token) return
-    if (!silent) setLoading(true)
+  const { streams, loading, lastUpd, selected, setSelected, refresh, deleteStream, endStream } =
+    useStreamsData({ token, onError: msg => toast(msg, 'error') })
+
+  const isLive     = (s: AdminStream) => ['LIVE', 'ONLINE'].includes(s.status?.toUpperCase() ?? '')
+  const liveCount  = streams.filter(isLive).length
+  const cols       = streams.length <= 1 ? 1 : streams.length <= 4 ? 2 : streams.length <= 9 ? 3 : 4
+
+  const handleDelete = useCallback(async (s: AdminStream) => {
+    if (!confirm('Supprimer définitivement ce flux ?')) return
     try {
-      const data = await api.getStreams(token)
-      setStreams(data)
-      setLiveCount(data.filter(s => s.status?.toUpperCase() === 'ONLINE').length)
-      setLastUpdate(new Date())
-
-      // Met à jour le stream sélectionné si son statut a changé
-      setSelectedStream(prev => {
-        if (!prev) return null
-        const updated = data.find(s => s.livestreamId === prev.livestreamId)
-        return updated ?? prev
-      })
+      await deleteStream(s)
+      toast('Flux supprimé', 'success')
     } catch {
-      if (!silent) toast('Impossible de charger les flux', 'error')
-    } finally {
-      if (!silent) setLoading(false)
+      toast('Échec de la suppression', 'error')
     }
-  }, [token])
+  }, [deleteStream, toast])
 
-  /* ── Démarrage du polling temps réel ── */
-  useEffect(() => {
-    fetchStreams(false)
-    pollRef.current = setInterval(() => fetchStreams(true), POLL_INTERVAL)
-    return () => clearInterval(pollRef.current)
-  }, [fetchStreams])
-
-  const deleteStream = async (id: number) => {
-    if (confirm('Clôturer ce flux ?')) {
-      try {
-        await api.deleteStream(id, token)
-        toast('Flux clôturé', 'success')
-        if (selectedStream?.livestreamId === id) setSelectedStream(null)
-        fetchStreams(true)
-      } catch {
-        toast('Échec de la suppression', 'error')
-      }
+  const handleEnd = useCallback(async (s: AdminStream) => {
+    try {
+      await endStream(s)
+      toast('Flux terminé', 'success')
+    } catch {
+      toast('Échec — impossible de terminer le flux', 'error')
     }
-  }
+  }, [endStream, toast])
 
   if (loading) return (
-    <div className="flex items-center gap-3 text-cyan-400 text-sm py-8 justify-center">
-      <Radio size={16} className="animate-pulse" />
-      Connexion aux flux en cours...
+    <div style={{ textAlign: 'center', padding: 60 }}>
+      <div className="spinner" />
+      <p className="loading-txt" style={{ marginTop: 10 }}>INITIALISATION DES MONITEURS...</p>
     </div>
   )
 
-  const getUrl    = (s: AdminStream) => s.streamUrl ?? s.videoUrl ?? ''
-  const isOnline  = (s: AdminStream) => s.status?.toUpperCase() === 'ONLINE'
-  const isHls     = (url: string) => url.includes('.m3u8') || url.includes('/hls/')
-
   return (
     <>
-      {/* ── Lecteur vidéo modal ── */}
-      {selectedStream && (
-        <VideoPlayer
-          stream={selectedStream}
-          onClose={() => setSelectedStream(null)}
-        />
-      )}
+      {selected && <VideoPlayer stream={selected} onClose={() => setSelected(null)} />}
 
-      <div>
-        {/* En-tête */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2 tracking-wider">
-              <Video size={22} className="text-cyan-400" /> Flux Live
-            </h2>
-            <div className="flex items-center gap-3 mt-1">
-              {liveCount > 0 ? (
-                <span className="flex items-center gap-1.5 text-xs text-red-400">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  {liveCount} EN DIRECT
-                </span>
-              ) : (
-                <span className="text-xs text-gray-600">Aucun flux actif</span>
-              )}
-              <span className="text-[10px] text-cyan-900 tracking-widest">
-                · {streams.length} total · Actualisé {lastUpdate ? lastUpdate.toLocaleTimeString('fr-FR') : '—'}
-              </span>
+      {/* ══ EN-TÊTE ══ */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: 24, background: 'var(--card)', border: '1px solid var(--border)',
+        borderRadius: 8, padding: '14px 20px', boxShadow: 'inset 0 1px 0 rgba(0,180,255,.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Tv2 size={20} style={{ color: 'var(--primary)', opacity: .8 }} />
+            <div>
+              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 18, fontWeight: 700,
+                letterSpacing: 2, textTransform: 'uppercase', color: 'var(--txt-hi)' }}>Mur de Moniteurs</div>
+              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 10, color: 'var(--txt-lo)', letterSpacing: 1 }}>
+                CENTRE DE SURVEILLANCE · {streams.length} CAMÉRA{streams.length !== 1 ? 'S' : ''}
+              </div>
             </div>
           </div>
+          {[
+            { label: 'TOTAL',      val: streams.length,              color: 'var(--primary)' },
+            { label: 'EN DIRECT',  val: liveCount,                   color: liveCount > 0 ? 'var(--red)' : 'var(--txt-lo)' },
+            { label: 'HORS LIGNE', val: streams.length - liveCount,  color: 'var(--txt-lo)' },
+          ].map(({ label, val, color }) => (
+            <div key={label} style={{ textAlign: 'center', borderLeft: '1px solid var(--border)', paddingLeft: 16 }}>
+              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 22, fontWeight: 700, color, lineHeight: 1 }}>{val}</div>
+              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, letterSpacing: '0.18em', color: 'var(--txt-lo)', marginTop: 3 }}>{label}</div>
+            </div>
+          ))}
+          {liveCount > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,59,48,.12)',
+              border: '1px solid rgba(255,59,48,.3)', borderRadius: 4, padding: '5px 12px' }}>
+              <span className="blink-dot" />
+              <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 10,
+                letterSpacing: '0.2em', color: 'var(--red)' }}>{liveCount} EN DIRECT</span>
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ textAlign: 'right' }}>
+            <ClockDisplay />
+            <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8,
+              letterSpacing: '0.2em', color: 'var(--txt-lo)', marginTop: 2 }}>HEURE LOCALE</div>
+          </div>
+          <button className="btn btn-primary btn-sm" onClick={() => refresh(false)}
+            style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <RefreshCw size={12} /> Actualiser
+          </button>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-2">
-            {/* Indicateur de polling actif */}
-            <span className="text-[10px] text-cyan-800 flex items-center gap-1 tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-700 animate-pulse" />
-              TEMPS RÉEL · {POLL_INTERVAL / 1000}s
+      {/* ══ AUCUN FLUX ══ */}
+      {streams.length === 0 ? (
+        <div className="empty">
+          <div className="empty-icon"><Tv2 size={44} /></div>
+          <p>Aucun flux disponible</p>
+          <p style={{ fontSize: 11, marginTop: 6, fontFamily: "'Share Tech Mono', monospace" }}>
+            Nouvelle vérification dans {POLL / 1000}s
+          </p>
+        </div>
+      ) : (
+        <div style={{ background: 'radial-gradient(ellipse at center, rgba(5,12,25,.97) 0%, rgba(3,9,18,1) 100%)',
+          border: '1px solid var(--border)', borderRadius: 12, padding: 28,
+          boxShadow: 'inset 0 0 80px rgba(0,0,0,.4)', position: 'relative' }}>
+          <div style={{ position: 'absolute', inset: 0, borderRadius: 12, pointerEvents: 'none',
+            backgroundImage: 'linear-gradient(rgba(0,90,140,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(0,90,140,.025) 1px, transparent 1px)',
+            backgroundSize: '44px 44px' }} />
+          <div style={{ position: 'relative', zIndex: 2, display: 'grid',
+            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+            gap: cols === 1 ? 0 : cols === 2 ? 32 : 24,
+            maxWidth: cols === 1 ? 560 : '100%', margin: '0 auto' }}>
+            {streams.map((s, i) => (
+              <Monitor
+                key={s.livestreamId ?? i} stream={s} index={i}
+                selected={selected?.livestreamId === s.livestreamId}
+                onOpen={setSelected}
+                onDelete={handleDelete}
+                onEnd={handleEnd}
+              />
+            ))}
+          </div>
+          <div style={{ position: 'relative', zIndex: 2, marginTop: 20, paddingTop: 14,
+            borderTop: '1px solid rgba(22,45,80,.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: 24 }}>
+              {['SURVEILLANCE ACTIVE', `${streams.length} CAMÉRA${streams.length > 1 ? 'S' : ''}`, 'FLUX CHIFFRÉS'].map(l => (
+                <span key={l} style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8,
+                  letterSpacing: '0.2em', color: 'var(--txt-lo)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#0a5040', display: 'block' }} />
+                  {l}
+                </span>
+              ))}
+            </div>
+            <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8,
+              letterSpacing: '0.16em', color: 'var(--txt-lo)' }}>
+              MAJ {lastUpd?.toLocaleTimeString('fr-FR') ?? '—'}
             </span>
-            <button
-              onClick={() => fetchStreams(false)}
-              className="p-2 rounded border border-cyan-900/50 text-cyan-500 hover:bg-cyan-950/40 transition"
-              title="Actualiser maintenant"
-            >
-              <RefreshCw size={15} />
-            </button>
           </div>
         </div>
-
-        {/* Liste vide */}
-        {streams.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-cyan-900/30 rounded-xl">
-            <Radio size={32} className="text-cyan-900 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">Aucun flux disponible.</p>
-            <p className="text-gray-700 text-xs mt-1">Nouvelle vérification dans {POLL_INTERVAL / 1000}s</p>
-          </div>
-        ) : (
-          <div className="grid gap-3">
-            {streams.map((stream) => {
-              const id         = stream.livestreamId ?? 0
-              const online     = isOnline(stream)
-              const url        = getUrl(stream)
-              const hls        = isHls(url)
-              const isSelected = selectedStream?.livestreamId === id
-
-              return (
-                <div
-                  key={id}
-                  className={`border rounded-xl overflow-hidden transition-all duration-200 ${
-                    isSelected
-                      ? 'border-cyan-500/60 bg-cyan-950/20 shadow-[0_0_20px_rgba(0,240,255,0.06)]'
-                      : online
-                        ? 'border-red-900/40 bg-black/50 hover:border-red-900/70'
-                        : 'border-cyan-900/30 bg-black/30 hover:border-cyan-900/60'
-                  }`}
-                >
-                  <div className="p-4 flex items-center gap-4">
-
-                    {/* Icône statut */}
-                    <div className="relative shrink-0">
-                      <div className={`w-12 h-12 rounded-lg border flex items-center justify-center ${
-                        online
-                          ? 'border-red-700/50 bg-red-950/30'
-                          : 'border-gray-800/50 bg-gray-950/20'
-                      }`}>
-                        <Signal size={18} className={online ? 'text-red-400' : 'text-gray-600'} />
-                      </div>
-                      {online && (
-                        <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-black">
-                          <span className="absolute inset-0 w-full h-full rounded-full bg-red-400 animate-ping opacity-60" />
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Infos */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="font-bold text-cyan-200 tracking-wider">Flux #{id}</span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded border tracking-widest uppercase ${
-                          online
-                            ? 'bg-red-900/30 border-red-800/40 text-red-400'
-                            : 'bg-gray-900/30 border-gray-800/40 text-gray-500'
-                        }`}>{stream.status ?? 'OFFLINE'}</span>
-                        {online && (
-                          <span className="text-[10px] text-red-300 font-bold tracking-[0.2em]">● LIVE</span>
-                        )}
-                        {hls && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-900/30 border border-purple-800/40 text-purple-400 tracking-widest">
-                            HLS
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex gap-4 text-[11px] text-gray-500 flex-wrap">
-                        <span>Opérateur : {stream.userId ?? '—'}</span>
-                        <span>Début : {fmtDate(stream.startedAt)}</span>
-                        {stream.duration && <span>Durée : {stream.duration}s</span>}
-                      </div>
-                      {url ? (
-                        <p className="text-[10px] text-cyan-900 mt-1 truncate max-w-sm font-mono">{url}</p>
-                      ) : (
-                        <p className="text-[10px] text-gray-700 mt-1 italic">Aucune URL de flux</p>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 shrink-0">
-                      <button
-                        onClick={() => setSelectedStream(isSelected ? null : stream)}
-                        disabled={!url}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded text-xs font-bold tracking-widest uppercase transition-all border ${
-                          isSelected
-                            ? 'bg-cyan-600/20 border-cyan-500/40 text-cyan-300'
-                            : url
-                              ? online
-                                ? 'bg-red-900/30 border-red-700/50 text-red-300 hover:bg-red-900/50'
-                                : 'bg-blue-900/30 border-blue-800/40 text-blue-300 hover:bg-blue-900/50'
-                              : 'bg-gray-900/20 border-gray-800/30 text-gray-700 cursor-not-allowed'
-                        }`}
-                        title={url ? 'Visionner' : 'Aucune URL disponible'}
-                      >
-                        <Play size={11} />
-                        {isSelected ? 'Fermer' : online ? 'Regarder LIVE' : 'Lire'}
-                      </button>
-                      <button
-                        onClick={() => deleteStream(id)}
-                        className="p-2 rounded border border-red-900/40 text-red-600 hover:text-red-400 hover:bg-red-950/30 transition"
-                        title="Clôturer"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
+      )}
+      <style>{`@keyframes tvLed { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }`}</style>
     </>
   )
 }

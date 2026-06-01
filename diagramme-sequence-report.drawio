@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-20T00:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="Report (Signalement)" id="seq-report">
+    <mxGraphModel grid="0" pageWidth="1100" pageHeight="1020" shadow="1">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="t" value="Diagramme de Séquence — Signalement (Report) Manuel&#xa;Citoyen · React Native · ReportService · Backend Spring Boot · MariaDB" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=center;whiteSpace=wrap;rounded=1;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="60" y="10" width="980" height="50" as="geometry" /></mxCell>
+
+        <!-- HEADERS  cx: Citoyen=100 | ReportScreen=290 | ReportService=490 | Backend=710 | MariaDB=940 -->
+        <mxCell id="h1" value="&lt;b&gt;Citoyen&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1"><mxGeometry x="20" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h2" value="&lt;b&gt;ReportScreen&lt;/b&gt;&#xa;React Native" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="210" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h3" value="&lt;b&gt;ReportService&lt;/b&gt;&#xa;Service Frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="410" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h4" value="&lt;b&gt;Backend API&lt;/b&gt;&#xa;Spring Boot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="630" y="70" width="160" height="50" as="geometry" /></mxCell>
+        <mxCell id="h5" value="&lt;b&gt;MariaDB&lt;/b&gt;&#xa;Base de données" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="860" y="70" width="160" height="50" as="geometry" /></mxCell>
+
+        <!-- LIFELINES -->
+        <mxCell id="l1" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint" /><mxPoint x="100" y="970" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l2" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#6c8ebf;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="120" as="sourcePoint" /><mxPoint x="290" y="970" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l3" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#6c8ebf;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="120" as="sourcePoint" /><mxPoint x="490" y="970" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l4" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#82b366;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="710" y="120" as="sourcePoint" /><mxPoint x="710" y="970" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l5" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#d79b00;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="940" y="120" as="sourcePoint" /><mxPoint x="940" y="970" as="targetPoint" /></mxGeometry></mxCell>
+
+        <!-- MESSAGES -->
+        <mxCell id="m1" value="1. Saisit description, catégorie, type alerte (photo optionnelle)" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="175" as="sourcePoint" /><mxPoint x="290" y="175" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m2" value="2. createReport(payload, token?)" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="230" as="sourcePoint" /><mxPoint x="490" y="230" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m3" value="3. POST /api/geolocalisation  { lat, lon, timestamp }" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="285" as="sourcePoint" /><mxPoint x="710" y="285" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m4" value="4. save(geolocalisation)" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="710" y="340" as="sourcePoint" /><mxPoint x="940" y="340" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m5" value="5. « geolocalisationId »" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="940" y="395" as="sourcePoint" /><mxPoint x="710" y="395" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m6" value="6. 201 Created { geolocalisationId }" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="710" y="450" as="sourcePoint" /><mxPoint x="490" y="450" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m7" value="7. POST /api/report  { description, status:PENDING, geolocalisationId, anonymous, userId? }" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="505" as="sourcePoint" /><mxPoint x="710" y="505" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m8" value="8. reportRepository.save(report)" style="endArrow=block;endFill=1;html=1;fontSize=10;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="710" y="560" as="sourcePoint" /><mxPoint x="940" y="560" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m9" value="9. « reportId, status:PENDING »" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="940" y="615" as="sourcePoint" /><mxPoint x="710" y="615" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m10" value="10. 201 Created { reportId, status:PENDING }" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="710" y="670" as="sourcePoint" /><mxPoint x="490" y="670" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m11" value="11. ReportFlowResult { reportId }" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=10;fontStyle=2;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="725" as="sourcePoint" /><mxPoint x="290" y="725" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m12" value="12. Signalement envoyé ✓ — ConfirmationScreen" style="endArrow=block;endFill=1;html=1;fontSize=10;fontStyle=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="785" as="sourcePoint" /><mxPoint x="100" y="785" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="note" value="Cycle de vie du statut (géré par l'Admin via PUT /api/report/{id}) :&#xa;PENDING → IN_REVIEW → VALIDATED / REJECTED → RESOLVED / ARCHIVED" style="text;html=1;align=left;strokeColor=#82b366;fillColor=#d5e8d4;rounded=1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="380" y="845" width="590" height="45" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

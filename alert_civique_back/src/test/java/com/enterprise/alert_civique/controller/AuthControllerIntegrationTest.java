@@ -9,16 +9,19 @@ import com.enterprise.alert_civique.repository.RoleRepository;
 import com.enterprise.alert_civique.repository.UserRepository;
 import com.enterprise.alert_civique.security.IPasswordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,13 +37,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests d'intégration pour AuthController
  */
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("AuthController Integration Tests")
 public class AuthControllerIntegrationTest {
 
-    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired
     private UserRepository userRepository;
@@ -51,8 +55,9 @@ public class AuthControllerIntegrationTest {
     @Autowired
     private IPasswordService passwordService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     private static final String AUTH_BASE_URI = "/api/auth";
     private String testEmail;
@@ -61,6 +66,8 @@ public class AuthControllerIntegrationTest {
 
     @BeforeEach
     public void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
         // Nettoyer la base
         userRepository.deleteAll();
 
@@ -95,7 +102,7 @@ public class AuthControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userId", notNullValue()))
+                .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.email", equalTo(testEmail)))
                 .andExpect(jsonPath("$.firstname", equalTo("John")))
                 .andExpect(jsonPath("$.lastname", equalTo("Doe")));

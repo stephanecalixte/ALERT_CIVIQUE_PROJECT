@@ -33,31 +33,36 @@ build/
 .vscode/
 
 ### Security - Sensitive Configuration ###
-# Environment-specific configuration files
 application-local.properties
 application-dev.properties
 application-prod.properties
-.env.ci
-.env.ci.local
-
-# Environment variable files
+application-staging.properties
 .env
 .env.local
 .env.*.local
+.env.ci
+.env.ci.local
+!.env.example
 
 # Secrets and credentials
 *.key
 *.pem
 *.secret
+*.keystore
+*.pfx
 secrets.properties
 docker-compose.override.yml
+docker-compose.local.yml
 
-# Docker compose overrides with secrets
-docker-compose.override.yml
+### Logs ###
+*.log
+*.log.*
+*.gz
+logs/
 
-# OS-specific files that might contain credentials
+### Uploads runtime ###
+src/main/resources/static/uploads/
+
+### OS ###
 .DS_Store
-.env*
-!.env.example
-.md
-.claude
+Thumbs.db

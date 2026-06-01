@@ -45,6 +45,7 @@ export const api = {
 
   getStreams:   (t: string) => req<AdminStream[]>('GET', '/api/livestream', t),
   deleteStream: (id: number, t: string) => req('DELETE', `/api/livestream/${id}`, t),
+  endStream:    (id: number, t: string) => req('PUT', '/api/livestream/update', t, { livestreamId: id, status: 'ENDED' }),
 
   getEmergencies:   (t: string) => req<AdminEmergency[]>('GET', '/api/emergencies', t),
   deleteEmergency:  (id: number, t: string) => req('DELETE', `/api/emergencies/${id}`, t),

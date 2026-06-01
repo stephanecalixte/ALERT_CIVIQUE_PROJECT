@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="label" for="node" attr.name="label" attr.type="string"/>
+  <key id="node_type" for="node" attr.name="node_type" attr.type="string"/>
+  <key id="source_file" for="node" attr.name="source_file" attr.type="string"/>
+  <key id="community" for="node" attr.name="community" attr.type="int"/>
+  <key id="relation" for="edge" attr.name="relation" attr.type="string"/>
+  <key id="confidence" for="edge" attr.name="confidence" attr.type="string"/>
+  <key id="confidence_score" for="edge" attr.name="confidence_score" attr.type="double"/>
+  <key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+  <graph id="G" edgedefault="undirected">
+    <node id="hooks_usegpsregion_ts">
+      <data key="label">useGpsRegion</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\hooks\useGpsRegion.ts</data>
+      <data key="community">1</data>
+    </node>
+    <node id="hooks_usegpsregion_ts_import_react_usestate">
+      <data key="label">react/useState</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\useGpsRegion.ts</data>
+      <data key="community">1</data>
+    </node>
+    <node id="hooks_usegpsregion_ts_import_react_useeffect">
+      <data key="label">react/useEffect</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\useGpsRegion.ts</data>
+      <data key="community">1</data>
+    </node>
+    <node id="hooks_usegpsregion_ts_import_expo_location">
+      <data key="label">expo-location</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\useGpsRegion.ts</data>
+      <data key="community">1</data>
+    </node>
+    <node id="hooks_usegpsregion_ts_detectregion">
+      <data key="label">detectRegion()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\hooks\useGpsRegion.ts</data>
+      <data key="community">1</data>
+    </node>
+    <node id="hooks_usegpsregion_ts_usegpsregion">
+      <data key="label">useGpsRegion()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\hooks\useGpsRegion.ts</data>
+      <data key="community">1</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts">
+      <data key="label">usePersistedReports</data>
+      <data key="node_type">File</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts_import_react_usecallback">
+      <data key="label">react/useCallback</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts_import_lib_config_java_base_url">
+      <data key="label">@/lib/config/JAVA_BASE_URL</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts_import_contexts_alertcontext_alerttype">
+      <data key="label">@/contexts/AlertContext/AlertType</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts_import_contexts_alertcontext_alert_configs">
+      <data key="label">@/contexts/AlertContext/ALERT_CONFIGS</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts_import_contexts_messagescontext_message">
+      <data key="label">@/contexts/MessagesContext/Message</data>
+      <data key="node_type">Module</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts_formatdate">
+      <data key="label">formatDate()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <node id="hooks_usepersistedreports_ts_usepersistedreports">
+      <data key="label">usePersistedReports()</data>
+      <data key="node_type">Function</data>
+      <data key="source_file">.\hooks\usePersistedReports.ts</data>
+      <data key="community">0</data>
+    </node>
+    <edge id="e0" source="hooks_usegpsregion_ts" target="hooks_usegpsregion_ts_import_react_usestate">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e1" source="hooks_usegpsregion_ts" target="hooks_usegpsregion_ts_import_react_useeffect">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e2" source="hooks_usegpsregion_ts" target="hooks_usegpsregion_ts_import_expo_location">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e3" source="hooks_usegpsregion_ts" target="hooks_usegpsregion_ts_detectregion">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e4" source="hooks_usegpsregion_ts" target="hooks_usegpsregion_ts_usegpsregion">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e5" source="hooks_usegpsregion_ts_usegpsregion" target="hooks_usegpsregion_ts_detectregion">
+      <data key="relation">calls</data>
+      <data key="confidence">Inferred</data>
+      <data key="confidence_score">0.7</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e6" source="hooks_usepersistedreports_ts" target="hooks_usepersistedreports_ts_import_react_usecallback">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e7" source="hooks_usepersistedreports_ts" target="hooks_usepersistedreports_ts_import_lib_config_java_base_url">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e8" source="hooks_usepersistedreports_ts" target="hooks_usepersistedreports_ts_import_contexts_alertcontext_alerttype">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e9" source="hooks_usepersistedreports_ts" target="hooks_usepersistedreports_ts_import_contexts_alertcontext_alert_configs">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e10" source="hooks_usepersistedreports_ts" target="hooks_usepersistedreports_ts_import_contexts_messagescontext_message">
+      <data key="relation">imports</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e11" source="hooks_usepersistedreports_ts" target="hooks_usepersistedreports_ts_formatdate">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e12" source="hooks_usepersistedreports_ts" target="hooks_usepersistedreports_ts_usepersistedreports">
+      <data key="relation">defines</data>
+      <data key="confidence">Extracted</data>
+      <data key="confidence_score">1</data>
+      <data key="weight">1</data>
+    </edge>
+    <edge id="e13" source="hooks_usepersistedreports_ts_usepersistedreports" target="hooks_usepersistedreports_ts_formatdate">
+      <data key="relation">calls</data>
+      <data key="confidence">Inferred</data>
+      <data key="confidence_score">0.7</data>
+      <data key="weight">1</data>
+    </edge>
+  </graph>
+</graphml>

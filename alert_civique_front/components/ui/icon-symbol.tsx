@@ -29,6 +29,7 @@ const MAPPING = {
   'magnifyingglass': 'search',
   'person.2.fill': 'group',
   'shield.fill': 'security',
+  'clock.arrow.circlepath': 'history',
 } as IconMapping;
 
 /**

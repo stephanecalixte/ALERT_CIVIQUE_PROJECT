@@ -21,7 +21,41 @@
       "Bash(cmd /c \"netstat -ano 2>nul\")",
       "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 9090 -State Listen | Select-Object -ExpandProperty OwningProcess\")",
       "Bash(powershell -Command \"Get-Process -Id 38312 | Select-Object Id, ProcessName, StartTime, CPU\")",
-      "Bash(curl -s --max-time 5 -X POST http://localhost:9090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"test123\"}')"
+      "Bash(curl -s --max-time 5 -X POST http://localhost:9090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"stephanecalixte@gmail.com\",\"password\":\"test123\"}')",
+      "Bash(mvn -q exec:java -Dexec.mainClass=\"com.enterprise.alert_civique.AlertCiviqueApplication\")",
+      "Bash(mysql -u root alertdb -e \"DESCRIBE lives_stream;\")",
+      "Bash(mysql -u root --password=\"\" alertdb -e \"DESCRIBE lives_stream; SELECT user_id FROM lives_stream LIMIT 5;\")",
+      "Bash(mysql -u root alertdb --connect-expired-password -e \"DESCRIBE lives_stream;\")",
+      "Bash(mysql alertdb *)",
+      "Bash(mysql -u root -p\"\" alertdb -e \"DESCRIBE lives_stream;\")",
+      "Bash(mysql -u root --password=\"\" alertdb -e \"DESCRIBE lives_stream;\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\" -Recurse -Filter \"*.drawio\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Move-Item -Path \"c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\\\\alert_civique_front\\\\server\" -Destination \"c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\\\\server\")",
+      "Bash(mv \"c:/PROJET_DORANCO/ALERT-CIVIQUE-PROJECT/alert_civique_front/server\" \"c:/PROJET_DORANCO/ALERT-CIVIQUE-PROJECT/server\")",
+      "Bash(xargs grep -l \"Report\")",
+      "Bash(xargs grep -l \"jackson\\\\|date\\\\|serializ\")",
+      "Bash(xargs grep -E \"alertType|senderName|getAlert|getSender\")",
+      "Bash(curl -s http://localhost:9090/api/report)",
+      "Bash(curl -s -X POST http://localhost:9090/api/report -H \"Content-Type: application/json\" -d \"{\\\\\"description\\\\\":\\\\\"Test\\\\\",\\\\\"anonymous\\\\\":true,\\\\\"status\\\\\":\\\\\"PENDING\\\\\"}\")",
+      "Bash(curl -s -X POST http://localhost:9090/api/report -H \"Content-Type: application/json\" -d \"{\\\\\"description\\\\\":\\\\\"Test SOS\\\\\",\\\\\"anonymous\\\\\":false,\\\\\"userId\\\\\":1,\\\\\"status\\\\\":\\\\\"PENDING\\\\\",\\\\\"savedAt\\\\\":\\\\\"2026-05-21T10:00:00.000Z\\\\\"}\")",
+      "Bash(Get-Content \"c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\\\\alert_civique_back\\\\logs\\\\alert_civique.log\" -Tail 40)",
+      "Bash(curl -s http://localhost:9090/api/reportMessages)",
+      "Bash(npx expo *)",
+      "Bash(Get-Content \"C:\\\\Users\\\\steph\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--PROJET-DORANCO-ALERT-CIVIQUE-PROJECT\\\\44a3c6c8-249a-4b6b-9e12-a0189a4cddc7\\\\tasks\\\\b2qe0hqvp.output\")",
+      "Bash(Select-Object -Last 20)",
+      "Bash(Get-ChildItem -Path \"c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\\\\server\" -Recurse -Include \"application*.properties\", \"application*.yml\")",
+      "Bash(Select-Object FullName)",
+      "Bash(grep -r \"\\\\${[A-Z_]*}\" \"c:/PROJET_DORANCO/ALERT-CIVIQUE-PROJECT/alert_civique_back/src/main/resources/application.properties\")",
+      "Bash(grep '\\\\${')",
+      "Bash(node generate-docx.js)",
+      "PowerShell(Get-ChildItem -Path c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT -Directory | ForEach-Object { Write-Host \"=== $\\($_.Name\\) ===\" })",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT\\\\alert_civique_mongo\" -File | Where-Object { $_.Extension -eq \".js\" } | Select-Object -ExpandProperty Name)",
+      "PowerShell(Get-ChildItem -Path C:\\\\PROJET_DORANCO\\\\ALERT-CIVIQUE-PROJECT -Recurse -Include Dockerfile, docker-compose.yml, .dockerignore, Makefile, pom.xml -ErrorAction SilentlyContinue | Where-Object { -not $_.FullName.Contains\\('\\\\node_modules'\\) } | Select-Object FullName)"
+    ],
+    "additionalDirectories": [
+      "c:\\PROJET_DORANCO\\ALERT-CIVIQUE-PROJECT\\alert_civique_front\\server"
     ]
   }
 }

@@ -11,6 +11,7 @@ export type ReportCreate = {
   categoryId?: number;
   geolocalisationId?: number;
   priority?: string;
+  alertType?: string;
 };
 
 export default class ReportService {
@@ -29,7 +30,6 @@ export default class ReportService {
       body: JSON.stringify({
         ...payload,
         status: ReportsStatus.PENDING,
-        createdAt: new Date().toISOString(),
       }),
     });
     const text = await response.text();
@@ -40,15 +40,16 @@ export default class ReportService {
   /**
    * Récupère tous les signalements → GET /api/report
    */
-  static async getAll(token: string): Promise<Report[]> {
+  static async getAll(token?: string | null): Promise<Report[]> {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     try {
-      const response = await fetch(`${this.BASE_URL}/api/report`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) return [];
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${this.BASE_URL}/api/report`, { headers, signal: controller.signal });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return await response.json();
-    } catch {
-      return [];
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
@@ -64,6 +65,22 @@ export default class ReportService {
       return await response.json();
     } catch {
       return null;
+    }
+  }
+
+  /**
+   * Supprime un signalement → DELETE /api/report/{id}
+   */
+  static async deleteReport(reportId: number, token?: string | null): Promise<boolean> {
+    try {
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${this.BASE_URL}/api/report/${reportId}`, {
+        method: 'DELETE',
+        headers,
+      });
+      return response.ok;
+    } catch {
+      return false;
     }
   }
 

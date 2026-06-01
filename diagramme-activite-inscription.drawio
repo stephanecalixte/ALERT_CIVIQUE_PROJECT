@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-20T00:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="Activité - Inscription" id="activity-inscription">
+    <mxGraphModel grid="1" gridSize="10" pageWidth="1169" pageHeight="1480" shadow="1">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Diagramme d'Activité — Inscription (Création de compte)&#xa;Alert Civique · React Native · Spring Boot · BCrypt · JWT · MariaDB" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="300" y="10" width="580" height="55" as="geometry" /></mxCell>
+
+        <!-- NOEUD INITIAL -->
+        <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1"><mxGeometry x="560" y="95" width="40" height="40" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 1 -->
+        <mxCell id="act_open" value="Utilisateur ouvre RegisterScreen&#xa;Formulaire de création de compte (React Native)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="168" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 2 -->
+        <mxCell id="act_form" value="Saisit nom, prénom, email&#xa;mot de passe, confirmation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="260" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- DÉCISION formulaire -->
+        <mxCell id="dec_form" value="Formulaire&#xa;valide ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="352" width="200" height="70" as="geometry" /></mxCell>
+        <mxCell id="err_form" value="Afficher erreurs de validation&#xa;(email invalide, mots de passe&#xa;différents, champs manquants)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="352" width="190" height="70" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 3 -->
+        <mxCell id="act_post" value="POST /api/auth/register&#xa;AuthController.register(RegisterDTO)&#xa;{ nom, prenom, email, password }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="465" width="380" height="65" as="geometry" /></mxCell>
+
+        <!-- DÉCISION email existant -->
+        <mxCell id="dec_email" value="Email déjà&#xa;utilisé ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="480" y="568" width="200" height="70" as="geometry" /></mxCell>
+        <mxCell id="err_email" value="409 Conflict&#xa;'Email déjà existant'" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="750" y="576" width="190" height="54" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 4 BCrypt -->
+        <mxCell id="act_bcrypt" value="Chiffrement mot de passe&#xa;BCryptPasswordEncoder.encode(password)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="678" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 5 Save -->
+        <mxCell id="act_save" value="Sauvegarder User en base de données&#xa;userRepository.save(user)  —  MariaDB&#xa;Rôle par défaut : ROLE_USER" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="773" width="380" height="65" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 6 JWT -->
+        <mxCell id="act_jwt" value="Générer token JWT&#xa;JwtService.generateToken(userDetails)&#xa;Payload : { userId, email, role, iat, exp }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="878" width="380" height="65" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 7 Retour -->
+        <mxCell id="act_return" value="HTTP 201 Created&#xa;AuthResponseDTO { token, userId, email, role }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="983" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 8 Stockage -->
+        <mxCell id="act_store" value="Stocker token JWT&#xa;AsyncStorage.setItem('token', jwt)&#xa;Mise à jour AuthContext { isAuthenticated: true }" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1078" width="380" height="65" as="geometry" /></mxCell>
+
+        <!-- ÉTAPE 9 HomeScreen -->
+        <mxCell id="act_home" value="Accès à l'application&#xa;HomeScreen — Tableau de bord citoyen" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="1183" width="380" height="55" as="geometry" /></mxCell>
+
+        <!-- NOEUD FINAL -->
+        <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;double=1;" vertex="1" parent="1"><mxGeometry x="560" y="1278" width="40" height="40" as="geometry" /></mxCell>
+
+        <!-- ===== EDGES ===== -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="start" target="act_open" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_open" target="act_form" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_form" target="dec_form" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e4" value="Non" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_form" target="err_form" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="Corriger" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="err_form" target="act_form" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="287" /><mxPoint x="770" y="287" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e6" value="Oui" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_form" target="act_post" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_post" target="dec_email" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e8" value="Oui" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_email" target="err_email" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" value="Corriger" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="err_email" target="act_form" parent="1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="287" /><mxPoint x="770" y="287" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e10" value="Non" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dec_email" target="act_bcrypt" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_bcrypt" target="act_save" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_save" target="act_jwt" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_jwt" target="act_return" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_return" target="act_store" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_store" target="act_home" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="act_home" target="end" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

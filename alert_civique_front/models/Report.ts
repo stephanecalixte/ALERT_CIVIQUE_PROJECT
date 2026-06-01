@@ -15,6 +15,8 @@ export interface Report {
   geolocalisationId?: number;
   mediaCount?: number;
   aiConfidenceScore?: number;
+  alertType?: string;
+  senderName?: string;
 }
 
 export interface ReportCreate extends Omit<Report, 'reportId' | 'createdAt' | 'status' | 'mediaCount' | 'aiConfidenceScore'> {}

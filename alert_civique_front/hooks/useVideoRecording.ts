@@ -1,102 +1,66 @@
-import { CameraView } from 'expo-camera';
-import { useCallback, useRef, useState, type RefObject } from 'react';
-import * as FileSystem from 'expo-file-system/legacy';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
+import type { RefObject } from 'react';
+import type { CameraView } from 'expo-camera';
 
 export function useVideoRecording() {
   const [recording, setRecording] = useState(false);
   const [videoUri, setVideoUri] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  
-  const videoUriRef = useRef<string | null>(null);
-  const recordingPromiseRef = useRef<Promise<any> | null>(null);
 
-  const startRecording = useCallback(async (cameraRef: RefObject<CameraView | null>) => {
-    if (!cameraRef.current) {
-      console.error('❌ Camera ref is null');
-      return false;
-    }
-
+  const startRecording = useCallback(async (
+    _cameraRef?: RefObject<CameraView | null>,
+    onFailed?: () => void,
+  ): Promise<string | null> => {
     try {
-      console.log('🎥 Démarrage enregistrement vidéo...');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
       setRecording(true);
       setUploadProgress(0);
 
-      const recordingPromise = cameraRef.current.recordAsync({ maxDuration: 60 });
-      recordingPromiseRef.current = recordingPromise;
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: 'videos',
+        videoMaxDuration: 60,
+        quality: 0.8,
+      });
 
-      recordingPromise
-        .then((video: { uri: string } | undefined) => {
-          if (video?.uri) {
-            setVideoUri(video.uri);
-            videoUriRef.current = video.uri;
-            FileSystem.getInfoAsync(video.uri).then(fileInfo => {
-              console.log('📁 Info fichier vidéo:', {
-                exists: fileInfo.exists,
-                size: (fileInfo as any).size,
-              });
-            });
-          } else {
-            console.error('❌ recordAsync: pas d\'URI dans la réponse');
-          }
-        })
-        .catch((error: unknown) => {
-          const msg = error instanceof Error ? error.message : 'Erreur inconnue';
-          if (msg.includes('RECORD_AUDIO') || msg.includes('permission') || msg.includes('Permission')) {
-            console.error('❌ Permission micro manquante — va dans Paramètres → Expo Go → Autorisations → Microphone');
-            Alert.alert(
-              'Permission micro requise',
-              'Va dans Paramètres Android → Apps → Expo Go → Autorisations → Microphone → Autoriser'
-            );
-          } else if (!msg.includes('stopped before any data')) {
-            console.error('❌ Erreur recordAsync:', error);
-          }
-          setRecording(false);
-        });
-
-      return true;
-    } catch (error) {
-      console.error('❌ Erreur démarrage enregistrement:', error);
       setRecording(false);
-      return false;
+
+      if (result.canceled || !result.assets?.[0]?.uri) {
+        console.log('📹 Enregistrement annulé par l\'utilisateur');
+        onFailed?.();
+        return null;
+      }
+
+      const uri = result.assets[0].uri;
+      setVideoUri(uri);
+      console.log('📁 Vidéo enregistrée URI:', uri);
+
+      // Sauvegarder dans la galerie — même mécanisme que les photos (pas de requestPermissions qui plante)
+      try {
+        await MediaLibrary.saveToLibraryAsync(uri);
+        console.log('💾 Vidéo sauvegardée dans la galerie');
+      } catch (e) {
+        console.log('⚠️ Galerie non disponible (Expo Go):', e);
+      }
+
+      return uri;
+    } catch (error) {
+      console.error('❌ Erreur enregistrement vidéo:', error);
+      setRecording(false);
+      Alert.alert('Erreur', "Impossible d'enregistrer la vidéo.", [{ text: 'OK', onPress: onFailed }]);
+      return null;
     }
   }, []);
 
-  const stopRecording = useCallback(async (cameraRef: RefObject<CameraView | null>) => {
-    if (!cameraRef.current || !recording) {
-      return null;
-    }
-
-    try {
-      console.log('🛑 Arrêt enregistrement...');
-      
-      if (recordingPromiseRef.current) {
-        cameraRef.current.stopRecording();
-        await recordingPromiseRef.current;
-        recordingPromiseRef.current = null;
-      } else {
-        await cameraRef.current.stopRecording();
-      }
-      
-      setRecording(false);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      return videoUriRef.current;
-    } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Erreur inconnue';
-      if (!msg.includes('stopped before any data')) {
-        console.error('❌ Erreur stopRecording:', error);
-      }
-      setRecording(false);
-      return null;
-    }
-  }, [recording]);
+  const stopRecording = useCallback(async (
+    _cameraRef?: RefObject<CameraView | null>
+  ): Promise<string | null> => {
+    return videoUri;
+  }, [videoUri]);
 
   const resetVideoUri = useCallback(() => {
     setVideoUri(null);
-    videoUriRef.current = null;
   }, []);
 
   return {

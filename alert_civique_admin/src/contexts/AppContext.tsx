@@ -24,7 +24,6 @@ export const useApp = () => {
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  // État initial depuis localStorage
   const [token, setToken] = useState(() => localStorage.getItem('token') || '')
   const [currentUser, setUser] = useState<LoginResponse | null>(() => {
     const saved = localStorage.getItem('currentUser')
@@ -35,7 +34,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false)
   const toastId = useRef(0)
 
-  // Synchronisation avec localStorage
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token)

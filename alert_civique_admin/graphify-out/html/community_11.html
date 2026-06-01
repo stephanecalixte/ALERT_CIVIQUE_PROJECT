@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>./contexts/AppContext/useApp — Community 11</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+#sidebar { width: 320px; min-width: 320px; background: #1a1a2e; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; border-right: 1px solid #2a2a4a; }
+#sidebar h2 { font-size: 18px; color: #F28E2B; margin-bottom: 4px; }
+#sidebar h3 { font-size: 14px; color: #9ca3af; margin-bottom: 8px; }
+.nav-link { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 8px; border-radius: 4px; color: #e0e0e0; text-decoration: none; }
+.nav-link:hover { background: #2a2a4a; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+#graph-container { flex: 1; position: relative; }
+#search { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #3a3a5a; background: #0f0f1a; color: #e0e0e0; font-size: 14px; }
+#search:focus { outline: none; border-color: #F28E2B; }
+#info-panel { background: #0f0f1a; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.6; min-height: 100px; }
+#info-panel .prop { color: #9ca3af; }
+#info-panel .val { color: #e0e0e0; }
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div>
+        <h2>./contexts/AppContext/useApp</h2>
+        <p style="font-size:12px;color:#666;">13 nodes · Community 11</p>
+    </div>
+    <input id="search" type="text" placeholder="Search nodes…" />
+    <div>
+        <h3>Node Info</h3>
+        <div id="info-panel"><i style="color:#666">Click a node to see details</i></div>
+    </div>
+    <div>
+        <h3>Navigation</h3>
+        <a href="index.html" class="nav-link" style="font-weight:bold;">← Overview</a>
+    </div>
+</div>
+<div id="graph-container"></div>
+<script>
+(function() {
+    var nodesData = [{id:"src_app_tsx",label:"App",title:"App\nType: File\nFile: .\\src\\App.tsx\nDegree: 12",color:"#F28E2B",size:21.9},{id:"src_app_tsx_import_contexts_appcontext_appprovider",label:"./contexts/AppContext/AppProvider",title:"./contexts/AppContext/AppProvider\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_contexts_appcontext_useapp",label:"./contexts/AppContext/useApp",title:"./contexts/AppContext/useApp\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_layout_layout",label:"./components/Layout/Layout",title:"./components/Layout/Layout\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_loginpage_loginpage",label:"./components/LoginPage/LoginPage",title:"./components/LoginPage/LoginPage\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_dashboard_dashboard",label:"./components/DashBoard/Dashboard",title:"./components/DashBoard/Dashboard\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_reportslist_reportslist",label:"./components/ReportsList/ReportsList",title:"./components/ReportsList/ReportsList\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_alertslist_alertslist",label:"./components/AlertsList/AlertsList",title:"./components/AlertsList/AlertsList\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_streamslist_streamslist",label:"./components/StreamsList/StreamsList",title:"./components/StreamsList/StreamsList\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_emergencieslist_emergencieslist",label:"./components/EmergenciesList/EmergenciesList",title:"./components/EmergenciesList/EmergenciesList\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_userslist_userslist",label:"./components/UsersList/UsersList",title:"./components/UsersList/UsersList\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_chatroom_chatroom",label:"./components/ChatRoom/ChatRoom",title:"./components/ChatRoom/ChatRoom\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0},{id:"src_app_tsx_import_components_starfield_starfield",label:"./components/Starfield/Starfield",title:"./components/Starfield/Starfield\nType: Module\nFile: .\\src\\App.tsx\nDegree: 1",color:"#F28E2B",size:12.0}];
+    var edgesData = [{from:"src_app_tsx",to:"src_app_tsx_import_contexts_appcontext_appprovider",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_contexts_appcontext_appprovider\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_contexts_appcontext_useapp",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_contexts_appcontext_useapp\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_layout_layout",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_layout_layout\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_loginpage_loginpage",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_loginpage_loginpage\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_dashboard_dashboard",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_dashboard_dashboard\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_reportslist_reportslist",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_reportslist_reportslist\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_alertslist_alertslist",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_alertslist_alertslist\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_streamslist_streamslist",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_streamslist_streamslist\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_emergencieslist_emergencieslist",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_emergencieslist_emergencieslist\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_userslist_userslist",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_userslist_userslist\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_chatroom_chatroom",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_chatroom_chatroom\nConfidence: Extracted"},{from:"src_app_tsx",to:"src_app_tsx_import_components_starfield_starfield",label:"imports",dashes:false,title:"imports: src_app_tsx → src_app_tsx_import_components_starfield_starfield\nConfidence: Extracted"}];
+    var container = document.getElementById('graph-container');
+    var nodes = new vis.DataSet(nodesData);
+    var edges = new vis.DataSet(edgesData);
+    var options = {
+        physics: {solver:'forceAtlas2Based',forceAtlas2Based:{gravitationalConstant:-50,centralGravity:0.01,springLength:120,springConstant:0.08,damping:0.4,avoidOverlap:0.5},stabilization:{iterations:200}},
+        nodes: { shape: 'dot', font: { color: '#e0e0e0', size: 12 }, borderWidth: 2 },
+        edges: { color: { color: '#4a4a6a', highlight: '#F28E2B', hover: '#F28E2B' }, font: { color: '#888', size: 10 }, arrows: { to: { enabled: false } }, smooth: { type: 'continuous' } },
+        interaction: { hover: true, tooltipDelay: 200, zoomView: true, dragView: true }
+    };
+    var network = new vis.Network(container, { nodes: nodes, edges: edges }, options);
+    network.on('stabilizationIterationsDone', function() { network.setOptions({ physics: { enabled: false } }); });
+    network.on('click', function(params) {
+        var panel = document.getElementById('info-panel');
+        if (params.nodes.length > 0) {
+            var node = nodes.get(params.nodes[0]);
+            if (node) {
+                panel.innerHTML = '<div><span class="prop">Label:</span> <span class="val">' + node.label + '</span></div><div><span class="prop">ID:</span> <span class="val">' + node.id + '</span></div>';
+                network.focus(params.nodes[0], { scale: 1.2, animation: true });
+            }
+        }
+    });
+    var searchEl = document.getElementById('search');
+    var sTimer = null;
+    searchEl.addEventListener('input', function() {
+        clearTimeout(sTimer);
+        sTimer = setTimeout(function() {
+            var term = searchEl.value.toLowerCase();
+            var updates = [];
+            nodes.forEach(function(n) {
+                var h = term && !n.label.toLowerCase().includes(term);
+                if (n.hidden !== h) { updates.push({ id: n.id, hidden: h }); }
+            });
+            if (updates.length > 0) { nodes.update(updates); }
+        }, 200);
+    });
+})();
+</script>
+</body>
+</html>

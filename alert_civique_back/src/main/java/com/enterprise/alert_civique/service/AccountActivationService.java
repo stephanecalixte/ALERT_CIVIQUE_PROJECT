@@ -1,17 +1,14 @@
 package com.enterprise.alert_civique.service;
 
-
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.enterprise.alert_civique.entity.ActivationToken;
 import com.enterprise.alert_civique.entity.Users;
+import com.enterprise.alert_civique.repository.IActivationRepository;
 import com.enterprise.alert_civique.repository.UserRepository;
-import com.enterprise.alert_civique.security.ActivationJwtService;
 
 import java.time.LocalDateTime;
 
@@ -21,37 +18,35 @@ import java.time.LocalDateTime;
 @Transactional
 public class AccountActivationService {
 
-    private final ActivationJwtService activationJwtService;
+    private final IActivationRepository activationRepository;
     private final UserRepository userRepository;
 
-    public void activateAccount(String token) throws IllegalAccessException, IllegalStateException {
+    public void activateAccount(String token) throws IllegalAccessException {
 
-        // Valide le token et récupère les claims
-        Claims claims = activationJwtService.valideToken(token);
+        ActivationToken activationToken = activationRepository.findByTokenHash(token);
 
-        String type = claims.get("type", String.class);
-        if (!"activation".equals(type)) {
-            throw new IllegalAccessException("Token invalide : type incorrect");
+        if (activationToken == null) {
+            throw new IllegalAccessException("Token invalide ou introuvable");
+        }
+        if (activationToken.isUsed()) {
+            throw new IllegalAccessException("Token déjà utilisé");
+        }
+        if (activationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalAccessException("Token expiré");
         }
 
-        Long userId = claims.get("uid", Long.class);
-        if (userId == null) {
-            throw new IllegalAccessException("Token invalide : userId invalide");
-        }
-        Users user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalAccessException("Utilisateur non trouvé")
-        );
-
-        if (user.isActive()) {
-            throw new IllegalStateException("Compte déjà actif");
+        Users user = activationToken.getUser();
+        if (user == null) {
+            throw new IllegalAccessException("Utilisateur non trouvé");
         }
 
         user.setActive(true);
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        // Effectuer envoi d'email
-        System.out.println("Compte activé pour l'utilisateur : " + user.getEmail());
-        System.out.println("Envoi d'email de confirmation en cours à " + user.getEmail());
+        activationToken.setUsed(true);
+        activationRepository.save(activationToken);
+
+        log.info("Compte activé pour l'utilisateur : {}", user.getEmail());
     }
 }

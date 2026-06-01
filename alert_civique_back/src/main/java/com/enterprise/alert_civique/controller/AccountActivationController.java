@@ -34,15 +34,11 @@ public class AccountActivationController {
             accountActivationService.activateAccount(token);
             log.info("Account activated successfully");
         } catch (IllegalAccessException e) {
-            log.warn("Account activation failed - Invalid token or user not found: {}", e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of("Token invalide ou utilisateur non trouvé", e.getMessage()));
-        } catch (IllegalStateException e) {
-            log.info("Account activation skipped - Account already active: {}", e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.accepted().body(Map.of("Compte déjà actif", e.getMessage()));
+            log.warn("Account activation failed: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             log.error("Unexpected error during account activation", e);
+            return ResponseEntity.badRequest().body(Map.of("message", "Erreur lors de l'activation du compte"));
         }
         return ResponseEntity.ok(Map.of("message", "Compte activé avec succès"));
     }

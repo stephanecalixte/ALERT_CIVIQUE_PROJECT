@@ -3,6 +3,7 @@ import { FlatList } from 'react-native';
 import io from 'socket.io-client';
 import { NODE_BASE_URL } from '@/lib/config';
 import { AlertType, ALERT_CONFIGS } from '@/contexts/AlertContext';
+import { getFullAddress } from './useGpsRegion';
 
 export interface User {
   id: string;
@@ -18,7 +19,8 @@ export interface Message {
   senderId: string;
   timestamp: string;
   type?: 'text' | 'alert' | 'system' | 'report';
-  alertType?: AlertType;  // présent quand type === 'report'
+  alertType?: AlertType;
+  address?: string | null;
 }
 
 const SOCKET_URL = NODE_BASE_URL;
@@ -32,8 +34,14 @@ export function useMessages() {
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const addressRef = useRef<string | null>(null);
 
   const flatListRef = useRef<FlatList<Message> | null>(null);
+
+  // Récupère l'adresse GPS une seule fois au montage
+  useEffect(() => {
+    getFullAddress().then(addr => { addressRef.current = addr; });
+  }, []);
 
   const initSocket = useCallback(() => {
     const newSocket = io(SOCKET_URL, {
@@ -119,6 +127,11 @@ export function useMessages() {
       setMessages((prev: Message[]) => [...prev, alertMessage]);
     });
 
+    newSocket.on('chatCleared', () => {
+      console.log('🗑️ Chat vidé par l\'admin');
+      setMessages([]);
+    });
+
     newSocket.on('disconnect', () => {
       console.log('❌ Déconnecté du serveur');
       setIsConnected(false);
@@ -157,6 +170,7 @@ export function useMessages() {
       sender: user.name,
       senderId: user.id,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      address: addressRef.current,
     };
 
     console.log('📤 Envoi message:', message);
@@ -179,6 +193,7 @@ export function useMessages() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       type:      'report',
       alertType: type,
+      address:   addressRef.current,
     };
     socket.emit('sendMessage', message);
     setMessages(prev => [...prev, message]);

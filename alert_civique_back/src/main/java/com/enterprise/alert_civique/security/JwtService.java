@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -24,8 +25,12 @@ public class JwtService {
     }
 
     public String generateToken(String username) {
+        if (username == null) {
+            throw new IllegalArgumentException("Username cannot be null");
+        }
         try {
             String token = Jwts.builder()
+                    .setId(UUID.randomUUID().toString())
                     .setSubject(username)
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1h

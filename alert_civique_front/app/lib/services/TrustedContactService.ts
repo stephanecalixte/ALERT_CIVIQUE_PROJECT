@@ -7,11 +7,10 @@ export default class TrustedContactService {
   /**
    * Récupère les contacts de confiance d'un utilisateur → GET /api/trusted-contacts/user/{userId}
    */
-  static async getByUserId(userId: number, token: string): Promise<TrustedContact[]> {
+  static async getByUserId(userId: number, token?: string | null): Promise<TrustedContact[]> {
     try {
-      const response = await fetch(`${this.BASE_URL}/api/trusted-contacts/user/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${this.BASE_URL}/api/trusted-contacts/user/${userId}`, { headers });
       if (!response.ok) return [];
       return await response.json();
     } catch (e) {
@@ -23,14 +22,12 @@ export default class TrustedContactService {
   /**
    * Crée un contact de confiance → POST /api/trusted-contacts
    */
-  static async create(data: Omit<TrustedContact, 'id'>, token: string): Promise<TrustedContact | null> {
+  static async create(data: Omit<TrustedContact, 'id'>, token?: string | null): Promise<TrustedContact | null> {
     try {
+      const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
       const response = await fetch(`${this.BASE_URL}/api/trusted-contacts`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify(data),
       });
       const text = await response.text();
@@ -45,11 +42,12 @@ export default class TrustedContactService {
   /**
    * Supprime un contact → DELETE /api/trusted-contacts/{id}
    */
-  static async delete(id: number, token: string): Promise<boolean> {
+  static async delete(id: number, token?: string | null): Promise<boolean> {
     try {
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
       const response = await fetch(`${this.BASE_URL}/api/trusted-contacts/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
       });
       return response.ok;
     } catch (e) {

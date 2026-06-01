@@ -13,8 +13,9 @@ interface ContactForm {
 const EMPTY_FORM: ContactForm = { name: '', email: '', phone: '' };
 
 export function useTrustedContacts() {
-  const { token, user } = useAuth();
-  const userId = user?.userId ? Number(user.userId) : null;
+  const { token, user, isLoaded } = useAuth();
+  const userId = user?.userId != null && user.userId !== 0 ? Number(user.userId) : null;
+  console.log('🔑 useTrustedContacts — user:', JSON.stringify(user), 'userId calculé:', userId);
 
   const [contacts, setContacts] = useState<TrustedContact[]>([]);
   const [form, setForm] = useState<ContactForm>(EMPTY_FORM);
@@ -24,18 +25,21 @@ export function useTrustedContacts() {
   const [showForm, setShowForm] = useState(false);
 
   const load = useCallback(async () => {
-    if (!userId || !token) return;
+    if (!isLoaded) return;
+    if (userId == null) return;
     setIsLoading(true);
     setError(null);
     try {
+      console.log('👥 Contacts — chargement pour userId:', userId);
       const data = await TrustedContactService.getByUserId(userId, token);
+      console.log('👥 Contacts reçus:', data.length, data);
       setContacts(data);
     } catch (e) {
       setError('Impossible de charger les contacts');
     } finally {
       setIsLoading(false);
     }
-  }, [userId, token]);
+  }, [isLoaded, userId, token]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -46,7 +50,10 @@ export function useTrustedContacts() {
   }, []);
 
   const add = useCallback(async () => {
-    if (!userId || !token) return;
+    if (userId == null) {
+      setError('Session non disponible — relancez l\'application');
+      return;
+    }
     if (!form.name.trim()) {
       setError('Le nom est requis');
       return;
@@ -59,21 +66,20 @@ export function useTrustedContacts() {
         token
       );
       if (created) {
-        setContacts(prev => [...prev, created]);
         setForm(EMPTY_FORM);
         setShowForm(false);
+        await load();
       } else {
-        setError('Échec de l\'ajout du contact');
+        setError('Le serveur n\'a pas enregistré le contact — vérifiez votre connexion');
       }
     } catch (e) {
-      setError('Erreur lors de l\'ajout');
+      setError('Erreur réseau — vérifiez votre connexion');
     } finally {
       setIsSaving(false);
     }
-  }, [form, userId, token]);
+  }, [form, userId, token, load]);
 
   const remove = useCallback(async (id: number) => {
-    if (!token) return;
     const ok = await TrustedContactService.delete(id, token);
     if (ok) {
       setContacts(prev => prev.filter(c => c.id !== id));
@@ -107,5 +113,7 @@ export function useTrustedContacts() {
     openForm,
     closeForm,
     reload: load,
+    isLoaded,
+    isAuthenticated: isLoaded && userId != null,
   };
 }

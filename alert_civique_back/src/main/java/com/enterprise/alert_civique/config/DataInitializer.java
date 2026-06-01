@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.Set;
 
 @Component
 @Slf4j
+@Profile("!test")
 public class DataInitializer implements ApplicationRunner {
 
     private final RoleRepository roleRepository;
@@ -65,7 +67,7 @@ public class DataInitializer implements ApplicationRunner {
         }
 
         // ── 2. Recréer les users seulement si les comptes par défaut n'existent pas déjà
-        boolean adminExists = userRepository.existsByEmail("stephanecalixte@gmail.com");
+        boolean adminExists = userRepository.existsByEmail("stephanecalixte243@gmail.com");
         if (adminExists) {
             log.info("Utilisateurs déjà présents — initialisation ignorée.");
             return;
@@ -87,14 +89,14 @@ public class DataInitializer implements ApplicationRunner {
         Roles roleClient = roleRepository.findFirstByName("ROLE_CLIENT")
                 .orElseThrow(() -> new RuntimeException("ROLE_CLIENT introuvable"));
 
-        String hash = passwordService.hash("admin");
+        String hash = passwordService.hash(initialAdminPassword);
 
         // ── 4. Créer l'administrateur ─────────────────────────────────────────
         Users admin = Users.builder()
                 .firstname("Stéphane")
                 .lastname("Calixte")
-                .name("stephanecalixte")
-                .email("stephanecalixte@gmail.com")
+                .name("stephanecalixte243")
+                .email("stephanecalixte243@gmail.com")
                 .phone("0758968407")
                 .password(hash)
                 .active(true)

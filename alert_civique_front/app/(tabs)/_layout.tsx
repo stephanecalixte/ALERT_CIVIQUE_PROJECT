@@ -1,15 +1,13 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, View, Platform, Text, Animated, Easing, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useAlert, ALERT_CONFIGS } from '@/contexts/AlertContext';
 import { useMessagesContext } from '@/contexts/MessagesContext';
-import { useAuth } from '@/contexts/AuthContext';
 
 const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 90 : 80;
 
@@ -165,11 +163,8 @@ function TopLayout() {
 }
 
 export default function TabLayout() {
-  const { isAuthenticated, isAdmin } = useAuth();
-
-  // "key" force le re-mount complet des tabs quand isAdmin change
-  // (Expo Router ne met pas à jour href dynamiquement sans ça)
-  const tabsKey = isAdmin ? 'admin' : isAuthenticated ? 'user' : 'guest';
+  const tabsKey = 'user';
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.root}>
@@ -182,19 +177,22 @@ export default function TabLayout() {
           tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
           headerShown: false,
           tabBarButton: HapticTab,
-          tabBarStyle: styles.tabBar,
+          tabBarStyle: {
+            ...styles.tabBar,
+            height: TAB_BAR_HEIGHT + insets.bottom,
+            paddingBottom: insets.bottom,
+          },
         }}>
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home',
+            title: 'Accueil',
             tabBarIcon: ({ color }) => <IconSymbol size={26} name="house.fill" color={color} />,
           }}
         />
         <Tabs.Screen name="LiveStream" options={{ href: null }} />
         <Tabs.Screen name="Photo"      options={{ href: null }} />
         <Tabs.Screen name="Messages"   options={{ href: null }} />
-        <Tabs.Screen name="explore"    options={{ href: null }} />
         <Tabs.Screen
           name="Contact"
           options={{
@@ -205,30 +203,15 @@ export default function TabLayout() {
         <Tabs.Screen
           name="Priority"
           options={{
-            title: 'Priorité',
-            tabBarIcon: ({ color }) => <IconSymbol size={26} name="exclamationmark.triangle.fill" color={color} />,
+            title: 'Historique',
+            tabBarIcon: ({ color }) => <IconSymbol size={26} name="clock.arrow.circlepath" color={color} />,
           }}
         />
         <Tabs.Screen
           name="Option"
           options={{
-            title: isAuthenticated ? 'Options' : 'Connexion',
-            tabBarIcon: ({ color }) => (
-              <IconSymbol
-                size={26}
-                name={isAuthenticated ? 'gearshape.fill' : 'person.circle.fill'}
-                color={color}
-              />
-            ),
-          }}
-        />
-        {/* Onglet Admin : visible uniquement pour les admins connectés */}
-        <Tabs.Screen
-          name="Admin"
-          options={{
-            title: 'Admin',
-            tabBarIcon: ({ color }) => <IconSymbol size={26} name="shield.fill" color={color} />,
-            href: isAdmin ? undefined : null,
+            title: 'Options',
+            tabBarIcon: ({ color }) => <IconSymbol size={26} name="gearshape.fill" color={color} />,
           }}
         />
         <Tabs.Screen name="Register" options={{ href: null }} />
@@ -327,6 +310,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#1565c0',
     height: TAB_BAR_HEIGHT,
     borderTopWidth: 0,
+    paddingBottom: 0,
+    paddingTop: 0,
   },
   tabItem: {
     borderRadius: 14,

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+<rect width="100%" height="100%" fill="#0f0f1a"/>
+<line x1="600.0" y1="60.0" x2="720.5" y2="79.1" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="829.2" y2="134.5" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="915.5" y2="220.8" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="970.9" y2="329.5" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="990.0" y2="450.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="970.9" y2="570.5" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="915.5" y2="679.2" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="829.2" y2="765.5" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="720.5" y2="820.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="720.5" y1="820.9" x2="600.0" y2="840.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="720.5" y1="820.9" x2="479.5" y2="820.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="370.8" y1="765.5" x2="284.5" y2="679.2" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="370.8" y1="765.5" x2="229.1" y2="570.5" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="370.8" y1="765.5" x2="210.0" y2="450.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="370.8" y1="765.5" x2="229.1" y2="329.5" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="370.8" y1="765.5" x2="284.5" y2="220.8" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="370.8" y1="765.5" x2="370.8" y2="134.5" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="370.8" y1="134.5" x2="479.5" y2="79.1" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<circle cx="600.0" cy="60.0" r="6" fill="#4E79A7" opacity="0.85"><title>LocalDateTimeDeserializer</title></circle>
+<circle cx="720.5" cy="79.1" r="6" fill="#4E79A7" opacity="0.85"><title>com.fasterxml.jackson.core.JsonParser</title></circle>
+<circle cx="829.2" cy="134.5" r="6" fill="#4E79A7" opacity="0.85"><title>com.fasterxml.jackson.databind.DeserializationContext</title></circle>
+<circle cx="915.5" cy="220.8" r="6" fill="#4E79A7" opacity="0.85"><title>com.fasterxml.jackson.databind.deser.std.StdDeserializer</title></circle>
+<circle cx="970.9" cy="329.5" r="6" fill="#4E79A7" opacity="0.85"><title>java.io.IOException</title></circle>
+<circle cx="990.0" cy="450.0" r="6" fill="#4E79A7" opacity="0.85"><title>java.time.LocalDateTime</title></circle>
+<circle cx="970.9" cy="570.5" r="6" fill="#4E79A7" opacity="0.85"><title>java.time.OffsetDateTime</title></circle>
+<circle cx="915.5" cy="679.2" r="6" fill="#4E79A7" opacity="0.85"><title>java.time.format.DateTimeFormatter</title></circle>
+<circle cx="829.2" cy="765.5" r="6" fill="#4E79A7" opacity="0.85"><title>java.time.format.DateTimeParseException</title></circle>
+<circle cx="720.5" cy="820.9" r="6" fill="#E15759" opacity="0.85"><title>LocalDateTimeDeserializer</title></circle>
+<circle cx="600.0" cy="840.0" r="6" fill="#E15759" opacity="0.85"><title>.LocalDateTimeDeserializer()</title></circle>
+<circle cx="479.5" cy="820.9" r="6" fill="#E15759" opacity="0.85"><title>.deserialize()</title></circle>
+<circle cx="370.8" cy="765.5" r="6" fill="#F28E2B" opacity="0.85"><title>JacksonConfig</title></circle>
+<circle cx="284.5" cy="679.2" r="6" fill="#F28E2B" opacity="0.85"><title>com.enterprise.alert_civique.config.jackson.LocalDateTimeDeserializer</title></circle>
+<circle cx="229.1" cy="570.5" r="6" fill="#F28E2B" opacity="0.85"><title>com.fasterxml.jackson.databind.module.SimpleModule</title></circle>
+<circle cx="210.0" cy="450.0" r="6" fill="#F28E2B" opacity="0.85"><title>org.springframework.context.annotation.Bean</title></circle>
+<circle cx="229.1" cy="329.5" r="6" fill="#F28E2B" opacity="0.85"><title>org.springframework.context.annotation.Configuration</title></circle>
+<circle cx="284.5" cy="220.8" r="6" fill="#F28E2B" opacity="0.85"><title>java.time.LocalDateTime</title></circle>
+<circle cx="370.8" cy="134.5" r="6" fill="#F28E2B" opacity="0.85"><title>JacksonConfig</title></circle>
+<circle cx="479.5" cy="79.1" r="6" fill="#F28E2B" opacity="0.85"><title>.alertCiviqueJacksonModule()</title></circle>
+<text x="600.0" y="51.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">LocalDateTimeDeserializer</text>
+<text x="720.5" y="70.1" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">com.fasterxml.jackson.core.JsonParser</text>
+<text x="829.2" y="125.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">com.fasterxml.jackson.databind.DeserializationContext</text>
+<text x="915.5" y="211.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">com.fasterxml.jackson.databind.deser.std.StdDeserializer</text>
+<text x="970.9" y="320.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">java.io.IOException</text>
+<text x="990.0" y="441.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">java.time.LocalDateTime</text>
+<text x="970.9" y="561.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">java.time.OffsetDateTime</text>
+<text x="915.5" y="670.2" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">java.time.format.DateTimeFormatter</text>
+<text x="829.2" y="756.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">java.time.format.DateTimeParseException</text>
+<text x="720.5" y="811.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">LocalDateTimeDeserializer</text>
+<text x="600.0" y="831.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">.LocalDateTimeDeserializer()</text>
+<text x="479.5" y="811.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">.deserialize()</text>
+<text x="370.8" y="756.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">JacksonConfig</text>
+<text x="284.5" y="670.2" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">com.enterprise.alert_civique.config.jackson.LocalDateTimeDeserializer</text>
+<text x="229.1" y="561.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">com.fasterxml.jackson.databind.module.SimpleModule</text>
+<text x="210.0" y="441.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">org.springframework.context.annotation.Bean</text>
+<text x="229.1" y="320.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">org.springframework.context.annotation.Configuration</text>
+<text x="284.5" y="211.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">java.time.LocalDateTime</text>
+<text x="370.8" y="125.5" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">JacksonConfig</text>
+<text x="479.5" y="70.1" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">.alertCiviqueJacksonModule()</text>
+</svg>

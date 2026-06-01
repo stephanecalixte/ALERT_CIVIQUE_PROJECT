@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+<rect width="100%" height="100%" fill="#0f0f1a"/>
+<line x1="600.0" y1="60.0" x2="678.5" y2="68.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="753.8" y2="91.6" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="822.8" y2="129.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="882.7" y2="181.3" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="931.0" y2="243.7" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="965.7" y2="314.6" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="985.5" y2="390.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="600.0" y1="60.0" x2="989.5" y2="469.8" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="977.6" y1="547.8" x2="950.1" y2="621.8" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="977.6" y1="547.8" x2="908.4" y2="688.7" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="977.6" y1="547.8" x2="854.0" y2="745.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="977.6" y1="547.8" x2="789.3" y2="791.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="977.6" y1="547.8" x2="716.8" y2="822.1" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="639.5" y1="838.0" x2="560.5" y2="838.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="639.5" y1="838.0" x2="483.2" y2="822.1" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="639.5" y1="838.0" x2="410.7" y2="791.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="639.5" y1="838.0" x2="346.0" y2="745.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="639.5" y1="838.0" x2="291.6" y2="688.7" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="639.5" y1="838.0" x2="249.9" y2="621.8" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="210.5" y2="469.8" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="214.5" y2="390.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="234.3" y2="314.6" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="269.0" y2="243.7" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="317.3" y2="181.3" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="377.2" y2="129.9" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="446.2" y2="91.6" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<line x1="222.4" y1="547.8" x2="521.5" y2="68.0" stroke="#3a3a5a" stroke-width="0.5" stroke-opacity="0.6"/>
+<circle cx="600.0" cy="60.0" r="6" fill="#F28E2B" opacity="0.85"><title>PlayerControls</title></circle>
+<circle cx="678.5" cy="68.0" r="6" fill="#F28E2B" opacity="0.85"><title>lucide-react/Play</title></circle>
+<circle cx="753.8" cy="91.6" r="6" fill="#F28E2B" opacity="0.85"><title>lucide-react/Pause</title></circle>
+<circle cx="822.8" cy="129.9" r="6" fill="#F28E2B" opacity="0.85"><title>lucide-react/Volume2</title></circle>
+<circle cx="882.7" cy="181.3" r="6" fill="#F28E2B" opacity="0.85"><title>lucide-react/VolumeX</title></circle>
+<circle cx="931.0" cy="243.7" r="6" fill="#F28E2B" opacity="0.85"><title>lucide-react/Maximize2</title></circle>
+<circle cx="965.7" cy="314.6" r="6" fill="#F28E2B" opacity="0.85"><title>lucide-react/Minimize2</title></circle>
+<circle cx="985.5" cy="390.9" r="6" fill="#F28E2B" opacity="0.85"><title>fmt()</title></circle>
+<circle cx="989.5" cy="469.8" r="6" fill="#F28E2B" opacity="0.85"><title>PlayerControls()</title></circle>
+<circle cx="977.6" cy="547.8" r="6" fill="#76B7B2" opacity="0.85"><title>PlayerOverlay</title></circle>
+<circle cx="950.1" cy="621.8" r="6" fill="#76B7B2" opacity="0.85"><title>lucide-react/AlertTriangle</title></circle>
+<circle cx="908.4" cy="688.7" r="6" fill="#76B7B2" opacity="0.85"><title>lucide-react/Loader2</title></circle>
+<circle cx="854.0" cy="745.9" r="6" fill="#76B7B2" opacity="0.85"><title>lucide-react/Radio</title></circle>
+<circle cx="789.3" cy="791.0" r="6" fill="#76B7B2" opacity="0.85"><title>lucide-react/RefreshCw</title></circle>
+<circle cx="716.8" cy="822.1" r="6" fill="#76B7B2" opacity="0.85"><title>../hooks/useHlsPlayer/PlayerStatus</title></circle>
+<circle cx="639.5" cy="838.0" r="6" fill="#E15759" opacity="0.85"><title>useHlsPlayer</title></circle>
+<circle cx="560.5" cy="838.0" r="6" fill="#E15759" opacity="0.85"><title>react/useEffect</title></circle>
+<circle cx="483.2" cy="822.1" r="6" fill="#E15759" opacity="0.85"><title>react/useRef</title></circle>
+<circle cx="410.7" cy="791.0" r="6" fill="#E15759" opacity="0.85"><title>react/useState</title></circle>
+<circle cx="346.0" cy="745.9" r="6" fill="#E15759" opacity="0.85"><title>react/useCallback</title></circle>
+<circle cx="291.6" cy="688.7" r="6" fill="#E15759" opacity="0.85"><title>hls.js/Hls</title></circle>
+<circle cx="249.9" cy="621.8" r="6" fill="#E15759" opacity="0.85"><title>useHlsPlayer()</title></circle>
+<circle cx="222.4" cy="547.8" r="6" fill="#4E79A7" opacity="0.85"><title>useStreamsData</title></circle>
+<circle cx="210.5" cy="469.8" r="6" fill="#4E79A7" opacity="0.85"><title>react/useEffect</title></circle>
+<circle cx="214.5" cy="390.9" r="6" fill="#4E79A7" opacity="0.85"><title>react/useRef</title></circle>
+<circle cx="234.3" cy="314.6" r="6" fill="#4E79A7" opacity="0.85"><title>react/useState</title></circle>
+<circle cx="269.0" cy="243.7" r="6" fill="#4E79A7" opacity="0.85"><title>react/useCallback</title></circle>
+<circle cx="317.3" cy="181.3" r="6" fill="#4E79A7" opacity="0.85"><title>socket.io-client/io</title></circle>
+<circle cx="377.2" cy="129.9" r="6" fill="#4E79A7" opacity="0.85"><title>../services/api/api</title></circle>
+<circle cx="446.2" cy="91.6" r="6" fill="#4E79A7" opacity="0.85"><title>../types/AdminStream</title></circle>
+<circle cx="521.5" cy="68.0" r="6" fill="#4E79A7" opacity="0.85"><title>useStreamsData()</title></circle>
+<text x="600.0" y="51.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">PlayerControls</text>
+<text x="678.5" y="59.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/Play</text>
+<text x="753.8" y="82.6" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/Pause</text>
+<text x="822.8" y="120.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/Volume2</text>
+<text x="882.7" y="172.3" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/VolumeX</text>
+<text x="931.0" y="234.7" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/Maximize2</text>
+<text x="965.7" y="305.6" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/Minimize2</text>
+<text x="985.5" y="381.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">fmt()</text>
+<text x="989.5" y="460.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">PlayerControls()</text>
+<text x="977.6" y="538.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">PlayerOverlay</text>
+<text x="950.1" y="612.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/AlertTriangle</text>
+<text x="908.4" y="679.7" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/Loader2</text>
+<text x="854.0" y="736.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/Radio</text>
+<text x="789.3" y="782.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">lucide-react/RefreshCw</text>
+<text x="716.8" y="813.1" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">../hooks/useHlsPlayer/PlayerStatus</text>
+<text x="639.5" y="829.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">useHlsPlayer</text>
+<text x="560.5" y="829.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useEffect</text>
+<text x="483.2" y="813.1" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useRef</text>
+<text x="410.7" y="782.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useState</text>
+<text x="346.0" y="736.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useCallback</text>
+<text x="291.6" y="679.7" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">hls.js/Hls</text>
+<text x="249.9" y="612.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">useHlsPlayer()</text>
+<text x="222.4" y="538.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">useStreamsData</text>
+<text x="210.5" y="460.8" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useEffect</text>
+<text x="214.5" y="381.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useRef</text>
+<text x="234.3" y="305.6" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useState</text>
+<text x="269.0" y="234.7" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">react/useCallback</text>
+<text x="317.3" y="172.3" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">socket.io-client/io</text>
+<text x="377.2" y="120.9" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">../services/api/api</text>
+<text x="446.2" y="82.6" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">../types/AdminStream</text>
+<text x="521.5" y="59.0" fill="#ccc" font-size="9" font-family="sans-serif" text-anchor="middle">useStreamsData()</text>
+</svg>
